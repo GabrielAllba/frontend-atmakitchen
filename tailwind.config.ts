@@ -7,6 +7,9 @@ const config: Config = {
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     theme: {
+        fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+        },
         extend: {
             backgroundImage: {
                 'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -15,5 +18,20 @@ const config: Config = {
         },
     },
     plugins: [require('daisyui')],
+    daisyui: {
+        themes: [
+            {
+                mainTheme: {
+                    primary: '#FFFFFF',
+                    secondary: '#FFFCFC',
+                    accent: '#AA2B2B',
+                    neutral: '#E7F9FD',
+                    'base-100': '#1D6786',
+                },
+            },
+            'dark',
+            'cupcake',
+        ],
+    },
 };
 export default config;
