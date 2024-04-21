@@ -64,7 +64,7 @@ export default function Navbar() {
             <div className="drawer ">
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
-                <div className="drawer-side ">
+                <div className="drawer-side z-50">
                     <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
 
                     <ul className="menu p-4 md:w-96 sm:w-80 min-h-full text-base-content bg-[#FFFFFF] flex flex-col justify-between">
