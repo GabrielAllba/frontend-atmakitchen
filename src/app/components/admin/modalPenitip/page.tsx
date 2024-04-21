@@ -6,7 +6,7 @@ import { Listbox } from '@headlessui/react';
 
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
-export default function CustomModalPenitip({ open, setOpen, penitip }: { open: any; setOpen: any; penitip: Penitip }) {
+const CustomModalPenitip = ({ open, setOpen, penitip }: { open: any; setOpen: any; penitip: Penitip }) => {
     const cancelButtonRef = useRef(null);
 
     // bank
@@ -241,4 +241,6 @@ export default function CustomModalPenitip({ open, setOpen, penitip }: { open: a
             </Dialog>
         </Transition.Root>
     );
-}
+};
+
+export default CustomModalPenitip;
