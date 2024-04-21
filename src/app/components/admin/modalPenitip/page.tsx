@@ -4,15 +4,9 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Penitip } from '@/dummy_data/penitip';
 import { Listbox } from '@headlessui/react';
 
-interface CustomModalPenitipProps {
-    open: boolean;
-    setOpen: any;
-    penitip: Penitip;
-}
-
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
-export default function CustomModalPenitip({ open, setOpen, penitip }: CustomModalPenitipProps) {
+export default function CustomModalPenitip({ open, setOpen, penitip }: { open: any; setOpen: any; penitip: Penitip }) {
     const cancelButtonRef = useRef(null);
 
     // bank
