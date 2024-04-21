@@ -2,6 +2,10 @@ import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
+import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
+import { RiLuggageDepositLine } from 'react-icons/ri';
+import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
+
 const navigation = [
     { name: 'Dashboard', href: '#', current: true },
     { name: 'Team', href: '#', current: false },
@@ -16,169 +20,114 @@ function classNames({ ...classes }) {
 export default function Navbar() {
     return (
         <div>
-            <Disclosure as="nav" className="bg-gray-800">
+            <Disclosure as="nav" className="bg-white border-b">
                 {({ open }: { open: any }) => (
                     <>
-                        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+                        <div className="font-poppins mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                             <div className="relative flex h-16 items-center justify-between">
-                                <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                                    {/* Mobile menu button*/}
-                                    <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                                        <span className="absolute -inset-0.5" />
-                                        <span className="sr-only">Open main menu</span>
-                                        {open ? (
-                                            <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                                        ) : (
-                                            <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                                        )}
-                                    </Disclosure.Button>
-                                </div>
                                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                    <div className="flex flex-shrink-0 items-center">
-                                        <img
-                                            className="h-8 w-auto"
-                                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                                            alt="Your Company"
-                                        />
+                                    <div className="hidden sm:ml-6 sm:block">
+                                        <div className="flex space-x-4 items-center text-black">
+                                            <p className="font-semibold text-[#AA2B2B]">AtmaKitchen</p>
+                                        </div>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        <div className="flex space-x-4">
-                                            {navigation.map((item) => (
-                                                <a
-                                                    key={item.name}
-                                                    href={item.href}
-                                                    className={
-                                                        item.current
-                                                            ? 'bg-gray-900 text-white'
-                                                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                                                    }
-                                                    aria-current={item.current ? 'page' : undefined}
-                                                >
-                                                    {item.name}
-                                                </a>
-                                            ))}
+                                        <div className="flex space-x-4 items-center text-black">
+                                            <p>Senin, 28 Maret 2024</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    <button
-                                        type="button"
-                                        className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                    >
-                                        <span className="absolute -inset-1.5" />
-                                        <span className="sr-only">View notifications</span>
-                                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                                    </button>
-
+                                <div className=" flex items-center">
                                     {/* Profile dropdown */}
-                                    <Menu as="div" className="relative ml-3">
-                                        <div>
-                                            <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                                <span className="absolute -inset-1.5" />
-                                                <span className="sr-only">Open user menu</span>
-                                                <img
-                                                    className="h-8 w-8 rounded-full"
-                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                    alt=""
-                                                />
-                                            </Menu.Button>
-                                        </div>
-                                        <Transition
-                                            as={Fragment}
-                                            enter="transition ease-out duration-100"
-                                            enterFrom="transform opacity-0 scale-95"
-                                            enterTo="transform opacity-100 scale-100"
-                                            leave="transition ease-in duration-75"
-                                            leaveFrom="transform opacity-100 scale-100"
-                                            leaveTo="transform opacity-0 scale-95"
-                                        >
-                                            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={
-                                                                active
-                                                                    ? 'bg-gray-100'
-                                                                    : 'block px-4 py-2 text-sm text-gray-700'
-                                                            }
-                                                        >
-                                                            Your Profile
-                                                        </a>
-                                                    )}
-                                                </Menu.Item>
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={
-                                                                active
-                                                                    ? 'bg-gray-100'
-                                                                    : 'block px-4 py-2 text-sm text-gray-700'
-                                                            }
-                                                        >
-                                                            Settings
-                                                        </a>
-                                                    )}
-                                                </Menu.Item>
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={
-                                                                active
-                                                                    ? 'bg-gray-100'
-                                                                    : 'block px-4 py-2 text-sm text-gray-700'
-                                                            }
-                                                        >
-                                                            Sign out
-                                                        </a>
-                                                    )}
-                                                </Menu.Item>
-                                            </Menu.Items>
-                                        </Transition>
-                                    </Menu>
+                                    <div className="relative flex justify-center items-center text-black">
+                                        <img
+                                            className="h-8 w-8 rounded-full"
+                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt=""
+                                        />
+                                        <p className="ml-2 hidden md:block">admin@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div className="drawer-content ml-4">
+                                    <label
+                                        htmlFor="my-drawer"
+                                        className="btn border border-[#dedede] shadow-none btn-primary drawer-button"
+                                    >
+                                        <BsListNested></BsListNested>
+                                    </label>
                                 </div>
                             </div>
                         </div>
-
-                        <Disclosure.Panel className="sm:hidden">
-                            <div className="space-y-1 px-2 pb-3 pt-2">
-                                {navigation.map((item) => (
-                                    <Disclosure.Button
-                                        key={item.name}
-                                        as="a"
-                                        href={item.href}
-                                        className={
-                                            item.current
-                                                ? 'bg-gray-900 text-white'
-                                                : 'text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium'
-                                        }
-                                        aria-current={item.current ? 'page' : undefined}
-                                    >
-                                        {item.name}
-                                    </Disclosure.Button>
-                                ))}
-                            </div>
-                        </Disclosure.Panel>
                     </>
                 )}
             </Disclosure>
-            <div className="drawer">
+            <div className="drawer ">
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-                <div className="drawer-content">
-                    <label htmlFor="my-drawer" className="btn btn-primary drawer-button">
-                        Open drawer
-                    </label>
-                </div>
-                <div className="drawer-side">
+
+                <div className="drawer-side ">
                     <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                    <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-                        <li>
-                            <a>Sidebar Item 1</a>
-                        </li>
-                        <li>
-                            <a>Sidebar Item 2</a>
+
+                    <ul className="menu p-4 md:w-96 sm:w-80 min-h-full text-base-content bg-[#FFFFFF] flex flex-col justify-between">
+                        <div>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <BiHome className="w-4 h-4"></BiHome>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <BiShoppingBag className="w-4 h-4"></BiShoppingBag>
+                                    <span>Produk Toko</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Produk Toko</span>
+                                        </a>
+                                    </li>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Produk Toko</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>
+                                    <span>Titipan</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Titipan</span>
+                                        </a>
+                                    </li>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Titipan</span>
+                                        </a>
+                                    </li>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Penitip</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </div>
+
+                        <li className="py-2 ">
+                            <a className="text-black font-poppins flex items-center">
+                                <BiLogOut className="w-4 h-4"></BiLogOut>
+                                <span>Logout</span>
+                            </a>
                         </li>
                     </ul>
                 </div>
