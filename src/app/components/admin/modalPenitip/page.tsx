@@ -1,3 +1,4 @@
+'use client';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Penitip } from '@/dummy_data/penitip';
