@@ -9,11 +9,11 @@ const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
 interface MyProps {
     open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpen: any;
     penitip: Penitip;
 }
 
-const CustomModalPenitip: React.FC<MyProps> = ({ open, setOpen, penitip }) => {
+export default function CustomModalPenitip({ open, setOpen, penitip }: MyProps) {
     const cancelButtonRef = useRef(null);
 
     // bank
@@ -248,5 +248,4 @@ const CustomModalPenitip: React.FC<MyProps> = ({ open, setOpen, penitip }) => {
             </Dialog>
         </Transition.Root>
     );
-};
-export default CustomModalPenitip;
+}
