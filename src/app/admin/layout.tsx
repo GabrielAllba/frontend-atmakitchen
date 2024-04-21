@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return (
         <main>
             <Navbar></Navbar>
-            <div>{children}</div>
+            <div className="py-16">{children}</div>
         </main>
     );
 }

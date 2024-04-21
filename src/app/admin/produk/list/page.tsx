@@ -2,9 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Fragment } from 'react';
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Listbox } from '@headlessui/react';
 
 interface Produk {
     id: number;
@@ -217,13 +215,13 @@ const List: React.FC = () => {
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
-                        <div className="flex items-center pb-4">
+                        <div className="flex items-center pb-4 flex-wrap">
                             <p className="text-[#AA2B2B] font-semibold">Data Produk</p>
                             <form>
                                 <input
                                     type="text"
                                     placeholder="Search"
-                                    className="search bg-white border p-2 outline-none"
+                                    className="search bg-white border p-2 outline-none w-16 sm:w-full"
                                     value={searchQuery}
                                     onChange={handleSearchChange}
                                 />

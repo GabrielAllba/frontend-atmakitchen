@@ -19,7 +19,7 @@ function classNames({ ...classes }) {
 
 export default function Navbar() {
     return (
-        <div>
+        <div className="fixed z-10 w-full">
             <Disclosure as="nav" className="bg-white border-b">
                 {({ open }: { open: any }) => (
                     <>
