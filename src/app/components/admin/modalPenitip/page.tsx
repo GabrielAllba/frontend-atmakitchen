@@ -8,12 +8,12 @@ import { Listbox } from '@headlessui/react';
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
 interface MyProps {
-    open: any;
-    setOpen: any;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     penitip: Penitip;
 }
 
-export default function CustomModalPenitip({ open, setOpen, penitip }: { open: any; setOpen: any; penitip: Penitip }) {
+export default function CustomModalPenitip({ open, setOpen, penitip }: MyProps) {
     const cancelButtonRef = useRef(null);
 
     // bank
