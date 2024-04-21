@@ -12,7 +12,7 @@ interface MyProps {
     penitip: Penitip;
 }
 
-const CustomModalPenitip = ({ open, setOpen, penitip }: MyProps) => {
+export default function CustomModalPenitip({ open, setOpen, penitip }: MyProps) {
     const cancelButtonRef = useRef(null);
 
     // bank
@@ -247,6 +247,4 @@ const CustomModalPenitip = ({ open, setOpen, penitip }: MyProps) => {
             </Dialog>
         </Transition.Root>
     );
-};
-
-export default CustomModalPenitip;
+}
