@@ -1,4 +1,5 @@
 'use client';
+
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Penitip } from '@/dummy_data/penitip';
@@ -12,7 +13,7 @@ interface MyProps {
     penitip: Penitip;
 }
 
-export default function CustomModalPenitip({ open, setOpen, penitip }: MyProps) {
+export default function CustomModalPenitip({ open, setOpen, penitip }: { open: any; setOpen: any; penitip: Penitip }) {
     const cancelButtonRef = useRef(null);
 
     // bank
