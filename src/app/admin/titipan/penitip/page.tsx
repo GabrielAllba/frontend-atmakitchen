@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Listbox } from '@headlessui/react';
 
 import { Penitip, penitip_data as data } from '@/dummy_data/penitip';
-import CustomModalPenitip from '@/app/components/admin/modalPenitip/page';
+import { CustomModalPenitip } from '@/app/components/admin/modalPenitip/page';
 
 const option = [{ number: 5 }, { number: 10 }];
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
@@ -211,7 +211,7 @@ export default function TambahTitipan() {
                                                         onChange={handleSearchChange}
                                                     />
                                                 </div>
-                                                <div className="pb-4 flex justify-start items-center">
+                                                <div className="pb-4 flex justify-start items-center flex-wrap">
                                                     <span className="mr-2">Show</span>
                                                     <Listbox
                                                         value={itemsPerPage}
@@ -355,7 +355,7 @@ export default function TambahTitipan() {
                             <hr className="mt-4" />
                             <div className="mt-4 flex w-full items-center">
                                 <button
-                                    className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#236f6f]"
+                                    className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#982c2c]"
                                     type="submit"
                                 >
                                     Tambah Penitip

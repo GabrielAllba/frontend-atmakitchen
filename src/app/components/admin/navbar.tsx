@@ -5,6 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
+import Image from 'next/image';
 
 const navigation = [
     { name: 'Dashboard', href: '#', current: true },
@@ -39,12 +40,7 @@ export default function Navbar() {
                                 </div>
                                 <div className=" flex items-center">
                                     {/* Profile dropdown */}
-                                    <div className="relative flex justify-center items-center text-black">
-                                        <img
-                                            className="h-8 w-8 rounded-full"
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                            alt=""
-                                        />
+                                    <div className="flex justify-center items-center text-black">
                                         <p className="ml-2 hidden md:block">admin@gmail.com</p>
                                     </div>
                                 </div>
