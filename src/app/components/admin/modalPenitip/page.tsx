@@ -12,7 +12,7 @@ interface CustomModalPenitipProps {
 
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
-export const CustomModalPenitip: React.FC<CustomModalPenitipProps> = ({ open, setOpen, penitip }) => {
+export default function CustomModalPenitip({ open, setOpen, penitip }: CustomModalPenitipProps) {
     const cancelButtonRef = useRef(null);
 
     // bank
@@ -247,4 +247,4 @@ export const CustomModalPenitip: React.FC<CustomModalPenitipProps> = ({ open, se
             </Dialog>
         </Transition.Root>
     );
-};
+}

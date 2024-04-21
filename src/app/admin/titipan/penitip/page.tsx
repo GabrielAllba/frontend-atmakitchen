@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Listbox } from '@headlessui/react';
 
 import { Penitip, penitip_data as data } from '@/dummy_data/penitip';
-import { CustomModalPenitip } from '@/app/components/admin/modalPenitip/page';
+import CustomModalPenitip from '@/app/components/admin/modalPenitip/page';
 
 const option = [{ number: 5 }, { number: 10 }];
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
