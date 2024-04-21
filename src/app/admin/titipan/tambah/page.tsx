@@ -80,6 +80,21 @@ export default function TambahTitipan() {
                                                 type="text"
                                             ></input>
                                         </div>
+                                        <div className="mb-4">
+                                            <label
+                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                htmlFor="kata_kunci"
+                                            >
+                                                Nomer Bank
+                                            </label>
+                                            <input
+                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                id="harga_produk"
+                                                placeholder="Nomer Bank"
+                                                required
+                                                type="text"
+                                            ></input>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="rounded-md border bg-white">
