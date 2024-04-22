@@ -10,3 +10,24 @@
     --tw-text-opacity: 1;
     color: var(--fallback-nc, oklch(var(--nc) / var(--tw-text-opacity)));
 }
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #bebebe;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
