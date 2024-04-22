@@ -12,10 +12,10 @@ const titipan_data: Titipan[] = [
     {
         id: 1,
         id_penitip: 1,
-        nama_titipan: 'Buku',
+        nama_titipan: 'Kue Gacor',
         foto_titipan: '/images/produk/kue.jpg',
         kuantitas: '2',
-        satuan: 'Pieces',
+        satuan: 'Loyang',
         harga: 200000,
     },
     {
