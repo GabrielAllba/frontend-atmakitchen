@@ -30,6 +30,10 @@ export default function TambahTitipan() {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    function handleOpenModal(): void {
+        setOpenModal(!openModal);
+    }
+
     useEffect(() => {
         const filtered = data.filter(
             (item) =>
@@ -364,7 +368,7 @@ export default function TambahTitipan() {
                         </form>
                         <CustomModalPenitip
                             open={openModal}
-                            setOpen={setOpenModal}
+                            setOpen={handleOpenModal}
                             penitip={editPenitip || emptyPenitip}
                         ></CustomModalPenitip>
                     </div>

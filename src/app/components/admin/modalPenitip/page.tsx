@@ -1,17 +1,17 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Penitip } from '@/dummy_data/penitip';
 import { Listbox } from '@headlessui/react';
 
 const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
-interface MyProps {
+type MyProps = {
     open: boolean;
-    setOpen: any;
+    setOpen: (type: boolean) => void;
     penitip: Penitip;
-}
+};
 
 export default function CustomModalPenitip({ open, setOpen, penitip }: MyProps) {
     const cancelButtonRef = useRef(null);
