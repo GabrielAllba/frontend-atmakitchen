@@ -5,6 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
+import { GiFlour } from "react-icons/gi";
 import Image from 'next/image';
 
 const navigation = [
@@ -113,6 +114,26 @@ export default function Navbar() {
                                         <a className="text-[#7D848C] font-poppins flex items-center">
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Penitip</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <GiFlour className="w-4 h-4"></GiFlour>
+                                    <span>Bahan Baku</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Bahan Baku</span>
+                                        </a>
+                                    </li>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Bahan Baku</span>
                                         </a>
                                     </li>
                                 </ul>
