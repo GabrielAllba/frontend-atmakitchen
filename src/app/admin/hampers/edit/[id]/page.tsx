@@ -208,7 +208,6 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                                     <td className="p-4 border">{item.id}</td>
                                                                     <td className="p-4 border">{item.produk?.nama}</td>
                                                                     <td className="p-4 border">{item.jumlah}</td>
-
                                                                     <td className="p-4 border">
                                                                         <div className="flex gap-2">
                                                                             <Link
