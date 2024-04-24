@@ -115,6 +115,7 @@ export default function Login() {
                                                 placeholder="Email"
                                                 name="email"
                                                 onChange={handleChange}
+                                                value={login.email}
                                             />
                                         </label>
                                     </div>
@@ -149,6 +150,7 @@ export default function Login() {
                                                 placeholder="Password"
                                                 name="password"
                                                 onChange={handleChange}
+                                                value={login.password}
                                             />
                                         </label>
                                     </div>
