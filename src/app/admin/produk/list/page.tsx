@@ -11,6 +11,7 @@ const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 const List: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
@@ -35,6 +36,7 @@ const List: React.FC = () => {
     useEffect(() => {
         const fetchProducts = () => {
             try {
+                setLoading(true);
                 axios({
                     method: 'get',
                     url: apiUrl + '/product',
@@ -42,6 +44,7 @@ const List: React.FC = () => {
                     setFilteredData(response.data.product);
                     fetchAllImages(response.data.product);
                     console.log(imageUrls);
+                    setLoading(false);
                 });
             } catch (error) {
                 console.error('Error fetching products:', error);
@@ -145,6 +148,7 @@ const List: React.FC = () => {
                             </Listbox>
                             <p className="pl-2">Entries</p>
                         </div>
+
                         <div className="overflow-auto">
                             <table className="table-auto w-full overflow-auto">
                                 <thead>
@@ -196,36 +200,43 @@ const List: React.FC = () => {
                                     ))}
                                 </tbody>
                             </table>
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    onClick={() => paginate(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="p-4 border"
-                                >
-                                    Previous
-                                </button>
-                                {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
+                            {!loading && (
+                                <div className="flex justify-end mt-4">
                                     <button
-                                        key={index}
-                                        onClick={() => paginate(index + 1)}
-                                        className={`p-4 ${
-                                            currentPage === index + 1
-                                                ? 'bg-[#AA2B2B] text-white'
-                                                : 'bg-white text-black border'
-                                        } `}
+                                        onClick={() => paginate(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className="p-4 border"
                                     >
-                                        {index + 1}
+                                        Previous
                                     </button>
-                                ))}
-                                <button
-                                    onClick={() => paginate(currentPage + 1)}
-                                    disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
-                                    className="p-4 border"
-                                >
-                                    Next
-                                </button>
-                            </div>
+                                    {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => paginate(index + 1)}
+                                            className={`p-4 ${
+                                                currentPage === index + 1
+                                                    ? 'bg-[#AA2B2B] text-white'
+                                                    : 'bg-white text-black border'
+                                            } `}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => paginate(currentPage + 1)}
+                                        disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                                        className="p-4 border"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
                         </div>
+                        {loading && (
+                            <div className="flex justify-center items-center font-poppins text-black text-center mt-4">
+                                <span className="loading loading-ring loading-lg"></span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
