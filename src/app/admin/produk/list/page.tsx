@@ -3,13 +3,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-import { Product, produk_data as data } from '@/dummy_data/product';
+import { ProductFetch } from '@/dummy_data/product';
+import axios from 'axios';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
 const List: React.FC = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Product[]>(data);
+    const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -19,14 +23,58 @@ const List: React.FC = () => {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    // useEffect(() => {
+    //     const filtered = data.filter(
+    //         (item) =>
+    //             item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //             item.price.toString().toLowerCase().includes(searchQuery.toLowerCase()),
+    //     );
+    //     setFilteredData(filtered);
+    // }, [searchQuery]);
+
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.price.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setFilteredData(filtered);
-    }, [searchQuery]);
+        const fetchProducts = () => {
+            try {
+                axios({
+                    method: 'get',
+                    url: apiUrl + '/product',
+                }).then((response) => {
+                    setFilteredData(response.data.product);
+                    fetchAllImages(response.data.product);
+                    console.log(imageUrls);
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            return objectURL;
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return '';
+        }
+    };
+
+    const fetchAllImages = async (products: ProductFetch[]) => {
+        const imageUrls: { [key: string]: string } = {};
+        for (const product of products) {
+            if (product.photo) {
+                const imageUrl = await fetchImage(product.photo);
+                imageUrls[product.photo] = imageUrl;
+            }
+        }
+        setImageUrls(imageUrls);
+    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -114,16 +162,18 @@ const List: React.FC = () => {
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
                                             <td className="p-4 border">{item.name}</td>
-                                            <td className="p-4 border">{item.stock ? 'Yes' : 'No'}</td>
+                                            <td className="p-4 border">{item.stock}</td>
                                             <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">
-                                                {item.photo && (
+                                                {item.photo && imageUrls[item.photo] ? (
                                                     <Image
-                                                        src={URL.createObjectURL(item.photo)}
+                                                        src={imageUrls[item.photo]}
                                                         width={100}
                                                         height={50}
                                                         alt={item.name}
                                                     />
+                                                ) : (
+                                                    <span>No Image</span>
                                                 )}
                                             </td>
                                             <td className="p-4 border">

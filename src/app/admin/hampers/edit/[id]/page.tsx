@@ -206,7 +206,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                             return (
                                                                 <tr key={item.id} className="border text-[#7D848C]">
                                                                     <td className="p-4 border">{item.id}</td>
-                                                                    <td className="p-4 border">{item.produk?.nama}</td>
+                                                                    <td className="p-4 border">{item.produk?.name}</td>
                                                                     <td className="p-4 border">{item.jumlah}</td>
                                                                     <td className="p-4 border">
                                                                         <div className="flex gap-2">

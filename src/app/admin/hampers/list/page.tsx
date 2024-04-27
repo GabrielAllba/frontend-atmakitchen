@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-import { Produk, produk_data as data } from '@/dummy_data/product';
+import { produk_data as data } from '@/dummy_data/product';
 import { Hampers, hampers_data } from '@/dummy_data/hampers';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];

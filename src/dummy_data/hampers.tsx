@@ -1,5 +1,5 @@
 import { ProdukHampers } from './produk_hampers';
-import { Produk, produk_data } from './product';
+import { Product, produk_data } from './product';
 
 interface Hampers {
     id?: number;
