@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import axios from 'axios';
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
