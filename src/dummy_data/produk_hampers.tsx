@@ -1,4 +1,4 @@
-import { Produk } from './produk';
+import { Produk } from './product';
 
 interface ProdukHampers {
     id: number;

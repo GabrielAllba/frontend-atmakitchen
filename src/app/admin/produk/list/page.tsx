@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-import { Produk, produk_data as data } from '@/dummy_data/produk';
+import { Product, produk_data as data } from '@/dummy_data/product';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
 const List: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Produk[]>(data);
+    const [filteredData, setFilteredData] = useState<Product[]>(data);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -22,8 +22,8 @@ const List: React.FC = () => {
     useEffect(() => {
         const filtered = data.filter(
             (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.harga.toString().toLowerCase().includes(searchQuery.toLowerCase()),
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.price.toString().toLowerCase().includes(searchQuery.toLowerCase()),
         );
         setFilteredData(filtered);
     }, [searchQuery]);
@@ -113,11 +113,18 @@ const List: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.nama}</td>
-                                            <td className="p-4 border">{item.ready_stock ? 'Yes' : 'No'}</td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
+                                            <td className="p-4 border">{item.name}</td>
+                                            <td className="p-4 border">{item.stock ? 'Yes' : 'No'}</td>
+                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">
-                                                <Image src={item.foto} width={100} height={50} alt={item.nama} />
+                                                {item.photo && (
+                                                    <Image
+                                                        src={URL.createObjectURL(item.photo)}
+                                                        width={100}
+                                                        height={50}
+                                                        alt={item.name}
+                                                    />
+                                                )}
                                             </td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">

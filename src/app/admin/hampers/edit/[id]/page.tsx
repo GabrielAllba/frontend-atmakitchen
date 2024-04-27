@@ -7,7 +7,7 @@ import { Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
 
 import { Titipan, titipan_data } from '@/dummy_data/titipan';
-import { Produk, produk_data } from '@/dummy_data/produk';
+import { Produk, produk_data } from '@/dummy_data/product';
 import { Hampers, hampers_data } from '@/dummy_data/hampers';
 
 import { satuan_produk_data, SatuanProduk } from '@/dummy_data/satuan_produk';
