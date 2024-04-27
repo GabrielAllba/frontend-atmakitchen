@@ -7,7 +7,7 @@ import { Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
 
 import { Titipan, titipan_data } from '@/dummy_data/titipan';
-import { Produk, produk_data } from '@/dummy_data/product';
+import { Product, produk_data } from '@/dummy_data/product';
 import { Hampers, hampers_data } from '@/dummy_data/hampers';
 
 import { satuan_produk_data, SatuanProduk } from '@/dummy_data/satuan_produk';
@@ -29,7 +29,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
     const cancelButtonRefTambahProduk = useRef(null);
 
     // produk selected
-    const [produk, setProduk] = useState<Produk>(produk_data[0]);
+    const [produk, setProduk] = useState<Product>(produk_data[0]);
 
     // satuan
     const [satuanSelected, setSatuanSelected] = useState<SatuanProduk>(satuan_produk_data[0]);
@@ -301,14 +301,14 @@ export default function EditHampers({ params }: { params: { id: number } }) {
 
                                                                             <Listbox
                                                                                 value={produk}
-                                                                                onChange={(value: Produk) =>
+                                                                                onChange={(value: Product) =>
                                                                                     setProduk(value)
                                                                                 }
                                                                             >
                                                                                 <div className="relative mt-1">
                                                                                     <Listbox.Button className="relative w-full bg-white border border-[#DADDE2] rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                                                         <span className="block truncate text-[#A5A5A5]">
-                                                                                            {produk?.nama}
+                                                                                            {produk?.name}
                                                                                         </span>
                                                                                         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                                                                             <svg
@@ -351,7 +351,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                                                                                 : 'font-normal'
                                                                                                         } block truncate`}
                                                                                                     >
-                                                                                                        {opt.nama}
+                                                                                                        {opt.name}
                                                                                                     </span>
                                                                                                 )}
                                                                                             </Listbox.Option>
