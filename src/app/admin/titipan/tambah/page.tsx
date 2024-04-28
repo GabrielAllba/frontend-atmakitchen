@@ -491,7 +491,7 @@ export default function TambahTitipan() {
                                                                                 type="file"
                                                                             ></input>
                                                                             {editTitipan?.foto_titipan && (
-                                                                                <div className="my-4">
+                                                                                <div className="my-4 ">
                                                                                     <Image
                                                                                         alt="Foto Titipan"
                                                                                         src={editTitipan.foto_titipan}
@@ -582,8 +582,7 @@ export default function TambahTitipan() {
                                                                                                                 active
                                                                                                                     ? 'text-white bg-indigo-600'
                                                                                                                     : 'text-gray-900'
-                                                                                                            }
-                                        cursor-default select-none relative py-2 pl-3 pr-9`
+                                                                                                            }cursor-default select-none relative py-2 pl-3 pr-9`
                                                                                                         }
                                                                                                     >
                                                                                                         {({

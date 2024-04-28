@@ -5,7 +5,9 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
+import { MdMenuBook } from "react-icons/md";
 import Image from 'next/image';
+import Link from 'next/link'
 
 const navigation = [
     { name: 'Dashboard', href: '#', current: true },
@@ -114,6 +116,26 @@ export default function Navbar() {
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Penitip</span>
                                         </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <MdMenuBook className="w-4 h-4"></MdMenuBook>
+                                    <span>Resep</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link href="/admin/resep/list" className="text-[#7D848C] font-poppins flex items-center">
+                                                <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                                <span>List Resep</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link href="/admin/resep/tambah" className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Resep</span>
+                                        </Link>
                                     </li>
                                 </ul>
                             </li>
