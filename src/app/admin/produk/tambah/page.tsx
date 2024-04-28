@@ -129,8 +129,8 @@ export default function Produk() {
         return (
             <>
                 <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
-                    <div className="w-full">
-                        {alert && (
+                    {alert && (
+                        <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
                             <Alert
                                 severity="success"
                                 className="font-poppins mb-4"
@@ -138,9 +138,11 @@ export default function Produk() {
                                     setAlert(false);
                                 }}
                             >
-                                <p>Berhasil menambahkan produk!</p>
+                                <p>Berhasil menambah produk!</p>
                             </Alert>
-                        )}
+                        </div>
+                    )}
+                    <div className="w-full">
                         <div className="card bg-primary border pb-8 rounded ">
                             <div className="card-body">
                                 <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>

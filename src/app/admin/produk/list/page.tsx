@@ -13,7 +13,6 @@ const List: React.FC = () => {
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState<boolean>(true);
 
-    const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,33 +23,53 @@ const List: React.FC = () => {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-    // useEffect(() => {
-    //     const filtered = data.filter(
-    //         (item) =>
-    //             item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //             item.price.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-    //     );
-    //     setFilteredData(filtered);
-    // }, [searchQuery]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     useEffect(() => {
-        const fetchProducts = () => {
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
             try {
-                setLoading(true);
-                axios({
-                    method: 'get',
-                    url: apiUrl + '/product',
-                }).then((response) => {
-                    setFilteredData(response.data.product);
-                    fetchAllImages(response.data.product);
-                    console.log(imageUrls);
-                    setLoading(false);
+                const response = await axios.get(apiUrl + '/product/search', {
+                    params: {
+                        query: searchQuery,
+                    },
                 });
+                setFilteredData(response.data.products);
             } catch (error) {
                 console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
             }
         };
+        fetchSearchResults();
+    }, [searchQuery]);
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setSearchQuery(e.target.value);
+        if (searchQuery == '') {
+        }
+    };
+    const fetchProducts = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: apiUrl + '/product',
+            }).then((response) => {
+                setFilteredData(response.data.product);
+                fetchAllImages(response.data.product);
+                console.log(imageUrls);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchProducts();
     }, []);
 
@@ -79,27 +98,32 @@ const List: React.FC = () => {
         setImageUrls(imageUrls);
     };
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/product/${id}`);
+            fetchProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
     };
-
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
-                        <div className="flex items-center pb-4 flex-wrap">
+                        <div className="flex items-center pb-4 w-full justify-between">
                             <p className="text-[#AA2B2B] font-semibold">Data Produk</p>
-                            <form>
-                                <input
-                                    type="text"
-                                    placeholder="Search"
-                                    className="search bg-white border p-2 outline-none w-16 sm:w-full"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                />
-                            </form>
                         </div>
+
+                        <form className="w-full">
+                            <input
+                                type="text"
+                                placeholder="Search By Name, Description, Price "
+                                className="search bg-white border p-2 outline-none w-full sm:w-full mb-4"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
+                        </form>
                         <div className="pb-4 flex justify-start items-center">
                             <span className="mr-2">Show</span>
                             <Listbox value={itemsPerPage} onChange={(value: number) => setItemsPerPage(value)}>
@@ -148,7 +172,6 @@ const List: React.FC = () => {
                             </Listbox>
                             <p className="pl-2">Entries</p>
                         </div>
-
                         <div className="overflow-auto">
                             <table className="table-auto w-full overflow-auto">
                                 <thead>
@@ -182,24 +205,31 @@ const List: React.FC = () => {
                                             </td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                    <Link
-                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                        href=""
-                                                    >
-                                                        Edit
+                                                    <Link href={`/admin/produk/edit/${item.id}`}>
+                                                        <p className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
+                                                            Edit
+                                                        </p>
                                                     </Link>
-                                                    <Link
+                                                    <button
+                                                        onClick={() => {
+                                                            handleDelete(item.id!);
+                                                        }}
                                                         className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                        href=""
                                                     >
                                                         Hapus
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            {!loading && currentItems.length === 0 && (
+                                <div className="flex justify-center items-center font-poppins text-black text-center mt-10">
+                                    <p className="font-poppins text-gray-400">Data tidak ditemukan</p>
+                                </div>
+                            )}
+
                             {!loading && (
                                 <div className="flex justify-end mt-4">
                                     <button
