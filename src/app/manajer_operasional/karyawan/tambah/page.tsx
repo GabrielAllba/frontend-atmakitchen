@@ -92,20 +92,35 @@ export default function TambahTitipan() {
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                 <div className="h-min rounded-md border bg-white">
                                     <div className="border-b p-4">
-                                        <p className=" text-[#AA2B2B]">Data Resep</p>
+                                        <p className=" text-[#AA2B2B]">Data Karyawan</p>
                                     </div>
                                     <div className="p-4">
                                         <div className=" mb-4">
                                             <label
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                htmlFor="nama_produk"
+                                                htmlFor="jabatan_karyawan"
                                             >
-                                                Nama Produk
+                                                Jabatan Karyawan
                                             </label>
                                             <input
                                                 className="h-12 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="harga_produk"
-                                                placeholder="Nama Produk"
+                                                id="nama_karyawan"
+                                                placeholder="Masukan Jabatan Karyawan"
+                                                required
+                                                type="text"
+                                            ></input>
+                                        </div>
+                                        <div className=" mb-4">
+                                            <label
+                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                htmlFor="jabatan_karyawan"
+                                            >
+                                                Nama Karyawan
+                                            </label>
+                                            <input
+                                                className="h-12 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                id="nama_karyawan"
+                                                placeholder="Masukan Nama Karyawan"
                                                 required
                                                 type="text"
                                             ></input>
@@ -115,7 +130,7 @@ export default function TambahTitipan() {
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                 htmlFor="foto_produk"
                                             >
-                                                Foto Produk
+                                                Foto Karyawan
                                             </label>
                                             <input
                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
@@ -130,12 +145,27 @@ export default function TambahTitipan() {
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                 htmlFor="foto_produk"
                                             >
-                                                Bahan - Bahan
+                                                Email
                                             </label>
                                             <input
                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                 id="foto_titipan"
-                                                placeholder="Masukan Bahan - Bahan Pembuatan"
+                                                placeholder="Masukan Email"
+                                                required
+                                                type="number"
+                                            ></input>
+                                        </div>
+                                        <div className=" mb-4">
+                                            <label
+                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                htmlFor="foto_produk"
+                                            >
+                                                Username
+                                            </label>
+                                            <input
+                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                id="foto_titipan"
+                                                placeholder="Masukan Username"
                                                 required
                                                 type="number"
                                             ></input>
@@ -145,12 +175,43 @@ export default function TambahTitipan() {
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                 htmlFor="foto_produk"
                                             >
-                                                Langkah Pembuatan 
+                                                Password 
                                             </label>
                                             <input
                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                 id="foto_titipan"
-                                                placeholder="Masukan Langkah - Langkah Pembuatan"
+                                                placeholder="Masukan Password"
+                                                required
+                                                type="number"
+                                            ></input>
+                                        </div>    
+                                        <div className="mb-4 ">
+                                            <label
+                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                htmlFor="foto_produk"
+                                            >
+                                                Tanggal Lahir 
+                                            </label>
+                                            <input
+                                                datepicker
+                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                id="foto_titipan"
+                                                placeholder="Masukan Tanggal Lahir"
+                                                required
+                                                type="number"
+                                            ></input>
+                                        </div>    
+                                        <div className="mb-4 ">
+                                            <label
+                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                htmlFor="foto_produk"
+                                            >
+                                                No. Telepon
+                                            </label>
+                                            <input
+                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                id="foto_titipan"
+                                                placeholder="Masukan Nomor Telepon"
                                                 required
                                                 type="number"
                                             ></input>
