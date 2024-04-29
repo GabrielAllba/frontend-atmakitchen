@@ -89,7 +89,7 @@ export default function OwnerLogin() {
                                     MO
                                 </h2>
                                 <h2 className=" text-wrap text-center text-2xl font-bold text-accent break-words">
-                                    Atmakitchen
+                                    Atmakitchenn
                                 </h2>
                                 <p className="mt-4 text-center text-sm text-[#555555]">Masuk ke akun anda </p>
                             </div>
