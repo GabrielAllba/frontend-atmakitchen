@@ -4,6 +4,7 @@ import { Disclosure } from '@headlessui/react';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
+import { GiFlour } from 'react-icons/gi';
 import { usePathname } from 'next/navigation';
 
 import Link from 'next/link';
@@ -147,6 +148,26 @@ export default function Navbar() {
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Penitip</span>
                                         </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <GiFlour className="w-4 h-4"></GiFlour>
+                                    <span>Bahan Baku</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Bahan Baku</span>
+                                        </a>
+                                    </li>
+                                    <li className="py-2">
+                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Bahan Baku</span>
+                                        </a>
                                     </li>
                                 </ul>
                             </li>
