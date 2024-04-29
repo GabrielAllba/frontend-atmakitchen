@@ -3,13 +3,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-import { Produk, produk_data as data } from '@/dummy_data/produk';
+import { ProductFetch } from '@/dummy_data/product';
+import axios from 'axios';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
 const List: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Produk[]>(data);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -19,36 +23,111 @@ const List: React.FC = () => {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.harga.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setFilteredData(filtered);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
+            try {
+                const response = await axios.get(apiUrl + '/product/type/search', {
+                    params: {
+                        query: 'Produk Toko',
+                        search_query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSearchResults();
     }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         setSearchQuery(e.target.value);
+        if (searchQuery == '') {
+        }
+    };
+    const fetchProducts = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: `${apiUrl}/product/type`,
+                params: {
+                    query: 'Produk Toko',
+                },
+            }).then((response) => {
+                setFilteredData(response.data.product);
+                fetchAllImages(response.data.product);
+                console.log(imageUrls);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
     };
 
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            return objectURL;
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return '';
+        }
+    };
+
+    const fetchAllImages = async (products: ProductFetch[]) => {
+        const imageUrls: { [key: string]: string } = {};
+        for (const product of products) {
+            if (product.photo) {
+                const imageUrl = await fetchImage(product.photo);
+                imageUrls[product.photo] = imageUrl;
+            }
+        }
+        setImageUrls(imageUrls);
+    };
+
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/product/${id}`);
+            fetchProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    };
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
-                        <div className="flex items-center pb-4 flex-wrap">
+                        <div className="flex items-center pb-4 w-full justify-between">
                             <p className="text-[#AA2B2B] font-semibold">Data Produk</p>
-                            <form>
-                                <input
-                                    type="text"
-                                    placeholder="Search"
-                                    className="search bg-white border p-2 outline-none w-16 sm:w-full"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                />
-                            </form>
                         </div>
+
+                        <form className="w-full">
+                            <input
+                                type="text"
+                                placeholder="Search By Name, Description, Price "
+                                className="search bg-white border p-2 outline-none w-full sm:w-full mb-4"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
+                        </form>
                         <div className="pb-4 flex justify-start items-center">
                             <span className="mr-2">Show</span>
                             <Listbox value={itemsPerPage} onChange={(value: number) => setItemsPerPage(value)}>
@@ -113,62 +192,85 @@ const List: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.nama}</td>
-                                            <td className="p-4 border">{item.ready_stock ? 'Yes' : 'No'}</td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
+                                            <td className="p-4 border">{item.name}</td>
+                                            <td className="p-4 border">{item.stock}</td>
+                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">
-                                                <Image src={item.foto} width={100} height={50} alt={item.nama} />
+                                                {item.photo && imageUrls[item.photo] ? (
+                                                    <Image
+                                                        src={imageUrls[item.photo]}
+                                                        width={100}
+                                                        height={50}
+                                                        alt={item.name}
+                                                    />
+                                                ) : (
+                                                    <span>No Image</span>
+                                                )}
                                             </td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                    <Link
-                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                        href=""
-                                                    >
-                                                        Edit
+                                                    <Link href={`/admin/produk/edit/${item.id}`}>
+                                                        <p className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
+                                                            Edit
+                                                        </p>
                                                     </Link>
-                                                    <Link
+                                                    <button
+                                                        onClick={() => {
+                                                            handleDelete(item.id!);
+                                                        }}
                                                         className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                        href=""
                                                     >
                                                         Hapus
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    onClick={() => paginate(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="p-4 border"
-                                >
-                                    Previous
-                                </button>
-                                {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
+                            {!loading && currentItems.length === 0 && (
+                                <div className="flex justify-center items-center font-poppins text-black text-center mt-10">
+                                    <p className="font-poppins text-gray-400">Data tidak ditemukan</p>
+                                </div>
+                            )}
+
+                            {!loading && (
+                                <div className="flex justify-end mt-4">
                                     <button
-                                        key={index}
-                                        onClick={() => paginate(index + 1)}
-                                        className={`p-4 ${
-                                            currentPage === index + 1
-                                                ? 'bg-[#AA2B2B] text-white'
-                                                : 'bg-white text-black border'
-                                        } `}
+                                        onClick={() => paginate(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className="p-4 border"
                                     >
-                                        {index + 1}
+                                        Previous
                                     </button>
-                                ))}
-                                <button
-                                    onClick={() => paginate(currentPage + 1)}
-                                    disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
-                                    className="p-4 border"
-                                >
-                                    Next
-                                </button>
-                            </div>
+                                    {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => paginate(index + 1)}
+                                            className={`p-4 ${
+                                                currentPage === index + 1
+                                                    ? 'bg-[#AA2B2B] text-white'
+                                                    : 'bg-white text-black border'
+                                            } `}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => paginate(currentPage + 1)}
+                                        disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                                        className="p-4 border"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
                         </div>
+                        {loading && (
+                            <div className="flex justify-center items-center font-poppins text-black text-center mt-4">
+                                <span className="loading loading-ring loading-lg"></span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

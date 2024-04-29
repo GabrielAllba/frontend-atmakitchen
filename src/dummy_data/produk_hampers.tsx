@@ -1,8 +1,8 @@
-import { Produk } from './produk';
+import { Product } from './product';
 
 interface ProdukHampers {
     id: number;
-    produk: Produk;
+    produk: Product;
     jumlah: number;
 }
 

@@ -1,26 +1,27 @@
-import { Fragment } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+'use client';
 
+import { Disclosure } from '@headlessui/react';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
-import { MdMenuBook } from "react-icons/md";
-import Image from 'next/image';
-import Link from 'next/link'
+import { usePathname } from 'next/navigation';
 
-const navigation = [
-    { name: 'Dashboard', href: '#', current: true },
-    { name: 'Team', href: '#', current: false },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-];
+import Link from 'next/link';
+import { useEffect } from 'react';
 
-function classNames({ ...classes }) {
-    return classes.filter(Boolean).join(' ');
-}
-
+const handleClickLink = () => {
+    const drawerToggle = document.getElementById('my-drawer');
+    if (drawerToggle) {
+        (drawerToggle as HTMLInputElement).checked = false;
+    }
+};
 export default function Navbar() {
+    const pathname = usePathname();
+    const url = pathname;
+
+    useEffect(() => {
+        console.log(url);
+    }, [pathname]);
     return (
         <div className="fixed z-10 w-full">
             <Disclosure as="nav" className="bg-white border-b">
@@ -80,16 +81,33 @@ export default function Navbar() {
                                 </a>
                                 <ul>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/produk/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/produk/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>List Produk Toko</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            onClick={handleClickLink}
+                                            href={`/admin/produk/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/produk/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Tambah Produk Toko</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </li>
@@ -100,41 +118,34 @@ export default function Navbar() {
                                 </a>
                                 <ul>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
-                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>List Titipan</span>
-                                        </a>
-                                    </li>
-                                    <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/titipan/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/titipan/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Tambah Titipan</span>
-                                        </a>
-                                    </li>
-                                    <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
-                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>Penitip</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="py-2">
-                                <a className="text-black font-poppins flex items-center">
-                                    <MdMenuBook className="w-4 h-4"></MdMenuBook>
-                                    <span>Resep</span>
-                                </a>
-                                <ul>
-                                    <li className="py-2">
-                                        <Link href="/admin/resep/list" className="text-[#7D848C] font-poppins flex items-center">
-                                                <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                                <span>List Resep</span>
                                         </Link>
                                     </li>
+
                                     <li className="py-2">
-                                        <Link href="/admin/resep/tambah" className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/titipan/penitip`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/titipan/penitip'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>Tambah Resep</span>
+                                            <span>Penitip</span>
                                         </Link>
                                     </li>
                                 </ul>

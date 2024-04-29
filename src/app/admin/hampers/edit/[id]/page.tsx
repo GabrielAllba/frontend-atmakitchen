@@ -7,7 +7,7 @@ import { Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
 
 import { Titipan, titipan_data } from '@/dummy_data/titipan';
-import { Produk, produk_data } from '@/dummy_data/produk';
+import { Product, produk_data } from '@/dummy_data/product';
 import { Hampers, hampers_data } from '@/dummy_data/hampers';
 
 import { satuan_produk_data, SatuanProduk } from '@/dummy_data/satuan_produk';
@@ -29,7 +29,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
     const cancelButtonRefTambahProduk = useRef(null);
 
     // produk selected
-    const [produk, setProduk] = useState<Produk>(produk_data[0]);
+    const [produk, setProduk] = useState<Product>(produk_data[0]);
 
     // satuan
     const [satuanSelected, setSatuanSelected] = useState<SatuanProduk>(satuan_produk_data[0]);
@@ -82,7 +82,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                     id="nama_hampers"
                                                     placeholder="Nama Hampers"
-                                                    value={currentHampers?.nama}
+                                                    value={currentHampers?.hampes_name}
                                                     required
                                                     type="text"
                                                 ></input>
@@ -99,7 +99,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                     id="foto_titipan"
                                                     placeholder="Harga"
-                                                    value={currentHampers?.harga}
+                                                    value={currentHampers?.price}
                                                     required
                                                     type="number"
                                                 ></input>
@@ -132,7 +132,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     id="ready_stock"
                                                     placeholder="Ready Stock"
                                                     required
-                                                    value={currentHampers?.ready_stock}
+                                                    value={currentHampers?.stock}
                                                     type="number"
                                                 ></input>
                                             </div>
@@ -148,7 +148,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     id="quota_harian_po"
                                                     placeholder="Quota Harian PO"
                                                     required
-                                                    value={currentHampers?.quota_harian_po}
+                                                    value={currentHampers?.daily_quota}
                                                     type="number"
                                                 ></input>
                                             </div>
@@ -166,10 +166,10 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     required
                                                     type="file"
                                                 ></input>
-                                                {currentHampers.foto_hampers && (
+                                                {currentHampers.photo && (
                                                     <div className="my-4">
                                                         <Image
-                                                            src={currentHampers?.foto_hampers}
+                                                            src={currentHampers?.photo}
                                                             className="rounded bg-gray-100"
                                                             width={200}
                                                             height={200}
@@ -206,9 +206,8 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                             return (
                                                                 <tr key={item.id} className="border text-[#7D848C]">
                                                                     <td className="p-4 border">{item.id}</td>
-                                                                    <td className="p-4 border">{item.produk?.nama}</td>
+                                                                    <td className="p-4 border">{item.produk?.name}</td>
                                                                     <td className="p-4 border">{item.jumlah}</td>
-
                                                                     <td className="p-4 border">
                                                                         <div className="flex gap-2">
                                                                             <Link
@@ -302,14 +301,14 @@ export default function EditHampers({ params }: { params: { id: number } }) {
 
                                                                             <Listbox
                                                                                 value={produk}
-                                                                                onChange={(value: Produk) =>
+                                                                                onChange={(value: Product) =>
                                                                                     setProduk(value)
                                                                                 }
                                                                             >
                                                                                 <div className="relative mt-1">
                                                                                     <Listbox.Button className="relative w-full bg-white border border-[#DADDE2] rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                                                         <span className="block truncate text-[#A5A5A5]">
-                                                                                            {produk?.nama}
+                                                                                            {produk?.name}
                                                                                         </span>
                                                                                         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                                                                             <svg
@@ -352,7 +351,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                                                                                 : 'font-normal'
                                                                                                         } block truncate`}
                                                                                                     >
-                                                                                                        {opt.nama}
+                                                                                                        {opt.name}
                                                                                                     </span>
                                                                                                 )}
                                                                                             </Listbox.Option>
