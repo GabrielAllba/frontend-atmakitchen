@@ -86,7 +86,9 @@ export default function Navbar() {
                                             onClick={handleClickLink}
                                             href={`/admin/produk/list`}
                                             className={`text-[#7D848C] font-poppins flex items-center ${
-                                                pathname === '/admin/produk/list' ? 'bg-[#AA2B2B] text-white' : ''
+                                                pathname === '/admin/produk/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
                                             }`}
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
@@ -98,7 +100,9 @@ export default function Navbar() {
                                             onClick={handleClickLink}
                                             href={`/admin/produk/tambah`}
                                             className={`text-[#7D848C] font-poppins flex items-center ${
-                                                pathname === '/admin/produk/tambah' ? 'bg-[#AA2B2B] text-white' : ''
+                                                pathname === '/admin/produk/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
                                             }`}
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
@@ -114,22 +118,35 @@ export default function Navbar() {
                                 </a>
                                 <ul>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
-                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>List Titipan</span>
-                                        </a>
-                                    </li>
-                                    <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/titipan/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/titipan/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Tambah Titipan</span>
-                                        </a>
+                                        </Link>
                                     </li>
+
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/titipan/penitip`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/titipan/penitip'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Penitip</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </li>

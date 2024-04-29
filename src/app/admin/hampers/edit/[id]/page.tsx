@@ -82,7 +82,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                     id="nama_hampers"
                                                     placeholder="Nama Hampers"
-                                                    value={currentHampers?.nama}
+                                                    value={currentHampers?.hampes_name}
                                                     required
                                                     type="text"
                                                 ></input>
@@ -99,7 +99,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                     id="foto_titipan"
                                                     placeholder="Harga"
-                                                    value={currentHampers?.harga}
+                                                    value={currentHampers?.price}
                                                     required
                                                     type="number"
                                                 ></input>
@@ -132,7 +132,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     id="ready_stock"
                                                     placeholder="Ready Stock"
                                                     required
-                                                    value={currentHampers?.ready_stock}
+                                                    value={currentHampers?.stock}
                                                     type="number"
                                                 ></input>
                                             </div>
@@ -148,7 +148,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     id="quota_harian_po"
                                                     placeholder="Quota Harian PO"
                                                     required
-                                                    value={currentHampers?.quota_harian_po}
+                                                    value={currentHampers?.daily_quota}
                                                     type="number"
                                                 ></input>
                                             </div>
@@ -166,10 +166,10 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                     required
                                                     type="file"
                                                 ></input>
-                                                {currentHampers.foto_hampers && (
+                                                {currentHampers.photo && (
                                                     <div className="my-4">
                                                         <Image
-                                                            src={currentHampers?.foto_hampers}
+                                                            src={currentHampers?.photo}
                                                             className="rounded bg-gray-100"
                                                             width={200}
                                                             height={200}

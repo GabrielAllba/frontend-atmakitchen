@@ -181,6 +181,17 @@ export default function Page({ params }: { params: { id: number } }) {
                                                 ></input>
                                             </div>
                                             <div className="border-t border-gray-200 pt-4 w-full col-span-2 md:col-span-1">
+                                                <dt className="font-medium text-gray-900">Harga</dt>
+                                                <input
+                                                    className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 mt-4 font-poppins text-sm text-black outline-none"
+                                                    id="nama_produk"
+                                                    required
+                                                    type="text"
+                                                    value={filteredData?.price}
+                                                    onChange={handleChange('price')}
+                                                ></input>
+                                            </div>
+                                            <div className="border-t border-gray-200 pt-4 w-full col-span-2 md:col-span-1">
                                                 <dt className="font-medium text-gray-900">Description</dt>
                                                 <textarea
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 mt-4 font-poppins text-sm text-black outline-none"

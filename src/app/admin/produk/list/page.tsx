@@ -31,9 +31,10 @@ const List: React.FC = () => {
             setLoading(true);
 
             try {
-                const response = await axios.get(apiUrl + '/product/search', {
+                const response = await axios.get(apiUrl + '/product/type/search', {
                     params: {
-                        query: searchQuery,
+                        query: 'Produk Toko',
+                        search_query: searchQuery,
                     },
                 });
                 setFilteredData(response.data.products);
@@ -57,7 +58,10 @@ const List: React.FC = () => {
             setLoading(true);
             axios({
                 method: 'get',
-                url: apiUrl + '/product',
+                url: `${apiUrl}/product/type`,
+                params: {
+                    query: 'Produk Toko',
+                },
             }).then((response) => {
                 setFilteredData(response.data.product);
                 fetchAllImages(response.data.product);

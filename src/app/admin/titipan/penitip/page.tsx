@@ -4,38 +4,75 @@ import React, { useState, useEffect, useRef, Fragment } from 'react';
 import Link from 'next/link';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
 
-import { Penitip, penitip_data as data } from '@/dummy_data/penitip';
+import { Penitip } from '@/dummy_data/penitip';
+import axios from 'axios';
+import { Bank } from '@/dummy_data/bank';
+import { Alert } from '@mui/material';
 
 const option = [{ number: 5 }, { number: 10 }];
-const bank = [{ name: 'BCA' }, { name: 'Mandiri' }];
 
-export default function TambahTitipan() {
+export default function TambahPenitip() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [bank, setBank] = useState<Bank[]>([]);
+    const [isPosting, setIsPosting] = useState<boolean>(false);
     const emptyPenitip: Penitip = {};
+    const [loading, setLoading] = useState<boolean>(true);
+    const [alert, setAlert] = useState<boolean>(false);
+    const [alertEdit, setAlertEdit] = useState<boolean>(false);
+    const [submitPenitip, setSubmitPenitip] = useState<Penitip>();
 
     // modal
     const [openModal, setOpenModal] = useState<boolean>(false);
 
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Penitip[]>(data);
+    const [filteredData, setFilteredData] = useState<Penitip[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
 
     // bank
-    const [bankSelected, setBankSelected] = useState<string>(bank[0].name);
+    const [bankSelected, setBankSelected] = useState<string>();
+
+    const fetchBank = async () => {
+        try {
+            setLoading(true);
+            const response = await axios(apiUrl + '/bank');
+            setBank(response.data.bank);
+            setBankSelected(response.data.bank[0].name);
+            setSubmitPenitip({ ...submitPenitip, bank_account: response.data.bank[0].name });
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchBank();
+    }, []);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item?.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item?.email?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setFilteredData(filtered);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+
+            try {
+                const response = await axios.get(apiUrl + '/consignation/search', {
+                    params: {
+                        query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.consignation);
+            } catch (error) {
+                console.error('Error fetching consignation:', error);
+            }
+        };
+        fetchSearchResults();
     }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,22 +87,127 @@ export default function TambahTitipan() {
     const [bankSelected2, setBankSelected2] = useState<string>('BCA');
 
     useEffect(() => {
-        if (editPenitip && editPenitip.bank) {
-            const matchingBank = bank.find((bankItem) => bankItem.name === editPenitip.bank);
+        if (editPenitip && editPenitip.bank_account) {
+            const matchingBank = bank.find((bankItem) => bankItem.name === editPenitip.bank_account);
             if (matchingBank) {
                 setBankSelected2(matchingBank.name);
             }
         }
     }, [editPenitip]);
 
+    const handleDelete = async (e: React.FormEvent, id: number) => {
+        e.preventDefault();
+        try {
+            const response = await axios.delete(apiUrl + `/consignation/${id}`);
+            fetchPenitip();
+        } catch (error) {
+            console.error('Error deleting consignation:', error);
+        }
+    };
+
+    const handleTambahPenitip = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(submitPenitip);
+        setIsPosting(true);
+
+        axios({
+            method: 'post',
+            url: apiUrl + '/consignation',
+            data: submitPenitip,
+        })
+            .then((response) => {
+                console.log(response);
+                setSubmitPenitip({
+                    address: '',
+                    bank_account: bank[0].name,
+                    bank_number: '',
+                    name: '',
+                    phone_number: '',
+                });
+                setBankSelected(bank[0].name);
+                setAlert(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+            .finally(() => {
+                setIsPosting(false);
+                fetchPenitip();
+            });
+    };
+
+    const fetchPenitip = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: apiUrl + '/consignation',
+            }).then((response) => {
+                setFilteredData(response.data.consignation);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPenitip();
+    }, []);
+
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, id: number) => {
+        e.preventDefault();
+        console.log(editPenitip);
+        setAlertEdit(false);
+        axios({
+            method: 'put',
+            url: apiUrl + '/consignation/' + id,
+            data: editPenitip,
+        })
+            .then((response) => {
+                console.log(response);
+                setAlertEdit(true);
+                fetchPenitip();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
+            {alert && (
+                <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
+                    <Alert
+                        severity="success"
+                        className="font-poppins mb-4"
+                        onClose={() => {
+                            setAlert(false);
+                        }}
+                    >
+                        <p>Berhasil menambah penitip!</p>
+                    </Alert>
+                </div>
+            )}
+            {alertEdit && (
+                <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
+                    <Alert
+                        severity="success"
+                        className="font-poppins mb-4"
+                        onClose={() => {
+                            setAlert(false);
+                        }}
+                    >
+                        <p>Berhasil mengubah penitip!</p>
+                    </Alert>
+                </div>
+            )}
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body">
-                        <form className="font-poppins">
+                        <div className="font-poppins">
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                                <div className="h-min rounded-md border bg-white">
+                                <form className="h-min rounded-md border bg-white" onSubmit={handleTambahPenitip}>
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B] ">Data Penitip</p>
                                     </div>
@@ -83,6 +225,10 @@ export default function TambahTitipan() {
                                                 placeholder="Nama Penitip"
                                                 required
                                                 type="text"
+                                                value={submitPenitip?.name}
+                                                onChange={(e) =>
+                                                    setSubmitPenitip({ ...submitPenitip, name: e.target.value })
+                                                }
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -98,6 +244,10 @@ export default function TambahTitipan() {
                                                 placeholder="Alamat"
                                                 required
                                                 type="text"
+                                                value={submitPenitip?.address}
+                                                onChange={(e) =>
+                                                    setSubmitPenitip({ ...submitPenitip, address: e.target.value })
+                                                }
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -113,23 +263,13 @@ export default function TambahTitipan() {
                                                 placeholder="No Telp"
                                                 required
                                                 type="text"
+                                                value={submitPenitip?.phone_number}
+                                                onChange={(e) =>
+                                                    setSubmitPenitip({ ...submitPenitip, phone_number: e.target.value })
+                                                }
                                             ></input>
                                         </div>
-                                        <div className="mb-4">
-                                            <label
-                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                htmlFor="kata_kunci"
-                                            >
-                                                Email
-                                            </label>
-                                            <input
-                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="harga_produk"
-                                                placeholder="No Telp"
-                                                required
-                                                type="text"
-                                            ></input>
-                                        </div>
+
                                         <div className="mb-4">
                                             <label
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
@@ -139,7 +279,10 @@ export default function TambahTitipan() {
                                             </label>
                                             <Listbox
                                                 value={bankSelected}
-                                                onChange={(value: string) => setBankSelected(value)}
+                                                onChange={(value: string) => {
+                                                    setBankSelected(value);
+                                                    setSubmitPenitip({ ...submitPenitip, bank_account: value });
+                                                }}
                                             >
                                                 <div className="relative mt-1">
                                                     <Listbox.Button className="relative w-full bg-white border border-[#DADDE2] rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -204,10 +347,22 @@ export default function TambahTitipan() {
                                                 placeholder="Nomer Bank"
                                                 required
                                                 type="text"
+                                                value={submitPenitip?.bank_number}
+                                                onChange={(e) =>
+                                                    setSubmitPenitip({ ...submitPenitip, bank_number: e.target.value })
+                                                }
                                             ></input>
                                         </div>
+                                        <div className="mt-4 flex w-full items-center">
+                                            <button
+                                                className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#982c2c]"
+                                                type="submit"
+                                            >
+                                                Tambah Penitip
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                                 <div className="rounded-md border bg-white">
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B]">List Penitip</p>
@@ -292,6 +447,12 @@ export default function TambahTitipan() {
                                                                     Nomor Telepon
                                                                 </th>
                                                                 <th className="p-8 border text-start font-semibold">
+                                                                    Bank
+                                                                </th>
+                                                                <th className="p-8 border text-start font-semibold">
+                                                                    Nomer Bank
+                                                                </th>
+                                                                <th className="p-8 border text-start font-semibold">
                                                                     Aksi
                                                                 </th>
                                                             </tr>
@@ -299,8 +460,10 @@ export default function TambahTitipan() {
                                                         <tbody>
                                                             {currentItems.map((item) => (
                                                                 <tr key={item.id} className="border text-[#7D848C]">
-                                                                    <td className="p-4 border">{item.nama}</td>
-                                                                    <td className="p-4 border">{item.no_telp}</td>
+                                                                    <td className="p-4 border">{item.name}</td>
+                                                                    <td className="p-4 border">{item.phone_number}</td>
+                                                                    <td className="p-4 border">{item.bank_account}</td>
+                                                                    <td className="p-4 border">{item.bank_number}</td>
 
                                                                     <td className="p-4 border">
                                                                         <div className="flex gap-2">
@@ -313,12 +476,14 @@ export default function TambahTitipan() {
                                                                             >
                                                                                 Edit
                                                                             </button>
-                                                                            <Link
+                                                                            <button
+                                                                                onClick={(e: React.FormEvent) => {
+                                                                                    handleDelete(e, item.id!);
+                                                                                }}
                                                                                 className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                                                href=""
                                                                             >
                                                                                 Hapus
-                                                                            </Link>
+                                                                            </button>
                                                                         </div>
                                                                     </td>
                                                                 </tr>
@@ -366,15 +531,7 @@ export default function TambahTitipan() {
                                 </div>
                             </div>
                             <hr className="mt-4" />
-                            <div className="mt-4 flex w-full items-center">
-                                <button
-                                    className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#982c2c]"
-                                    type="submit"
-                                >
-                                    Tambah Penitip
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                         <Transition.Root show={openModal} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -408,7 +565,12 @@ export default function TambahTitipan() {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:flex sm:items-start">
-                                                        <form className="font-poppins w-full">
+                                                        <form
+                                                            className="font-poppins w-full"
+                                                            onSubmit={(e: React.FormEvent<HTMLFormElement>) =>
+                                                                handleUpdate(e, editPenitip?.id!)
+                                                            }
+                                                        >
                                                             <div className="h-min rounded-md border bg-white">
                                                                 <div className="border-b p-4">
                                                                     <p className=" text-[#AA2B2B] ">Data Penitip</p>
@@ -426,8 +588,16 @@ export default function TambahTitipan() {
                                                                             id="nama_produk"
                                                                             placeholder="Nama Penitip"
                                                                             required
-                                                                            value={editPenitip?.nama}
+                                                                            value={editPenitip?.name}
                                                                             type="text"
+                                                                            onChange={(
+                                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                                            ) => {
+                                                                                setEditPenitip({
+                                                                                    ...editPenitip,
+                                                                                    name: e.target.value,
+                                                                                });
+                                                                            }}
                                                                         ></input>
                                                                     </div>
                                                                     <div className="mb-4">
@@ -441,9 +611,17 @@ export default function TambahTitipan() {
                                                                             className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                             id="harga_produk"
                                                                             placeholder="Alamat"
-                                                                            value={editPenitip?.alamat}
+                                                                            value={editPenitip?.address}
                                                                             required
                                                                             type="text"
+                                                                            onChange={(
+                                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                                            ) => {
+                                                                                setEditPenitip({
+                                                                                    ...editPenitip,
+                                                                                    address: e.target.value,
+                                                                                });
+                                                                            }}
                                                                         ></input>
                                                                     </div>
                                                                     <div className="mb-4">
@@ -455,27 +633,19 @@ export default function TambahTitipan() {
                                                                         </label>
                                                                         <input
                                                                             className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                            id="harga_produk"
+                                                                            id="phone_number"
                                                                             placeholder="No Telp"
                                                                             required
                                                                             type="text"
-                                                                            value={editPenitip?.no_telp}
-                                                                        ></input>
-                                                                    </div>
-                                                                    <div className="mb-4">
-                                                                        <label
-                                                                            className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                            htmlFor="kata_kunci"
-                                                                        >
-                                                                            Email
-                                                                        </label>
-                                                                        <input
-                                                                            className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                            id="harga_produk"
-                                                                            placeholder="No Telp"
-                                                                            required
-                                                                            type="text"
-                                                                            value={editPenitip?.email}
+                                                                            value={editPenitip?.phone_number}
+                                                                            onChange={(
+                                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                                            ) => {
+                                                                                setEditPenitip({
+                                                                                    ...editPenitip,
+                                                                                    phone_number: e.target.value,
+                                                                                });
+                                                                            }}
                                                                         ></input>
                                                                     </div>
                                                                     <div className="mb-4">
@@ -486,15 +656,19 @@ export default function TambahTitipan() {
                                                                             Bank
                                                                         </label>
                                                                         <Listbox
-                                                                            value={bankSelected2}
-                                                                            onChange={(value: string) =>
-                                                                                setBankSelected2(value)
-                                                                            }
+                                                                            value={editPenitip?.bank_account}
+                                                                            onChange={(value: string) => {
+                                                                                setBankSelected2(value);
+                                                                                setEditPenitip({
+                                                                                    ...editPenitip,
+                                                                                    bank_account: value,
+                                                                                });
+                                                                            }}
                                                                         >
                                                                             <div className="relative mt-1">
                                                                                 <Listbox.Button className="relative w-full bg-white border border-[#DADDE2] rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                                                     <span className="block truncate text-[#A5A5A5]">
-                                                                                        {bankSelected2}
+                                                                                        {editPenitip?.bank_account}
                                                                                     </span>
                                                                                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                                                                         <svg
@@ -559,7 +733,15 @@ export default function TambahTitipan() {
                                                                             placeholder="Nomer Bank"
                                                                             required
                                                                             type="text"
-                                                                            value={editPenitip?.alamat}
+                                                                            value={editPenitip?.bank_number}
+                                                                            onChange={(
+                                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                                            ) => {
+                                                                                setEditPenitip({
+                                                                                    ...editPenitip,
+                                                                                    bank_number: e.target.value,
+                                                                                });
+                                                                            }}
                                                                         ></input>
                                                                     </div>
                                                                 </div>
