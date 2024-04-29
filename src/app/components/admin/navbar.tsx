@@ -153,6 +153,45 @@ export default function Navbar() {
                             </li>
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">
+                                    <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>
+                                    <span>Resep</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/resep/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/resep/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Resep</span>
+                                        </Link>
+                                    </li>
+
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/resep/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/resep/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Resep</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
                                     <GiFlour className="w-4 h-4"></GiFlour>
                                     <span>Bahan Baku</span>
                                 </a>
