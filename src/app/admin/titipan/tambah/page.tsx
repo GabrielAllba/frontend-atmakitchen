@@ -320,6 +320,8 @@ export default function TambahTitipan() {
                 console.log(response);
                 setAlert(true);
                 fetchTitipan();
+                setOpenModal(false);
+
                 const fileInput = document.getElementById('foto_titipan') as HTMLInputElement;
                 if (fileInput) {
                     fileInput.value = '';
@@ -331,22 +333,8 @@ export default function TambahTitipan() {
             .finally(() => {
                 setIsPosting(false);
             });
-
-        axios({
-            method: 'get',
-            url: apiUrl + '/product/' + submitEditTitipan?.id,
-            data: formData,
-        })
-            .then((response) => {
-                setSubmitEditTitipan(response.data.product);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
-                setIsPosting(false);
-            });
     };
+
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
@@ -373,13 +361,13 @@ export default function TambahTitipan() {
                                                 type="text"
                                                 value={productType.find((type) => type.name == 'Titipan')?.name || ''}
                                                 readOnly
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     setProduct({
                                                         ...product,
                                                         product_type_id:
                                                             productType.find((type) => type.name == 'Titipan')?.id || 0,
-                                                    })
-                                                }
+                                                    });
+                                                }}
                                             />
                                         </div>
 
@@ -461,7 +449,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="text"
                                                 value={product.name}
-                                                onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, name: e.target.value });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -477,9 +467,9 @@ export default function TambahTitipan() {
                                                 required
                                                 placeholder="Deskripsi"
                                                 value={product.description}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, description: e.target.value })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, description: e.target.value });
+                                                }}
                                             ></textarea>
                                         </div>
                                         <div className="mb-4">
@@ -511,9 +501,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="number"
                                                 value={product.price}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, price: parseFloat(e.target.value) })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, price: parseFloat(e.target.value) });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -529,9 +519,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="number"
                                                 value={product.stock}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, stock: parseFloat(e.target.value) })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, stock: parseFloat(e.target.value) });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mt-4 flex w-full items-center">
