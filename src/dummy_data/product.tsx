@@ -5,7 +5,6 @@ interface Product {
     description: string;
     stock: number;
     daily_quota: number;
-    reward_poin: number;
     status: string;
     product_type_id: number;
     consignation_id: number | null;
@@ -19,7 +18,6 @@ interface ProductFetch {
     description: string;
     stock: number;
     daily_quota: number;
-    reward_poin: number;
     status: string;
     product_type_id: number;
     consignation_id: number | null;

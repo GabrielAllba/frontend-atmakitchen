@@ -13,11 +13,13 @@ import { Hampers } from '@/dummy_data/hampers';
 import { satuan_produk_data, SatuanProduk } from '@/dummy_data/satuan_produk';
 import { ProdukHampers } from '@/dummy_data/produk_hampers';
 import axios from 'axios';
+import { Alert } from '@mui/material';
 
 export default function TambahHampers() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState<boolean>(true);
     const [isPosting, setIsPosting] = useState<boolean>(false);
+    const [alert, setAlert] = useState<boolean>(false);
 
     // tambah produk
     const [addProduk, setAddProduk] = useState<ProdukHampers[]>();
@@ -67,12 +69,32 @@ export default function TambahHampers() {
     };
 
     useEffect(() => {
+        setProduk(produkData[0]);
+    }, [produkData]);
+
+    const getLatestId = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: `${apiUrl}/hampers/latest_id`,
+            }).then((response) => {
+                setAddHampers({ ...addHampers, id: response.data.latest_hampers_id + 1 });
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching hampers:', error);
+        }
+    };
+    useEffect(() => {
         fetchProducts();
+        getLatestId();
     }, []);
 
     // handle submit tambah produk
     function handleTambahProduk(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
         const newProduk: ProdukHampers = {
             id: (addHampers?.produk_hampers?.length || 0) + 1,
             produk: produk,
@@ -89,7 +111,7 @@ export default function TambahHampers() {
         setAddHampers(newHampers);
         setJumlahProduk(0);
 
-        console.log(addProduk);
+        // console.log(addProduk);
         console.log(addHampers);
     }
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,19 +122,118 @@ export default function TambahHampers() {
         }
     };
 
-    function handleTambahHampers(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        console.log(addHampers);
+    async function handleTambahHampers(event: React.FormEvent<HTMLFormElement>) {
+        try {
+            setIsPosting(true);
+            event.preventDefault();
+            console.log(addHampers);
+
+            const formData = new FormData();
+            formData.append('id', String(addHampers.id!));
+            formData.append('hampers_name', addHampers.hampers_name!);
+            formData.append('daily_quota', String(addHampers.daily_quota));
+            formData.append('deskripsi', addHampers.deskripsi!);
+            formData.append('price', String(addHampers.price));
+            formData.append('stock', String(addHampers.stock));
+
+            if (addHampers.photo) {
+                formData.append('photo', addHampers.photo);
+            }
+
+            if (addHampers.produk_hampers && addHampers.produk_hampers.length > 0) {
+                addHampers.produk_hampers.forEach((product, index) => {
+                    formData.append(`product_hampers[${index}][hampers_id]`, String(addHampers.id));
+                    formData.append(`product_hampers[${index}][product_id]`, String(product.produk.id));
+                    formData.append(`product_hampers[${index}][jumlah]`, String(product.jumlah));
+                });
+            }
+
+            await axios({
+                method: 'post',
+                url: apiUrl + '/hampers',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+            for (let i = 0; i < addHampers.produk_hampers!.length; i++) {
+                const product = addHampers.produk_hampers![i];
+                const detailFormData = new FormData();
+                detailFormData.append('id', String(addHampers.id!));
+                detailFormData.append('jumlah', String(product.jumlah!));
+                detailFormData.append('product_id', String(product.produk.id!));
+
+                await axios({
+                    method: 'post',
+                    url: apiUrl + '/hampers/detail/' + addHampers.id,
+                    data: detailFormData,
+                })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+
+            setIsPosting(false);
+            setAlert(true);
+        } catch (error) {
+            console.log(error);
+        }
+
+        setAddHampers({
+            hampers_name: '',
+            daily_quota: 0,
+            deskripsi: '',
+            photo: null,
+            price: 0,
+            produk_hampers: [],
+            stock: 0,
+        });
+
+        const fileInput = document.getElementById('foto_hampers') as HTMLInputElement;
+        if (fileInput) {
+            fileInput.value = '';
+        }
     }
+
+    const deleteItem = (index: number) => {
+        const updatedHampers = { ...addHampers };
+        updatedHampers.produk_hampers?.splice(index, 1)!;
+        const fix_produk_hampers: ProdukHampers[] = updatedHampers.produk_hampers!;
+
+        setAddHampers({ ...addHampers, produk_hampers: fix_produk_hampers });
+    };
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
+            {alert && (
+                <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
+                    <Alert
+                        severity="success"
+                        className="font-poppins mb-4"
+                        onClose={() => {
+                            setAlert(false);
+                        }}
+                    >
+                        <p>Berhasil menambah hampers!</p>
+                    </Alert>
+                </div>
+            )}
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded">
                     <div className="card-body">
-                        <form className="font-poppins" onSubmit={handleTambahHampers}>
+                        <div className="font-poppins">
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                                <div className="h-min rounded-md border bg-white">
+                                <form className="h-min rounded-md border bg-white" onSubmit={handleTambahHampers}>
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B]">Detail Hampers</p>
                                     </div>
@@ -130,7 +251,7 @@ export default function TambahHampers() {
                                                 placeholder="Nama Hampers"
                                                 required
                                                 type="text"
-                                                value={addHampers?.hampers_name!}
+                                                value={addHampers?.hampers_name}
                                                 onChange={(e) =>
                                                     setAddHampers({ ...addHampers, hampers_name: e.target.value })
                                                 }
@@ -232,8 +353,16 @@ export default function TambahHampers() {
                                                 onChange={handleFileChange}
                                             ></input>
                                         </div>
+                                        <div className="mt-4 flex w-full items-center">
+                                            <button
+                                                className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#832a2a]"
+                                                type="submit"
+                                            >
+                                                Tambah Hampers
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                                 <div className="rounded-md border bg-white">
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B] ">Data Produk</p>
@@ -250,7 +379,7 @@ export default function TambahHampers() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {addHampers?.produk_hampers?.map((item) => {
+                                                    {addHampers?.produk_hampers?.map((item, index) => {
                                                         return (
                                                             <tr key={item.id} className="border text-[#7D848C]">
                                                                 <td className="p-4 border">{item.id}</td>
@@ -259,12 +388,14 @@ export default function TambahHampers() {
 
                                                                 <td className="p-4 border">
                                                                     <div className="flex gap-2">
-                                                                        <Link
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                deleteItem(index);
+                                                                            }}
                                                                             className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                                            href=""
                                                                         >
                                                                             Hapus
-                                                                        </Link>
+                                                                        </button>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -288,15 +419,7 @@ export default function TambahHampers() {
                                 </div>
                             </div>
                             <hr className="mt-4" />
-                            <div className="mt-4 flex w-full items-center">
-                                <button
-                                    className="w-full rounded-lg bg-[#AA2B2B] px-5  py-2.5 text-center font-poppins text-sm font-medium text-white outline-none  hover:bg-[#832a2a]"
-                                    type="submit"
-                                >
-                                    Tambah Hampers
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                         <Transition.Root show={openModalTambahProduk} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -422,6 +545,7 @@ export default function TambahHampers() {
                                                                                 id="foto_titipan"
                                                                                 placeholder="Jumlah"
                                                                                 required
+                                                                                value={jumlahProduk}
                                                                                 onChange={handleChangeJumlahProduk}
                                                                                 type="number"
                                                                             ></input>

@@ -154,6 +154,45 @@ export default function Navbar() {
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">
                                     <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>
+                                    <span>Hampers</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/hampers/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/hampers/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Hampers</span>
+                                        </Link>
+                                    </li>
+
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/hampers/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/hampers/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Hampers</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>
                                     <span>Resep</span>
                                 </a>
                                 <ul>

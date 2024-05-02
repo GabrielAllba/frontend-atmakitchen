@@ -3,14 +3,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-import { produk_data as data } from '@/dummy_data/product';
-import { Hampers, hampers_data } from '@/dummy_data/hampers';
+import { Hampers, HampersFetch } from '@/dummy_data/hampers';
+import axios from 'axios';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
 const ListHampers: React.FC = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Hampers[]>(hampers_data);
+    const [filteredData, setFilteredData] = useState<HampersFetch[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -21,16 +24,81 @@ const ListHampers: React.FC = () => {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     useEffect(() => {
-        const filtered = hampers_data.filter(
-            (item) =>
-                item?.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item?.harga?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setFilteredData(filtered);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
+            try {
+                const response = await axios.get(apiUrl + '/hampers/search', {
+                    params: {
+                        query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.hampers);
+            } catch (error) {
+                console.error('Error fetching hampers:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSearchResults();
     }, [searchQuery]);
 
+    const fetchHampers = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: `${apiUrl}/hampers`,
+            }).then((response) => {
+                setFilteredData(response.data.hampers);
+                fetchAllImages(response.data.hampers);
+                console.log(imageUrls);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching hampers:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchHampers();
+    }, []);
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            return objectURL;
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return '';
+        }
+    };
+
+    const fetchAllImages = async (hampers: HampersFetch[]) => {
+        const imageUrls: { [key: string]: string } = {};
+        for (const hamper of hampers) {
+            if (hamper.photo) {
+                const imageUrl = await fetchImage(hamper.photo);
+                imageUrls[hamper.photo] = imageUrl;
+            }
+        }
+        setImageUrls(imageUrls);
+    };
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
+    };
+
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/hampers/${id}`);
+            fetchHampers();
+        } catch (error) {
+            console.error('Error deleting hampers:', error);
+        }
     };
 
     return (
@@ -107,7 +175,7 @@ const ListHampers: React.FC = () => {
                                         <th className="p-8 border text-start font-semibold">Ready Stock</th>
                                         <th className="p-8 border text-start font-semibold">Harga</th>
                                         <th className="p-8 border text-start font-semibold">Foto</th>
-                                        <th className="p-8 border text-start font-semibold">Quota Harian PO</th>
+
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -115,20 +183,22 @@ const ListHampers: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.nama}</td>
-                                            <td className="p-4 border">{item.ready_stock}</td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
+                                            <td className="p-4 border">{item.hampers_name}</td>
+                                            <td className="p-4 border">{item.stock}</td>
+                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">
-                                                {item?.foto_hampers && item?.nama && (
+                                                {item.photo && imageUrls[item.photo] ? (
                                                     <Image
-                                                        src={item?.foto_hampers}
+                                                        src={imageUrls[item.photo]}
                                                         width={100}
                                                         height={50}
-                                                        alt={item?.nama}
+                                                        alt={item.hampers_name!}
                                                     />
+                                                ) : (
+                                                    <span>No Image</span>
                                                 )}
                                             </td>
-                                            <td className="p-4 border text-[#AA2B2B]">{item.quota_harian_po}</td>
+
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <Link
@@ -137,12 +207,14 @@ const ListHampers: React.FC = () => {
                                                     >
                                                         Edit
                                                     </Link>
-                                                    <Link
+                                                    <button
+                                                        onClick={() => {
+                                                            handleDelete(item.id!);
+                                                        }}
                                                         className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                        href=""
                                                     >
                                                         Hapus
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>

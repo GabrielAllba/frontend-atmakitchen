@@ -12,7 +12,15 @@ interface Hampers {
     produk_hampers?: ProdukHampers[];
 }
 
-const hampers_data: Hampers[] = [];
+interface HampersFetch {
+    id?: number;
+    hampers_name?: string;
+    price?: number;
+    stock?: number;
+    daily_quota?: number;
+    photo?: string | null;
+    deskripsi?: string;
+    produk_hampers?: ProdukHampers[];
+}
 
-export { hampers_data };
-export type { Hampers };
+export type { Hampers, HampersFetch };
