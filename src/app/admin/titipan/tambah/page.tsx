@@ -72,7 +72,6 @@ export default function TambahTitipan() {
         description: '',
         stock: 0,
         daily_quota: 0,
-        reward_poin: 0,
         status: 'Aktif',
         product_type_id: 0,
         consignation_id: null,
@@ -210,7 +209,6 @@ export default function TambahTitipan() {
         formData.append('description', product.description);
         formData.append('stock', String(product.stock));
         formData.append('daily_quota', String(product.daily_quota));
-        formData.append('reward_poin', String(product.reward_poin));
         formData.append('status', product.status);
         formData.append('product_type_id', String(product.product_type_id));
         formData.append('consignation_id', String(product.consignation_id));
@@ -236,7 +234,6 @@ export default function TambahTitipan() {
                     description: '',
                     stock: 0,
                     daily_quota: 0,
-                    reward_poin: 0,
                     status: 'Aktif',
                     product_type_id: 0,
                     consignation_id: null,
@@ -301,7 +298,6 @@ export default function TambahTitipan() {
         formData.append('description', submitEditTitipan!.description);
         formData.append('stock', String(submitEditTitipan!.stock));
         formData.append('daily_quota', String(submitEditTitipan!.daily_quota));
-        formData.append('reward_poin', String(submitEditTitipan!.reward_poin));
         formData.append('status', submitEditTitipan!.status);
         formData.append('product_type_id', String(submitEditTitipan!.product_type_id));
         formData.append('consignation_id', String(submitEditTitipan!.consignation_id));
@@ -584,7 +580,11 @@ export default function TambahTitipan() {
 
                                                                 {penitipData.map((i) => {
                                                                     if (i.id == item.consignation_id) {
-                                                                        return <td className="p-4 border">{i.name}</td>;
+                                                                        return (
+                                                                            <td key={i.id} className="p-4 border">
+                                                                                {i.name}
+                                                                            </td>
+                                                                        );
                                                                     }
                                                                 })}
 
