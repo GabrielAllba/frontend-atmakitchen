@@ -192,7 +192,7 @@ const List: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.name}</td>
+                                            <td className="p-4 border">{item.description}</td>
                                             <td className="p-4 border">{item.stock}</td>
                                             <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">
