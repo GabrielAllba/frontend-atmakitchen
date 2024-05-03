@@ -57,7 +57,7 @@ const List: React.FC = () => {
     useEffect(() => {
         const filtered = data.filter(
             (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()),
         );
         setFilteredData(filtered);
     }, [searchQuery]);
