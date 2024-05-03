@@ -8,7 +8,7 @@ import { GiFlour } from 'react-icons/gi';
 import { usePathname } from 'next/navigation';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const handleClickLink = () => {
     const drawerToggle = document.getElementById('my-drawer');
@@ -16,13 +16,43 @@ const handleClickLink = () => {
         (drawerToggle as HTMLInputElement).checked = false;
     }
 };
+
+interface Admin {
+    id: number;
+    born_date: string;
+    email: string;
+    name: string;
+    password: string;
+    phone_number: string;
+    role: { id: number; name: string; gaji_harian: number };
+    role_id: number;
+    total_point: number;
+    username: string;
+}
+
 export default function Navbar() {
     const pathname = usePathname();
     const url = pathname;
-
+    const [admin, setAdmin] = useState<Admin>({
+        id: 0,
+        born_date: '',
+        email: '',
+        name: '',
+        password: '',
+        phone_number: '',
+        role: { id: 0, name: '', gaji_harian: 0 },
+        role_id: 0,
+        total_point: 0,
+        username: '',
+    });
     useEffect(() => {
         console.log(url);
     }, [pathname]);
+
+    useEffect(() => {
+        const admin = localStorage.getItem('user');
+        setAdmin(JSON.parse(admin!));
+    }, []);
     return (
         <div className="fixed z-10 w-full">
             <Disclosure as="nav" className="bg-white border-b">
@@ -43,9 +73,8 @@ export default function Navbar() {
                                     </div>
                                 </div>
                                 <div className=" flex items-center">
-                                    {/* Profile dropdown */}
                                     <div className="flex justify-center items-center text-black">
-                                        <p className="ml-2 hidden md:block">admin@gmail.com</p>
+                                        <p className="ml-2 hidden md:block">{`${admin.name} - ${admin.email}`}</p>
                                     </div>
                                 </div>
                                 <div className="drawer-content ml-4">
