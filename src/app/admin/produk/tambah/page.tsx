@@ -26,7 +26,6 @@ export default function Produk() {
                 setLoading(false);
             }
         };
-
         fetchProductType();
     }, []);
 
@@ -43,7 +42,6 @@ export default function Produk() {
         description: '',
         stock: 0,
         daily_quota: 0,
-        reward_poin: 0,
         status: 'Aktif',
         product_type_id: 0,
         consignation_id: null,
@@ -62,7 +60,6 @@ export default function Produk() {
         formData.append('description', product.description);
         formData.append('stock', String(product.stock));
         formData.append('daily_quota', String(product.daily_quota));
-        formData.append('reward_poin', String(product.reward_poin));
         formData.append('status', product.status);
         formData.append('product_type_id', String(product.product_type_id));
         formData.append('consignation_id', String(product.consignation_id));
@@ -89,7 +86,6 @@ export default function Produk() {
                     description: '',
                     stock: 0,
                     daily_quota: 0,
-                    reward_poin: 0,
                     status: 'Aktif',
                     product_type_id: 0,
                     consignation_id: null,
@@ -292,28 +288,7 @@ export default function Produk() {
                                                         }
                                                     ></input>
                                                 </div>
-                                                <div className="mb-4">
-                                                    <label
-                                                        className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                        htmlFor="reward_poin"
-                                                    >
-                                                        Reward Poin
-                                                    </label>
-                                                    <input
-                                                        className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                        id="reward_poin"
-                                                        placeholder="Reward Poin"
-                                                        required
-                                                        type="number"
-                                                        value={product.reward_poin.toString()}
-                                                        onChange={(e) =>
-                                                            setProduct({
-                                                                ...product,
-                                                                reward_poin: parseFloat(e.target.value),
-                                                            })
-                                                        }
-                                                    ></input>
-                                                </div>
+
                                                 <div className="mb-4">
                                                     <label
                                                         className="mb-2 block font-poppins text-sm font-medium text-[#111827]"

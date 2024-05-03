@@ -37,31 +37,24 @@ export default function AdminLogin() {
         }));
         console.log(login);
     };
-    function newLogin() {
-        axios({
-            method: 'post',
-            url: apiUrl + '/admin/login',
-            data: login,
-        })
-            .then((response) => {
-                setLogin(emptyLogin);
-                if (response.status == 200) {
-                    setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                if (err.status == 400) {
-                    setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
-                } else {
-                    setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
-                }
-            });
-    }
+
+    const newLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(apiUrl + '/admin/login', login);
+            const { token, user } = response.data;
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
+        } catch (error) {
+            console.error(error);
+            setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
+        }
+    };
 
     const handleSubmitPost = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        newLogin();
+        newLogin(e);
     };
     return (
         <>

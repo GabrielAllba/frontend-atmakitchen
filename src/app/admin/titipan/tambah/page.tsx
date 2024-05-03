@@ -72,7 +72,6 @@ export default function TambahTitipan() {
         description: '',
         stock: 0,
         daily_quota: 0,
-        reward_poin: 0,
         status: 'Aktif',
         product_type_id: 0,
         consignation_id: null,
@@ -210,7 +209,6 @@ export default function TambahTitipan() {
         formData.append('description', product.description);
         formData.append('stock', String(product.stock));
         formData.append('daily_quota', String(product.daily_quota));
-        formData.append('reward_poin', String(product.reward_poin));
         formData.append('status', product.status);
         formData.append('product_type_id', String(product.product_type_id));
         formData.append('consignation_id', String(product.consignation_id));
@@ -236,7 +234,6 @@ export default function TambahTitipan() {
                     description: '',
                     stock: 0,
                     daily_quota: 0,
-                    reward_poin: 0,
                     status: 'Aktif',
                     product_type_id: 0,
                     consignation_id: null,
@@ -301,7 +298,6 @@ export default function TambahTitipan() {
         formData.append('description', submitEditTitipan!.description);
         formData.append('stock', String(submitEditTitipan!.stock));
         formData.append('daily_quota', String(submitEditTitipan!.daily_quota));
-        formData.append('reward_poin', String(submitEditTitipan!.reward_poin));
         formData.append('status', submitEditTitipan!.status);
         formData.append('product_type_id', String(submitEditTitipan!.product_type_id));
         formData.append('consignation_id', String(submitEditTitipan!.consignation_id));
@@ -324,6 +320,8 @@ export default function TambahTitipan() {
                 console.log(response);
                 setAlert(true);
                 fetchTitipan();
+                setOpenModal(false);
+
                 const fileInput = document.getElementById('foto_titipan') as HTMLInputElement;
                 if (fileInput) {
                     fileInput.value = '';
@@ -335,22 +333,8 @@ export default function TambahTitipan() {
             .finally(() => {
                 setIsPosting(false);
             });
-
-        axios({
-            method: 'get',
-            url: apiUrl + '/product/' + submitEditTitipan?.id,
-            data: formData,
-        })
-            .then((response) => {
-                setSubmitEditTitipan(response.data.product);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
-                setIsPosting(false);
-            });
     };
+
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
@@ -377,13 +361,13 @@ export default function TambahTitipan() {
                                                 type="text"
                                                 value={productType.find((type) => type.name == 'Titipan')?.name || ''}
                                                 readOnly
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     setProduct({
                                                         ...product,
                                                         product_type_id:
                                                             productType.find((type) => type.name == 'Titipan')?.id || 0,
-                                                    })
-                                                }
+                                                    });
+                                                }}
                                             />
                                         </div>
 
@@ -465,7 +449,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="text"
                                                 value={product.name}
-                                                onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, name: e.target.value });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -481,9 +467,9 @@ export default function TambahTitipan() {
                                                 required
                                                 placeholder="Deskripsi"
                                                 value={product.description}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, description: e.target.value })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, description: e.target.value });
+                                                }}
                                             ></textarea>
                                         </div>
                                         <div className="mb-4">
@@ -515,9 +501,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="number"
                                                 value={product.price}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, price: parseFloat(e.target.value) })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, price: parseFloat(e.target.value) });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mb-4">
@@ -533,9 +519,9 @@ export default function TambahTitipan() {
                                                 required
                                                 type="number"
                                                 value={product.stock}
-                                                onChange={(e) =>
-                                                    setProduct({ ...product, stock: parseFloat(e.target.value) })
-                                                }
+                                                onChange={(e) => {
+                                                    setProduct({ ...product, stock: parseFloat(e.target.value) });
+                                                }}
                                             ></input>
                                         </div>
                                         <div className="mt-4 flex w-full items-center">
@@ -584,7 +570,11 @@ export default function TambahTitipan() {
 
                                                                 {penitipData.map((i) => {
                                                                     if (i.id == item.consignation_id) {
-                                                                        return <td className="p-4 border">{i.name}</td>;
+                                                                        return (
+                                                                            <td key={i.id} className="p-4 border">
+                                                                                {i.name}
+                                                                            </td>
+                                                                        );
                                                                     }
                                                                 })}
 

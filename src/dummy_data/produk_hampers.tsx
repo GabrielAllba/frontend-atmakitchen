@@ -1,7 +1,7 @@
 import { Product } from './product';
 
 interface ProdukHampers {
-    id: number;
+    id?: number;
     produk: Product;
     jumlah: number;
 }

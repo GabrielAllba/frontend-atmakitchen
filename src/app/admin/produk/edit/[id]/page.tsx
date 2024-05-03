@@ -78,7 +78,6 @@ export default function Page({ params }: { params: { id: number } }) {
         formData.append('description', updateData!.description);
         formData.append('stock', String(updateData!.stock));
         formData.append('daily_quota', String(updateData!.daily_quota));
-        formData.append('reward_poin', String(updateData!.reward_poin));
         formData.append('status', updateData!.status);
         formData.append('product_type_id', String(updateData!.product_type_id));
         formData.append('consignation_id', String(updateData!.consignation_id));
@@ -234,17 +233,6 @@ export default function Page({ params }: { params: { id: number } }) {
                                                     type="number"
                                                     value={filteredData?.daily_quota}
                                                     onChange={handleChange('daily_quota')}
-                                                ></input>
-                                            </div>
-                                            <div className="border-t border-gray-200 pt-4 w-full col-span-2 md:col-span-1">
-                                                <dt className="font-medium text-gray-900">Reward Poin</dt>
-                                                <input
-                                                    className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 mt-4 font-poppins text-sm text-black outline-none"
-                                                    id="reward_poin"
-                                                    required
-                                                    type="number"
-                                                    value={filteredData?.reward_poin}
-                                                    onChange={handleChange('reward_poin')}
                                                 ></input>
                                             </div>
                                             <div className="border-t border-gray-200 pt-4 w-full col-span-2 md:col-span-1">
