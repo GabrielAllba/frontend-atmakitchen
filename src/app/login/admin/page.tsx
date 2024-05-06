@@ -4,6 +4,7 @@ import Image from 'next/image';
 import axios from 'axios';
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
+import { useRouter } from 'next/navigation';
 
 interface Login {
     email: string;
@@ -16,6 +17,7 @@ interface AlertI {
 }
 
 export default function AdminLogin() {
+    const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const emptyLogin: Login = {
         email: '',
@@ -46,6 +48,7 @@ export default function AdminLogin() {
             localStorage.setItem('accessToken', token);
             localStorage.setItem('user', JSON.stringify(user));
             setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
+            router.push('/admin/produk/list');
         } catch (error) {
             console.error(error);
             setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });

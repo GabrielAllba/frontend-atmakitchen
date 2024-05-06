@@ -5,7 +5,7 @@ import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositLine } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
 import { GiFlour } from 'react-icons/gi';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -31,6 +31,7 @@ interface Admin {
 }
 
 export default function Navbar() {
+    const router = useRouter();
     const pathname = usePathname();
     const url = pathname;
     const [admin, setAdmin] = useState<Admin>({
@@ -53,6 +54,11 @@ export default function Navbar() {
         const admin = localStorage.getItem('user');
         setAdmin(JSON.parse(admin!));
     }, []);
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        router.push('/login/admin');
+    };
     return (
         <div className="fixed z-10 w-full">
             <Disclosure as="nav" className="bg-white border-b">
@@ -280,7 +286,7 @@ export default function Navbar() {
                             </li>
                         </div>
 
-                        <li className="py-2 ">
+                        <li className="py-2 " onClick={handleLogout}>
                             <a className="text-black font-poppins flex items-center">
                                 <BiLogOut className="w-4 h-4"></BiLogOut>
                                 <span>Logout</span>

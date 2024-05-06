@@ -4,7 +4,7 @@ import Image from 'next/image';
 import axios from 'axios';
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
-import user from '@/dummy_data/user';
+import { useRouter } from 'next/navigation';
 
 interface Login {
     email: string;
@@ -17,6 +17,7 @@ interface AlertI {
 }
 
 export default function MOLogin() {
+    const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const emptyLogin: Login = {
         email: '',
@@ -38,31 +39,25 @@ export default function MOLogin() {
         }));
         console.log(login);
     };
-    function newLogin() {
-        axios({
-            method: 'post',
-            url: apiUrl + '/mo/login',
-            data: login,
-        })
-            .then((response) => {
-                setLogin(emptyLogin);
-                if (response.status == 200) {
-                    setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                if (err.status == 400) {
-                    setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
-                } else {
-                    setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
-                }
-            });
-    }
+
+    const newLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(apiUrl + '/mo/login', login);
+            const { token, user } = response.data;
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
+            router.push('/manajer_operasional/home');
+        } catch (error) {
+            console.error(error);
+            setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
+        }
+    };
 
     const handleSubmitPost = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        newLogin();
+        newLogin(e);
     };
     return (
         <>
@@ -87,7 +82,7 @@ export default function MOLogin() {
                         <div className="card-body">
                             <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center">
                                 <h2 className="mt-8 text-wrap text-center text-2xl font-bold text-accent break-words">
-                                    MO
+                                    Manajer operasional
                                 </h2>
                                 <h2 className=" text-wrap text-center text-2xl font-bold text-accent break-words">
                                     Atmakitchen
@@ -114,12 +109,12 @@ export default function MOLogin() {
                                                 <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                                             </svg>
                                             <input
+                                                value={login.email}
                                                 type="text"
                                                 className="text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="Email"
                                                 name="email"
                                                 onChange={handleChange}
-                                                value={login.email}
                                             />
                                         </label>
                                     </div>
@@ -153,8 +148,8 @@ export default function MOLogin() {
                                                 className="text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="Password"
                                                 name="password"
-                                                onChange={handleChange}
                                                 value={login.password}
+                                                onChange={handleChange}
                                             />
                                         </label>
                                     </div>

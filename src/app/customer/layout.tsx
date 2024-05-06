@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import Navbar from '../components/admin/navbar';
+import Navbar from '../components/customer/navbar';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -16,23 +16,23 @@ export default function Layout({ children }: { children: ReactNode }) {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 setIsAuthenticated(false);
-                router.push('/login/admin');
+                router.push('/login/customer');
                 return;
             }
 
             try {
-                const response = await axios.get(`${apiUrl}/admin/token/validate/${token}`);
+                const response = await axios.get(`${apiUrl}/customer/token/validate/${token}`);
                 if (response.status === 200) {
                     setIsAuthenticated(true);
-                    router.push('/admin/produk/list');
+                    router.push('/customer/home');
                 } else {
                     setIsAuthenticated(false);
-                    router.push('/login/admin');
+                    router.push('/login/customer');
                 }
             } catch (error) {
                 console.error('Error validating token:', error);
                 setIsAuthenticated(false);
-                router.push('/login/admin');
+                router.push('/login/customer');
             }
         };
 
