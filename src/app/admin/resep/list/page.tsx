@@ -55,10 +55,7 @@ const List: React.FC = () => {
     }, [editResep]);
 
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
+        const filtered = data.filter((item) => item.nama.toLowerCase().includes(searchQuery.toLowerCase()));
         setFilteredData(filtered);
     }, [searchQuery]);
 
@@ -137,7 +134,9 @@ const List: React.FC = () => {
                                     <tr className="border">
                                         <th className="p-8 border text-start font-semibold">No.</th>
                                         <th className="p-8 border text-start font-semibold">Nama Produk</th>
-                                        <th className="p-8 border text-start font-semibold">Detail Resep & Cara Pembuatan</th>
+                                        <th className="p-8 border text-start font-semibold">
+                                            Detail Resep & Cara Pembuatan
+                                        </th>
                                         <th className="p-8 border text-start font-semibold">Foto Produk</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
@@ -148,7 +147,14 @@ const List: React.FC = () => {
                                             <td className="p-4 border">{item.nomor}</td>
                                             <td className="p-4 border">{item.nama}</td>
                                             <td className="p-4 border text-[#AA2B2B]">
-                                                <button id="openResep" onClick={() => {setDetailResep(item); setOpenDetailModal(true) }} className="bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] font-poppins py-2 px-4 rounded-full">
+                                                <button
+                                                    id="openResep"
+                                                    onClick={() => {
+                                                        setDetailResep(item);
+                                                        setOpenDetailModal(true);
+                                                    }}
+                                                    className="bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] font-poppins py-2 px-4 rounded-full"
+                                                >
                                                     Klik Untuk Detail Resep dan Cara Pembuatan
                                                 </button>
                                             </td>
@@ -209,71 +215,79 @@ const List: React.FC = () => {
                             </div>
                         </div>
                         <Transition.Root show={openDetailModal} as={Fragment}>
-                                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenDetailModal}>
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="ease-out duration-300"
-                                        enterFrom="opacity-0"
-                                        enterTo="opacity-100"
-                                        leave="ease-in duration-200"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                                    </Transition.Child>
+                            <Dialog
+                                as="div"
+                                className="relative z-10"
+                                initialFocus={cancelButtonRef}
+                                onClose={setOpenDetailModal}
+                            >
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="ease-out duration-300"
+                                    enterFrom="opacity-0"
+                                    enterTo="opacity-100"
+                                    leave="ease-in duration-200"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                >
+                                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                                </Transition.Child>
 
-                                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                            <Transition.Child
-                                                enter="ease-out duration-300"
-                                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                                                leave="ease-in duration-200"
-                                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                            >  
-                                                    <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                                            <div className="sm:flex sm:items-start">
-                                                                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                                    <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                                                                        Resep {editDetail?.nama}
-                                                                    </Dialog.Title>
-                                                                    <div className="mt-2 flex justify-center">
-                                                                        <Image className='rounded-xl' src={editDetail?.foto} width={200} height={50} alt={editDetail?.nama} />
-                                                                    </div>
-                                                                    <div>
-                                                                        <h3 className='text-poppins'>
-                                                                            Bahan - Bahan :
-                                                                        </h3>
-                                                                        <p className="text-sm text-poppins text-gray-500 mt-4">
-                                                                            {editDetail?.bahan};
-                                                                        </p>
-                                                                    </div>
-                                                                </div>  
+                                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                                        <Transition.Child
+                                            enter="ease-out duration-300"
+                                            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                            enterTo="opacity-100 translate-y-0 sm:scale-100"
+                                            leave="ease-in duration-200"
+                                            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                        >
+                                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                                <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                                    <div className="sm:flex sm:items-start">
+                                                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                                            <Dialog.Title
+                                                                as="h3"
+                                                                className="text-base font-semibold leading-6 text-gray-900"
+                                                            >
+                                                                Resep {editDetail?.nama}
+                                                            </Dialog.Title>
+                                                            <div className="mt-2 flex justify-center">
+                                                                <Image
+                                                                    className="rounded-xl"
+                                                                    src={editDetail?.foto!}
+                                                                    width={200}
+                                                                    height={50}
+                                                                    alt={editDetail?.nama!}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="text-poppins">Bahan - Bahan :</h3>
+                                                                <p className="text-sm text-poppins text-gray-500 mt-4">
+                                                                    {editDetail?.bahan};
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                            <button
-                                                                type="button"
-                                                                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                                                onClick={() => setOpenDetailModal(false)}
-                                                                
-                                                            >
-                                                                Back
-                                                            </button>
-                                                            
-                                                        </div>
-                                                    </Dialog.Panel>
-                                                
-                                            </Transition.Child>
-                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                        onClick={() => setOpenDetailModal(false)}
+                                                    >
+                                                        Back
+                                                    </button>
+                                                </div>
+                                            </Dialog.Panel>
+                                        </Transition.Child>
                                     </div>
-                                </Dialog>
-                            </Transition.Root>
+                                </div>
+                            </Dialog>
+                        </Transition.Root>
 
-                            
-                            <Transition.Root show={openEditModal} as={Fragment}>
+                        <Transition.Root show={openEditModal} as={Fragment}>
                             <Dialog
                                 as="div"
                                 className="relative z-10"
@@ -310,7 +324,10 @@ const List: React.FC = () => {
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
-                                                                        <p className=" text-[#AA2B2B] ">  Edit {editResep?.nama}</p>
+                                                                        <p className=" text-[#AA2B2B] ">
+                                                                            {' '}
+                                                                            Edit {editResep?.nama}
+                                                                        </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
                                                                         <div className="mb-4">
@@ -336,20 +353,19 @@ const List: React.FC = () => {
                                                                             >
                                                                                 Foto Produk
                                                                             </label>
-                                                                            <div className='flex justify-center m-4'>
-                                                                            {editResep?.foto && (
-                                                                                <div className="my-4 ">
-                                                                                    <Image
-                                                                                        alt="Foto Titipan"
-                                                                                        src={editResep.foto}
-                                                                                        height={200}
-                                                                                        width={200}
-                                                                                    ></Image>
-                                                                                </div>
-                                                                            )}
+                                                                            <div className="flex justify-center m-4">
+                                                                                {editResep?.foto && (
+                                                                                    <div className="my-4 ">
+                                                                                        <Image
+                                                                                            alt="Foto Titipan"
+                                                                                            src={editResep.foto}
+                                                                                            height={200}
+                                                                                            width={200}
+                                                                                        ></Image>
+                                                                                    </div>
+                                                                                )}
                                                                             </div>
-                                                                            
-                                                                            
+
                                                                             <input
                                                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                                 id="foto_titipan"
@@ -365,18 +381,16 @@ const List: React.FC = () => {
                                                                             >
                                                                                 Bahan - Bahan:
                                                                             </label>
-                                                                            <div className='overflow-y-auto h-full'>
-                                                                            <input
-                                                                                className="text-ellipsis block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none "
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
-                                                                                required
-                                                                                type="description"
-                                                                                value={editResep?.bahan}
-                                                                            ></input>
+                                                                            <div className="overflow-y-auto h-full">
+                                                                                <input
+                                                                                    className="text-ellipsis block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none "
+                                                                                    id="foto_titipan"
+                                                                                    placeholder="foto_titipan"
+                                                                                    required
+                                                                                    type="description"
+                                                                                    value={editResep?.bahan}
+                                                                                ></input>
                                                                             </div>
-                                                                            
-                                                                            
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
@@ -397,16 +411,14 @@ const List: React.FC = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                         </form>
                                                     </div>
                                                 </div>
                                                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    
                                                     <button
                                                         className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
                                                         type="submit"
-                                                        >
+                                                    >
                                                         Save
                                                     </button>
 
@@ -415,7 +427,7 @@ const List: React.FC = () => {
                                                         type="button"
                                                         onClick={() => setOpenEditModal(false)}
                                                         ref={cancelButtonEdit}
-                                                        >
+                                                    >
                                                         Cancel
                                                     </button>
                                                 </div>
