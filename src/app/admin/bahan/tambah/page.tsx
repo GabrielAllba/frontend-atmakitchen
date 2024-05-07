@@ -120,7 +120,7 @@ const List: React.FC = () => {
                                             type="submit"
                                             className="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-normal leading-6 text-white shadow-sm hover:bg-[#b54545] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  font-poppins"
                                         >
-                                            Sign in
+                                            Tambah Bahan Baku
                                         </button>
                                     </div>
                                 </form>
