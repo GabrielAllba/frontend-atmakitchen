@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 setIsAuthenticated(false);
-                router.push('/login/customer');
+                router.push('/login');
                 return;
             }
 
@@ -27,12 +27,12 @@ export default function Layout({ children }: { children: ReactNode }) {
                     router.push('/customer/home');
                 } else {
                     setIsAuthenticated(false);
-                    router.push('/login/customer');
+                    router.push('/login');
                 }
             } catch (error) {
                 console.error('Error validating token:', error);
                 setIsAuthenticated(false);
-                router.push('/login/customer');
+                router.push('/login');
             }
         };
 

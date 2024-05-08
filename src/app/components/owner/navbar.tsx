@@ -57,7 +57,7 @@ export default function Navbar() {
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
-        router.push('/login/owner');
+        router.push('/login');
     };
     return (
         <div className="fixed z-10 w-full">
