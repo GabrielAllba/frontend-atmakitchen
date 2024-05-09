@@ -271,16 +271,34 @@ export default function Navbar() {
                                 </a>
                                 <ul>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/bahan/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/bahan/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>List Bahan Baku</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="py-2">
-                                        <a className="text-[#7D848C] font-poppins flex items-center">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/bahan/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/bahan/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Tambah Bahan Baku</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </li>
