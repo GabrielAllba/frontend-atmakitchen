@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 const response = await axios.get(`${apiUrl}/admin/token/validate/${token}`);
                 if (response.status === 200) {
                     setIsAuthenticated(true);
-                    router.push('/admin/produk/list');
+                    // router.push('/admin/produk/list');
                 } else {
                     setIsAuthenticated(false);
                     router.push('/login');

@@ -12,7 +12,7 @@ import { GiConsoleController } from 'react-icons/gi';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
-const List: React.FC = () => {
+const ListResep: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredData, setFilteredData] = useState<Resep[]>([]);
     const [productData, setProductData] = useState<ProductFetch[]>([]);
@@ -59,14 +59,25 @@ const List: React.FC = () => {
     // }, [editResep]);
 
     useEffect(() => {
-            const filtered = currentItems.filter(
-                (item) =>
-                    item?.instruction?.toLowerCase().includes(searchQuery.toLowerCase()) 
-                // ||
-                    // item?.harga?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-            );
-            setFilteredData(filtered);
-        }, [searchQuery]);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
+            try {
+                const response = await axios.get(apiUrl + '/resep/search', {
+                    params: {
+                        query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.resep);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSearchResults();
+    }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -75,11 +86,9 @@ const List: React.FC = () => {
         }
     };
 
-    
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState<boolean>(true);
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
-
 
     const fetchResep = () => {
         try {
@@ -87,7 +96,6 @@ const List: React.FC = () => {
             axios({
                 method: 'get',
                 url: `${apiUrl}/resep`,
-        
             }).then((response) => {
                 setFilteredData(response.data.resep);
                 setLoading(false);
@@ -108,38 +116,34 @@ const List: React.FC = () => {
                 },
             });
 
-            
             // const resepProductIds = resepResponse.data.resep.map((item: Resep) => item.product_id);
-    
+
             // const productResponse = await axios.get(`${apiUrl}/product/type/search`, {
             //     params: {
             //         query: 'Produk Toko',
             //     },
             // });
-            
+
             // const filteredProducts = productResponse.data.products.filter((product: { id: any; }) =>
             //     resepProductIds.includes(product.id)
             // );
-    
+
             setProductData(response.data.product);
-            fetchAllImages(response.data.product)
+            fetchAllImages(response.data.product);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching products:', error);
         }
     };
-    
 
     useEffect(() => {
         fetchResep();
-        fetchProduk()
-        
+        fetchProduk();
     }, []);
 
     //edit resep
     const [submitEditResep, setSubmitEditResep] = useState<Resep>();
     const [alert, setAlert] = useState<boolean>(false);
-    
 
     const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
         e.preventDefault();
@@ -150,7 +154,6 @@ const List: React.FC = () => {
         formData.append('instruction', submitEditResep!.instruction);
 
         console.log(formData);
-        setIsPosting(true);
 
         axios({
             method: 'put',
@@ -164,12 +167,10 @@ const List: React.FC = () => {
                 console.log(response);
                 setAlert(true);
                 fetchResep();
-                
             })
             .catch((err) => {
                 console.log(err);
-            })
-            
+            });
     };
 
     const fetchImage = async (name: string) => {
@@ -195,7 +196,7 @@ const List: React.FC = () => {
             }
         }
         setImageUrls(imageUrls);
-        console.log(imageUrls)
+        console.log(imageUrls);
     };
     //delete item
     const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
@@ -210,7 +211,6 @@ const List: React.FC = () => {
     };
 
     //search
-    
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -292,15 +292,17 @@ const List: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{productData.find((product) => product.id === item.product_id)?.name || 'Product Not Found'}</td>
+                                            <td className="p-4 border">
+                                                {productData.find((product) => product.id === item.product_id)?.name ||
+                                                    'Product Not Found'}
+                                            </td>
                                             <td className="p-4 border text-[#AA2B2B]">
                                                 <button
                                                     id="openResep"
                                                     onClick={() => {
                                                         setDetailResep(item);
                                                         setOpenDetailModal(true);
-                                                        console.log(editDetail)
-                                                        
+                                                        console.log(editDetail);
                                                     }}
                                                     className="bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] font-poppins py-2 px-4 rounded-full"
                                                 >
@@ -310,7 +312,13 @@ const List: React.FC = () => {
                                             <td className="p-4 border">
                                                 {productData && productData.length > 0 && (
                                                     <Image
-                                                        src={imageUrls[productData.find(product => product.id === item.product_id)?.photo!] || ''}
+                                                        src={
+                                                            imageUrls[
+                                                                productData.find(
+                                                                    (product) => product.id === item.product_id,
+                                                                )?.photo!
+                                                            ] || ''
+                                                        }
                                                         width={100}
                                                         height={50}
                                                         alt={item.instruction}
@@ -323,7 +331,6 @@ const List: React.FC = () => {
                                                         onClick={() => {
                                                             setEditResep(item);
                                                             setOpenEditModal(true);
-                                                            
                                                         }}
                                                         className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
                                                     >
@@ -332,7 +339,10 @@ const List: React.FC = () => {
                                                     <button
                                                         type="button"
                                                         className="mt-3 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm   shadow-sm  bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] sm:mt-0 sm:w-auto"
-                                                        onClick={() => {setDeleteResep(item); setOpenDeleteModal(true);}}
+                                                        onClick={() => {
+                                                            setDeleteResep(item);
+                                                            setOpenDeleteModal(true);
+                                                        }}
                                                         ref={cancelButtonRef}
                                                     >
                                                         Delete
@@ -410,14 +420,25 @@ const List: React.FC = () => {
                                                                 as="h3"
                                                                 className="text-base text- font-semibold leading-6 text-[#AA2B2B]"
                                                             >
-                                                                Resep {productData.find((product) => product.id === editDetail?.product_id)?.name || 'Product Not Found'}
+                                                                Resep{' '}
+                                                                {productData.find(
+                                                                    (product) => product.id === editDetail?.product_id,
+                                                                )?.name || 'Product Not Found'}
                                                             </Dialog.Title>
 
-                                                            <hr className='mx-2' />
+                                                            <hr className="mx-2" />
                                                             <div className="mt-2 flex justify-center">
                                                                 {productData && productData.length > 0 && (
                                                                     <Image
-                                                                        src={imageUrls[productData.find(product => product.id === editDetail?.product_id)?.photo!] || ''}
+                                                                        src={
+                                                                            imageUrls[
+                                                                                productData.find(
+                                                                                    (product) =>
+                                                                                        product.id ===
+                                                                                        editDetail?.product_id,
+                                                                                )?.photo!
+                                                                            ] || ''
+                                                                        }
                                                                         width={100}
                                                                         height={50}
                                                                         alt={editDetail?.instruction!}
@@ -425,14 +446,15 @@ const List: React.FC = () => {
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-poppins text-[#AA2B2B] mt-6 text-sm">Langkah Pembuatan :</h3>
+                                                                <h3 className="text-poppins text-[#AA2B2B] mt-6 text-sm">
+                                                                    Langkah Pembuatan :
+                                                                </h3>
                                                                 <p className="text-sm text-poppins text-slate-700 mt-4">
-                                                                    {editDetail?.instruction!|| 'Product Not Found'}
+                                                                    {editDetail?.instruction! || 'Product Not Found'}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                
                                                 </div>
                                                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                                     <button
@@ -483,13 +505,20 @@ const List: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form className="font-poppins" onSubmit={(e) => handleUpdate(e, editResep?.id!)}>
+                                                        <form
+                                                            className="font-poppins"
+                                                            onSubmit={(e) => handleUpdate(e, editResep?.id!)}
+                                                        >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
-                                                                  
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
-                                                                        Edit Resep {productData.find((product) => product.id === editResep?.product_id)?.name || 'Product Not Found'}
+                                                                            Edit Resep{' '}
+                                                                            {productData.find(
+                                                                                (product) =>
+                                                                                    product.id ===
+                                                                                    editResep?.product_id,
+                                                                            )?.name || 'Product Not Found'}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -506,7 +535,13 @@ const List: React.FC = () => {
                                                                                 placeholder="foto_titipan"
                                                                                 required
                                                                                 type="description"
-                                                                                value={productData.find((product) => product.id === editResep?.product_id)?.name || 'Product Not Found'}
+                                                                                value={
+                                                                                    productData.find(
+                                                                                        (product) =>
+                                                                                            product.id ===
+                                                                                            editResep?.product_id,
+                                                                                    )?.name || 'Product Not Found'
+                                                                                }
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4 ">
@@ -517,14 +552,23 @@ const List: React.FC = () => {
                                                                                 Foto Produk
                                                                             </label>
                                                                             <div className="flex justify-center m-4">
-                                                                                {productData && productData.length > 0 && (
-                                                                                    <Image
-                                                                                        src={imageUrls[productData.find(product => product.id === editResep?.product_id)?.photo!] || ''}
-                                                                                        width={100}
-                                                                                        height={50}
-                                                                                        alt='gambar doang'
-                                                                                    />
-                                                                                )}
+                                                                                {productData &&
+                                                                                    productData.length > 0 && (
+                                                                                        <Image
+                                                                                            src={
+                                                                                                imageUrls[
+                                                                                                    productData.find(
+                                                                                                        (product) =>
+                                                                                                            product.id ===
+                                                                                                            editResep?.product_id,
+                                                                                                    )?.photo!
+                                                                                                ] || ''
+                                                                                            }
+                                                                                            width={100}
+                                                                                            height={50}
+                                                                                            alt="gambar doang"
+                                                                                        />
+                                                                                    )}
                                                                             </div>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -542,7 +586,7 @@ const List: React.FC = () => {
                                                                                 value={submitEditResep?.instruction}
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-                                                                                    
+
                                                                                     setSubmitEditResep({
                                                                                         ...submitEditResep!,
                                                                                         instruction: value,
@@ -553,28 +597,27 @@ const List: React.FC = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                            <button
-                                                                className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                                type="submit"
-                                                                onClick={() => setOpenEditModal(false)}
-                                                            >
-                                                                Save
-                                                            </button>
+                                                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                                <button
+                                                                    className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                    type="submit"
+                                                                    onClick={() => setOpenEditModal(false)}
+                                                                >
+                                                                    Save
+                                                                </button>
 
-                                                            <button
-                                                                className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
-                                                                type="button"
-                                                                onClick={() => setOpenEditModal(false)}
-                                                                ref={cancelButtonEdit}
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </div>
+                                                                <button
+                                                                    className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                                    type="button"
+                                                                    onClick={() => setOpenEditModal(false)}
+                                                                    ref={cancelButtonEdit}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>
-                                                
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
@@ -613,33 +656,38 @@ const List: React.FC = () => {
                                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                                         >
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                            
-                                                <><div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                                    <div className="sm:flex sm:items-start">
-                                                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                            <ExclamationTriangleIcon
-                                                                className="h-6 w-6 text-[#AA2B2B]"
-                                                                aria-hidden="true" />
-                                                        </div>
-                                                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                            <Dialog.Title
-                                                                as="h3"
-                                                                className="text-base font-semibold leading-6 text-gray-900"
-                                                            >
-                                                                Hapus Resep
-                                                            </Dialog.Title>
-                                                            <div className="mt-2">
-                                                                <p className="text-sm text-gray-500">
-                                                                    Apakah anda yakin ingin menghapus resep ini ?
-                                                                </p>
+                                                <>
+                                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                                        <div className="sm:flex sm:items-start">
+                                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                                <ExclamationTriangleIcon
+                                                                    className="h-6 w-6 text-[#AA2B2B]"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </div>
+                                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                                                <Dialog.Title
+                                                                    as="h3"
+                                                                    className="text-base font-semibold leading-6 text-gray-900"
+                                                                >
+                                                                    Hapus Resep
+                                                                </Dialog.Title>
+                                                                <div className="mt-2">
+                                                                    <p className="text-sm text-gray-500">
+                                                                        Apakah anda yakin ingin menghapus resep ini ?
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div><div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                                         <button
                                                             type="button"
                                                             className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                                            onClick={() => {setOpenDeleteModal(false); handleDelete(deleteResep?.id!);}}
+                                                            onClick={() => {
+                                                                setOpenDeleteModal(false);
+                                                                handleDelete(deleteResep?.id!);
+                                                            }}
                                                         >
                                                             Hapus
                                                         </button>
@@ -651,7 +699,8 @@ const List: React.FC = () => {
                                                         >
                                                             Batal
                                                         </button>
-                                                    </div></>
+                                                    </div>
+                                                </>
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
@@ -665,4 +714,4 @@ const List: React.FC = () => {
     );
 };
 
-export default List;
+export default ListResep;
