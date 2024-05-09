@@ -1,126 +1,242 @@
-'use client';
+import { Fragment, useState } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
+import { CiUser } from 'react-icons/ci';
 
-import { Disclosure } from '@headlessui/react';
-import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
-import { RiLuggageDepositLine } from 'react-icons/ri';
-import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
-import { GiFlour } from 'react-icons/gi';
-import { usePathname, useRouter } from 'next/navigation';
-
+import { CiSearch } from 'react-icons/ci';
+import { CiShoppingCart } from 'react-icons/ci';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-const handleClickLink = () => {
-    const drawerToggle = document.getElementById('my-drawer');
-    if (drawerToggle) {
-        (drawerToggle as HTMLInputElement).checked = false;
-    }
-};
+const navigation = [{ name: 'Home', href: '#', current: true }];
 
-interface Admin {
-    id: number;
-    born_date: string;
-    email: string;
-    name: string;
-    password: string;
-    phone_number: string;
-    role: { id: number; name: string; gaji_harian: number };
-    role_id: number;
-    total_point: number;
-    username: string;
+function classNames(...classes: (string | undefined | null | false | 0)[]): string {
+    return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar() {
-    const router = useRouter();
-    const pathname = usePathname();
-    const url = pathname;
-    const [admin, setAdmin] = useState<Admin>({
-        id: 0,
-        born_date: '',
-        email: '',
-        name: '',
-        password: '',
-        phone_number: '',
-        role: { id: 0, name: '', gaji_harian: 0 },
-        role_id: 0,
-        total_point: 0,
-        username: '',
-    });
-    useEffect(() => {
-        console.log(url);
-    }, [pathname]);
+interface NavbarCustomerProps {
+    isAuth: boolean;
+}
 
-    useEffect(() => {
-        const admin = localStorage.getItem('user');
-        setAdmin(JSON.parse(admin!));
-    }, []);
+const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
+    const router = useRouter();
+
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    const [isLogin, setIsLogin] = useState<boolean>(isAuth);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setSearchQuery(e.target.value);
+        if (searchQuery == '') {
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
-        router.push('/login');
+        router.push('/');
     };
     return (
-        <div className="fixed z-10 w-full">
-            <Disclosure as="nav" className="bg-white border-b">
-                {({ open }: { open: any }) => (
-                    <>
-                        <div className="font-poppins mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-                            <div className="relative flex h-16 items-center justify-between">
-                                <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                    <div className="hidden sm:ml-6 sm:block">
-                                        <div className="flex space-x-4 items-center text-black">
-                                            <p className="font-semibold text-[#AA2B2B]">AtmaKitchen</p>
-                                        </div>
-                                    </div>
-                                    <div className="hidden sm:ml-6 sm:block">
-                                        <div className="flex space-x-4 items-center text-black">
-                                            <p>Senin, 28 Maret 2024</p>
-                                        </div>
+        <Disclosure as="nav" className="bg-white border-[#FOF3F7] border ">
+            {({ open }) => (
+                <>
+                    <div className="mx-auto  px-2 sm:px-6 lg:px-8">
+                        <div className="relative flex h-16 items-center justify-between gap-2">
+                            <div className="inset-y-0 left-0 flex items-center sm:hidden">
+                                {/* Mobile menu button*/}
+                                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-[#aa2b2b] hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                                    <span className="inset-0.5" />
+                                    <span className="sr-only">Open main menu</span>
+                                    {open ? (
+                                        <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                                    ) : (
+                                        <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                                    )}
+                                </Disclosure.Button>
+                            </div>
+                            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start gap-2">
+                                <div className="flex flex-shrink-0 items-center">
+                                    <Image
+                                        className="hidden sm:flex h-8 w-auto"
+                                        src="/images/logo/logo.jpg"
+                                        height={50}
+                                        width={50}
+                                        alt="Your Company"
+                                    />
+                                    <form className="flex sm:hidden items-center border border-gray-300 rounded-md ">
+                                        <input
+                                            name="search"
+                                            type="text"
+                                            placeholder="Cari di atma kitchen"
+                                            className="search p-2 text-sm bg-white  flex-grow"
+                                            value={searchQuery}
+                                            onChange={handleSearchChange}
+                                        />
+                                    </form>
+
+                                    <h2 className="hidden md:flex font-semibold font-poppins text-sm text-black">
+                                        Atma Kitchen
+                                    </h2>
+                                </div>
+
+                                <div className="hidden sm:ml-6 sm:block">
+                                    <div className="flex space-x-4 items-center">
+                                        {navigation.map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className={classNames(
+                                                    item.current
+                                                        ? 'bg-[#AA2B2B] text-white'
+                                                        : 'text-gray-300 hover:bg-[#9e1f1f] hover:text-white',
+                                                    'rounded-md px-3 py-2 text-sm font-medium',
+                                                )}
+                                                aria-current={item.current ? 'page' : undefined}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ))}
                                     </div>
                                 </div>
-                                <div className=" flex items-center">
-                                    <div className="flex justify-center items-center text-black">
-                                        <p className="ml-2 hidden md:block">{`${admin.name} - ${admin.email}`}</p>
+                                <form className="w-full hidden sm:flex items-center border border-gray-300 rounded-md px-2">
+                                    <div className="">
+                                        <CiSearch className="w-4 h-4 text-black" />
                                     </div>
-                                </div>
-                                <div className="drawer-content ml-4">
-                                    <label
-                                        htmlFor="my-drawer"
-                                        className="btn border border-[#dedede] shadow-none btn-primary drawer-button"
-                                    >
-                                        <BsListNested></BsListNested>
-                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Cari di atma kitchen "
+                                        className="search p-2 text-sm bg-white outline-none w-full text-black "
+                                        value={searchQuery}
+                                        onChange={handleSearchChange}
+                                    ></input>
+                                </form>
+
+                                <div className="flex items-center">
+                                    {isLogin && (
+                                        <div className="flex items-center">
+                                            <div>
+                                                <div className="flex items-center relative">
+                                                    <CiShoppingCart className="w-5 h-5 text-black"></CiShoppingCart>
+                                                </div>
+                                            </div>
+                                            <Menu as="div" className="relative">
+                                                <div>
+                                                    <Menu.Button className="flex items-center relative">
+                                                        <CiUser className="ml-1 w-5 h-5 text-black"></CiUser>
+                                                    </Menu.Button>
+                                                </div>
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <Menu.Item>
+                                                            {({ active }) => (
+                                                                <Link
+                                                                    href="#"
+                                                                    className={classNames(
+                                                                        active ? 'bg-gray-100' : '',
+                                                                        'block px-4 py-2 text-sm text-gray-700',
+                                                                    )}
+                                                                >
+                                                                    Profile
+                                                                </Link>
+                                                            )}
+                                                        </Menu.Item>
+
+                                                        <Menu.Item>
+                                                            {({ active }) => (
+                                                                <p
+                                                                    onClick={handleLogout}
+                                                                    className={classNames(
+                                                                        active ? 'bg-gray-100 cursor-pointer' : '',
+                                                                        'block px-4 py-2 text-sm text-gray-700',
+                                                                    )}
+                                                                >
+                                                                    Log out
+                                                                </p>
+                                                            )}
+                                                        </Menu.Item>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+                                        </div>
+                                    )}
+                                    {!isLogin && (
+                                        <div className="hidden md:flex">
+                                            <Link
+                                                href="/login"
+                                                className="bg-[#AA2B2B] text-white  rounded-md px-3 py-2 text-sm font-medium"
+                                            >
+                                                Login
+                                            </Link>
+                                            <Link
+                                                href="/register/customer"
+                                                className="border border-[#AA2B2B] ml-1 bg-white text-[#AA2B2B] rounded-md px-3 py-2 text-sm font-medium"
+                                            >
+                                                Daftar
+                                            </Link>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    </>
-                )}
-            </Disclosure>
-            <div className="drawer ">
-                <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+                        {!isLogin && (
+                            <div className="flex md:hidden mb-4 justify-around">
+                                <div className="flex flex-shrink-0 items-center gap-1">
+                                    <Image
+                                        className="h-8 w-auto"
+                                        src="/images/logo/logo.jpg"
+                                        height={50}
+                                        width={50}
+                                        alt="Your Company"
+                                    />
+                                    <div className="flex flex-col items-start justify-center text-black font-poppins">
+                                        <h2 className="text-sm font-semibold">Halo, gan!</h2>
+                                        <p className="text-sm text-gray-500">Akses semua fitur, yuk!</p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col justify-center gap-2">
+                                    <Link
+                                        href="/login"
+                                        className="bg-[#AA2B2B] text-center text-white  rounded-md px-3 py-2 text-sm font-medium"
+                                    >
+                                        Login
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
-                <div className="drawer-side z-50">
-                    <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-
-                    <ul className="menu p-4 md:w-96 sm:w-80 min-h-full text-base-content bg-[#FFFFFF] flex flex-col justify-between">
-                        <div>
-                            <li className="py-2">
-                                <a className="text-black font-poppins flex items-center">
-                                    <BiHome className="w-4 h-4"></BiHome>
-                                    <span>Home</span>
-                                </a>
-                            </li>
+                    <Disclosure.Panel className="sm:hidden">
+                        <div className="space-y-1 px-2 pb-3 pt-2">
+                            {navigation.map((item) => (
+                                <Disclosure.Button
+                                    key={item.name}
+                                    as="a"
+                                    href={item.href}
+                                    className={classNames(
+                                        item.current ? 'bg-[#AA2B2B] text-white' : '',
+                                        'block rounded-md px-3 py-2 text-base font-medium',
+                                    )}
+                                    aria-current={item.current ? 'page' : undefined}
+                                >
+                                    {item.name}
+                                </Disclosure.Button>
+                            ))}
                         </div>
-
-                        <li className="py-2 " onClick={handleLogout}>
-                            <a className="text-black font-poppins flex items-center">
-                                <BiLogOut className="w-4 h-4"></BiLogOut>
-                                <span>Logout</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                    </Disclosure.Panel>
+                </>
+            )}
+        </Disclosure>
     );
-}
+};
+
+export default NavbarCustomer;

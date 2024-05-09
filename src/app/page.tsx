@@ -1,13 +1,37 @@
-import Image from 'next/image';
+'use client';
+import { useRouter } from 'next/navigation';
+import NavbarCustomer from './components/customer/navbar';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-export default function Home() {
+export default function Index() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('accessToken');
+
+            try {
+                const response = await axios.get(`${apiUrl}/customer/token/validate/${token}`);
+                if (response.status === 200) {
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                }
+            } catch (error) {
+                console.error('Error validating token:', error);
+                setIsAuthenticated(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-                <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-                    Navbar
-                </p>
-            </div>
-        </main>
+        <div>
+            <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
+        </div>
     );
 }

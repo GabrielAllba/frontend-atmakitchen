@@ -1,7 +1,6 @@
 'use client';
-
 import { ReactNode, useState } from 'react';
-import Navbar from '../components/customer/navbar';
+import NavbarCustomer from '../components/customer/navbar';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -14,17 +13,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('accessToken');
-            if (!token) {
-                setIsAuthenticated(false);
-                router.push('/login');
-                return;
-            }
 
             try {
                 const response = await axios.get(`${apiUrl}/customer/token/validate/${token}`);
                 if (response.status === 200) {
                     setIsAuthenticated(true);
-                    router.push('/customer/home');
                 } else {
                     setIsAuthenticated(false);
                     router.push('/login');
@@ -41,18 +34,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 
     if (isAuthenticated) {
         return (
-            <main>
-                <Navbar></Navbar>
-                <div className="py-16">{children}</div>
-            </main>
-        );
-    } else {
-        return (
-            <main>
-                <div className="h-screen flex justify-center items-center font-poppins text-black text-center">
-                    <span className="loading loading-ring loading-lg"></span>
-                </div>
-            </main>
+            <>
+                <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
+                <main className="py-16">{children}</main>
+            </>
         );
     }
 }

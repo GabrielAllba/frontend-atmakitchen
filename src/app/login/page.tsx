@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import axios from 'axios';
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
@@ -51,7 +50,7 @@ export default function AdminLogin() {
             if (user.role.name == 'Admin') {
                 router.push('/admin/produk/list');
             } else if (user.role.name == 'Customer') {
-                router.push('/customer/home');
+                router.push('/customer');
             } else if (user.role.name == 'Manajer Operasional') {
                 router.push('/manajer_operasional/home');
             } else if (user.role.name == 'Owner') {

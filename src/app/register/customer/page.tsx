@@ -79,7 +79,7 @@ export default function Register() {
                                 <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmitPost}>
                                     <div>
                                         <label
-                                            htmlFor="email"
+                                            htmlFor="name"
                                             className="block text-sm font-medium leading-6 text-gray-900 mb-2 font-poppins"
                                         >
                                             Nama
@@ -88,7 +88,7 @@ export default function Register() {
                                             <CgProfile></CgProfile>
                                             <input
                                                 type="text"
-                                                className="text-sm font-poppins font-normal text-[#555555]"
+                                                className="w-full text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="Nama"
                                                 name="name"
                                                 onChange={handleChange}
@@ -107,7 +107,7 @@ export default function Register() {
                                             <CgProfile></CgProfile>
                                             <input
                                                 type="text"
-                                                className="text-sm font-poppins font-normal text-[#555555]"
+                                                className="w-full text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="Username"
                                                 name="username"
                                                 onChange={handleChange}
@@ -134,7 +134,7 @@ export default function Register() {
                                             </svg>
                                             <input
                                                 type="text"
-                                                className="text-sm font-poppins font-normal text-[#555555]"
+                                                className="w-full text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="Email"
                                                 name="email"
                                                 value={user.email}
@@ -153,7 +153,7 @@ export default function Register() {
                                             <CiPhone></CiPhone>
                                             <input
                                                 type="text"
-                                                className="text-sm font-poppins font-normal text-[#555555]"
+                                                className="w-full text-sm font-poppins font-normal text-[#555555]"
                                                 placeholder="No Telp"
                                                 name="phone_number"
                                                 onChange={handleChange}
