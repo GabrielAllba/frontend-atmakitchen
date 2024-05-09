@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { useRouter } from 'next/navigation';
 
@@ -18,6 +18,7 @@ interface AlertI {
 export default function AdminLogin() {
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     const emptyLogin: Login = {
         email: '',
         password: '',

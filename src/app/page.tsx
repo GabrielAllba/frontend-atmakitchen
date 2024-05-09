@@ -8,6 +8,7 @@ export default function Index() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -16,7 +17,8 @@ export default function Index() {
             try {
                 const response = await axios.get(`${apiUrl}/customer/token/validate/${token}`);
                 if (response.status === 200) {
-                    setIsAuthenticated(true);
+                    router.push('/customer');
+                    return;
                 } else {
                     setIsAuthenticated(false);
                 }
@@ -26,12 +28,22 @@ export default function Index() {
             }
         };
 
+        setIsLoading(true);
         checkAuth();
+        setIsLoading(false);
     }, []);
 
-    return (
-        <div>
-            <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
-        </div>
-    );
+    if (isLoading) {
+        return (
+            <div className="h-screen flex justify-center items-center font-poppins text-black text-center">
+                <span className="loading loading-ring loading-lg"></span>
+            </div>
+        );
+    } else {
+        return (
+            <>
+                <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
+            </>
+        );
+    }
 }
