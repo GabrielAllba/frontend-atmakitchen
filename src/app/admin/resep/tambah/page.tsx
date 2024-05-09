@@ -10,12 +10,17 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 // import { SatuanTitipan, satuan_titipan_data } from '@/dummy_data/satuan_titipan';
 import { Resep, resep_data } from '@/dummy_data/resep';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Product, ProductFetch } from '@/dummy_data/product';
+//axios
+import axios from 'axios';
+
+
 
 export default function TambahTitipan() {
     // const [penitipSelected, setPenitipSelected] = useState<Penitip>(penitip_data[0]);
     // const [satuanSelected, setSatuanSelected] = useState<SatuanTitipan>(satuan_titipan_data[0]);
 
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    
     const [filteredData, setFilteredData] = useState<Resep[]>(resep_data);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -26,10 +31,10 @@ export default function TambahTitipan() {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-    useEffect(() => {
-        const filtered = resep_data.filter((item) => item.nama.toLowerCase().includes(searchQuery.toLowerCase()));
-        setFilteredData(filtered);
-    }, [searchQuery]);
+    // useEffect(() => {
+    //     const filtered = resep_data.filter((item) => item.nama.toLowerCase().includes(searchQuery.toLowerCase()));
+    //     setFilteredData(filtered);
+    // }, [searchQuery]);
 
     // modal
     // const [openModal, setOpenModal] = useState<boolean>(false);
@@ -53,13 +58,13 @@ export default function TambahTitipan() {
     const [editDetail, setDetailResep] = useState<Resep>();
     const cancelButtonRef = useRef(null);
 
-    useEffect(() => {
-        if (editDetail) {
-            const matchingResep = resep_data.find((p) => p.nomor === editDetail.nomor);
+    // useEffect(() => {
+    //     if (editDetail) {
+    //         const matchingResep = resep_data.find((p) => p.nomor === editDetail.nomor);
 
-            setDetailResep(matchingResep);
-        }
-    }, [editDetail]);
+    //         setDetailResep(matchingResep);
+    //     }
+    // }, [editDetail]);
 
     //modal Edit
     const [openEditModal, setOpenEditModal] = useState<boolean>(false);
@@ -68,15 +73,179 @@ export default function TambahTitipan() {
     const [resepModal, setResepModal] = useState<Resep>();
     // const [satuanModal, setSatuanModal] = useState<Penitip>();
 
-    useEffect(() => {
-        if (editResep) {
-            const matchingResep = resep_data.find((p) => p.nomor === editResep.nomor);
+    // useEffect(() => {
+    //     if (editResep) {
+    //         const matchingResep = resep_data.find((p) => p.nomor === editResep.nomor);
 
-            setEditResep(matchingResep);
+    //         setEditResep(matchingResep);
+    //     }
+    // }, [editResep]);
+
+    // fetch data dari produk
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [productSelected, setProductSelected] = useState<Product>();
+    const [productData, setProductData] = useState<Product[]>([]);
+    const [editTitipan, setEditTitipan] = useState<ProductFetch>();
+    
+    // useEffect(() => {
+    //     const fetchProduct = async () => {
+    //         try {
+    //             const response = await axios.get(apiUrl + '/product/');
+    //             const productData = response.data.product_type;
+    //             setProductData(productData);
+    //         } catch (error) {
+    //             console.error('Error fetching product:', error);
+    //         }
+    //     };
+    //     fetchProduct();
+    // }, []);
+
+    //fetch data product dan resep
+    const fetchResep = () => {
+        try {
+            
+            axios({
+                method: 'get',
+                url: `${apiUrl}/resep`,
+        
+            }).then((response) => {
+                setFilteredData(response.data.resep);
+                
+            });
+        } catch (error) {
+            console.error('Error fetching resep:', error);
         }
-    }, [editResep]);
+    };
 
+    const fetchProduct = async () => {
+        try {
+            const response = await axios({
+                method: 'get',
+                url: `${apiUrl}/product/type`,
+                params: {
+                    query: 'Produk Toko',
+                },
+            });
+            setProductData(response.data.product);
+            setProductSelected(response.data.product[0]);
+            const firstProduct = response.data.product[0];
+            await fetchImage(firstProduct.photo);
+            // if (penitipData.length > 0) {
+            setResep({ ...resep, product_id: response.data.product[0].id });
+            // }
+            
+        } catch (error) {
+            console.error('Error fetching product:', error);
+        }
+    };
+
+    //image
+    const [imageUrls, setImageUrls] = useState<string>();
+
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            setImageUrls(objectURL);
+        } catch (error) {
+            console.error('Error fetching image:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProduct();
+    }, []);
+
+    const [resep, setResep] = useState<Resep>({
+        instruction: '',
+        product_id: 0
+    });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(resep);
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('instruction', resep.instruction);
+        formData.append('product_id', String(resep.product_id));
+
+        console.log(formData);
+
+        axios({
+            method: 'post',
+            url: apiUrl + '/resep',
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then((response) => {
+                console.log(response);
+                setResep({
+                    instruction: '',
+                    product_id: 0
+                });
+
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    };
+
+    // delete data
     const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/resep/${id}`);
+            fetchResep();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    };
+
+    //list resep
+    const [imageUrlsList, setImageUrlsList] = useState<{ [key: string]: string }>({});
+    
+    //modal
+    const [deleteResep, setDeleteResep] = useState<Resep>();
+
+    //update list
+    const [submitEditResep, setSubmitEditResep] = useState<Resep>();
+
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
+        e.preventDefault();
+        console.log(submitEditResep);
+
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('instruction', submitEditResep!.instruction);
+
+        console.log(formData);
+
+        axios({
+            method: 'put',
+            url: apiUrl + '/resep/' + itemId,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then((response) => {
+                console.log(response);
+                fetchResep();
+                
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    };
+    
+
+
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -87,54 +256,77 @@ export default function TambahTitipan() {
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                 <div className="h-min rounded-md border bg-white">
                                     <div className="border-b p-4">
-                                        <p className=" text-[#AA2B2B]">Data Resep</p>
+                                        <p className=" text-[#AA2B2B]">Input Data Resep</p>
                                     </div>
                                     <div className="p-4">
-                                        <div className=" mb-4">
-                                            <label
-                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                htmlFor="nama_produk"
-                                            >
-                                                Nama Produk
-                                            </label>
-                                            <input
-                                                className="h-12 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="harga_produk"
-                                                placeholder="Nama Produk"
-                                                required
-                                                type="text"
-                                            ></input>
-                                        </div>
-                                        <div className=" mb-4">
-                                            <label
-                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                htmlFor="foto_produk"
-                                            >
-                                                Foto Produk
-                                            </label>
-                                            <input
-                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="foto_titipan"
-                                                placeholder="foto_titipan"
-                                                required
-                                                type="file"
-                                            ></input>
-                                        </div>
-                                        <div className=" mb-4">
-                                            <label
-                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                htmlFor="foto_produk"
-                                            >
-                                                Bahan - Bahan
-                                            </label>
-                                            <input
-                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="foto_titipan"
-                                                placeholder="Masukan Bahan - Bahan Pembuatan"
-                                                required
-                                                type="number"
-                                            ></input>
-                                        </div>
+                                    <div className="mb-4">
+                                        <label
+                                            className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                            htmlFor="nama_produk"
+                                        >
+                                            Nama Produk
+                                        </label>
+                                        <Listbox
+                                            value={productSelected}
+                                            onChange={(value: Product) => {
+                                                setProductSelected(value);
+                                                setResep({ ...resep, product_id: value.id! }); // Update the product_id in the resep state
+                                            }}
+                                        >
+                                            <div className="relative mt-1">
+                                                <Listbox.Button
+                                                    className="relative w-full bg-white border border-[#DADDE2] rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                >
+                                                    <span className="block truncate text-[#A5A5A5]">
+                                                        {productSelected?.name || "Select a product"}
+                                                    </span>
+                                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                        <svg
+                                                            className="h-5 w-5 text-gray-400"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                            aria-hidden="true"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M10 12a1 1 0 01-.7-.29l-3-3a1 1 0 111.4-1.42L10 10.59l2.3-2.3a1 1 0 111.4 1.42l-3 3a1 1 0 01-.7.29z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </span>
+                                                </Listbox.Button>
+                                                <Listbox.Options
+                                                    className="absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                                                >
+                                                    {productData.map((opt) => (
+                                                        <Listbox.Option
+                                                            key={opt?.name} // Use a unique key for each option
+                                                            value={opt}
+                                                            className={({ active, selected }) =>
+                                                                `${
+                                                                    active
+                                                                        ? 'text-white bg-indigo-600'
+                                                                        : 'text-gray-900'
+                                                                }
+                                                                    cursor-default select-none relative py-2 pl-3 pr-9`
+                                                            }
+                                                        >
+                                                            {({ selected }) => (
+                                                                <span
+                                                                    className={`${
+                                                                        selected ? 'font-semibold' : 'font-normal'
+                                                                    } block truncate`}
+                                                                >
+                                                                    {opt.name}
+                                                                </span>
+                                                            )}
+                                                        </Listbox.Option>
+                                                    ))}
+                                                </Listbox.Options>
+                                            </div>
+                                        </Listbox>
+                                    </div>
                                         <div className="mb-4 ">
                                             <label
                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
@@ -142,13 +334,18 @@ export default function TambahTitipan() {
                                             >
                                                 Langkah Pembuatan
                                             </label>
-                                            <input
+                                            
+                                            <textarea
                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                id="foto_titipan"
-                                                placeholder="Masukan Langkah - Langkah Pembuatan"
+                                                id="deskripsi"
                                                 required
-                                                type="number"
-                                            ></input>
+                                                placeholder="Deskripsi"
+                                                value={resep?.instruction}
+                                                onChange={(e) =>
+                                                    setResep({ ...resep, instruction: e.target.value })   
+                                                }
+                                                
+                                            ></textarea>
                                         </div>
                                         <div className="mt-4 flex w-full items-center">
                                             <button
@@ -162,7 +359,7 @@ export default function TambahTitipan() {
                                 </div>
                                 <div className="rounded-md border bg-white">
                                     <div className="border-b p-4">
-                                        <p className=" text-[#AA2B2B] ">List Titipan</p>
+                                        <p className=" text-[#AA2B2B] ">List Resep</p>
                                     </div>
                                     <div className="p-4">
                                         <div className="overflow-auto">
@@ -184,9 +381,9 @@ export default function TambahTitipan() {
                                                 </thead>
                                                 <tbody>
                                                     {currentItems.map((item) => (
-                                                        <tr key={item.nomor} className="border text-[#7D848C]">
-                                                            <td className="p-4 border">{item.nomor}</td>
-                                                            <td className="p-4 border">{item.nama}</td>
+                                                        <tr key={item.id} className="border text-[#7D848C]">
+                                                            <td className="p-4 border">{item.id}</td>
+                                                            <td className="p-4 border">{productData.find((product) => product.id === item.product_id)?.name || 'Product Not Found'}</td>
                                                             <td className="p-4 border text-[#AA2B2B]">
                                                                 <button
                                                                     id="openResep"
@@ -200,12 +397,14 @@ export default function TambahTitipan() {
                                                                 </button>
                                                             </td>
                                                             <td className="p-4 border">
-                                                                <Image
-                                                                    src={item.foto}
-                                                                    width={100}
-                                                                    height={50}
-                                                                    alt={item.nama}
-                                                                />
+                                                                {productData && productData.length > 0 && (
+                                                                        <Image
+                                                                            src={imageUrlsList[productData.find(product => product.id === item.product_id)?.photo!] || ''}
+                                                                            width={100}
+                                                                            height={50}
+                                                                            alt={item.instruction}
+                                                                        />
+                                                                )}
                                                             </td>
                                                             <td className="p-4 border">
                                                                 <div className="flex gap-2">
@@ -220,11 +419,12 @@ export default function TambahTitipan() {
                                                                     </button>
                                                                     <button
                                                                         onClick={() => {
+                                                                            setDeleteResep(item);
                                                                             setOpenDeleteModal(true);
                                                                         }}
                                                                         className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
                                                                     >
-                                                                        Hapus
+                                                                        Delete
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -269,8 +469,11 @@ export default function TambahTitipan() {
                                     </div>
                                 </div>
                             </div>
+                            
+                            </form>
+                            
                             <hr className="mt-4" />
-                        </form>
+                        
                         <Transition.Root show={openDetailModal} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -306,27 +509,31 @@ export default function TambahTitipan() {
                                                         <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                             <Dialog.Title
                                                                 as="h3"
-                                                                className="text-base font-semibold leading-6 text-gray-900"
+                                                                className="text-base text- font-semibold leading-6 text-[#AA2B2B]"
                                                             >
-                                                                Resep {editDetail?.nama}
+                                                                Resep {productData.find((product) => product.id === editDetail?.product_id)?.name || 'Product Not Found'}
                                                             </Dialog.Title>
+
+                                                            <hr className='mx-2' />
                                                             <div className="mt-2 flex justify-center">
-                                                                <Image
-                                                                    className="rounded-xl"
-                                                                    src={editDetail?.foto!}
-                                                                    width={200}
-                                                                    height={50}
-                                                                    alt={editDetail?.nama!}
-                                                                />
+                                                                {productData && productData.length > 0 && (
+                                                                    <Image
+                                                                        src={imageUrlsList[productData.find(product => product.id === editDetail?.product_id)?.photo!] || ''}
+                                                                        width={100}
+                                                                        height={50}
+                                                                        alt={editDetail?.instruction!}
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-poppins">Bahan - Bahan :</h3>
-                                                                <p className="text-sm text-poppins text-gray-500 mt-4">
-                                                                    {editDetail?.bahan};
+                                                                <h3 className="text-poppins text-[#AA2B2B] mt-6 text-sm">Langkah Pembuatan :</h3>
+                                                                <p className="text-sm text-poppins text-slate-700 mt-4">
+                                                                    {editDetail?.instruction!|| 'Product Not Found'}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                
                                                 </div>
                                                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                                     <button
@@ -377,13 +584,13 @@ export default function TambahTitipan() {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form className="font-poppins">
+                                                        <form className="font-poppins" onSubmit={(e) => handleUpdate(e, editResep?.id!)}>
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
+                                                                  
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
-                                                                            {' '}
-                                                                            Edit {editResep?.nama}
+                                                                        Edit Resep {productData.find((product) => product.id === editResep?.product_id)?.name || 'Product Not Found'}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -395,12 +602,12 @@ export default function TambahTitipan() {
                                                                                 Nama Produk
                                                                             </label>
                                                                             <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_produk"
-                                                                                placeholder="Nama Produk"
+                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="foto_titipan"
+                                                                                placeholder="foto_titipan"
                                                                                 required
-                                                                                value={editResep?.nama}
-                                                                                type="text"
+                                                                                type="description"
+                                                                                value={productData.find((product) => product.id === editResep?.product_id)?.name || 'Product Not Found'}
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4 ">
@@ -411,42 +618,14 @@ export default function TambahTitipan() {
                                                                                 Foto Produk
                                                                             </label>
                                                                             <div className="flex justify-center m-4">
-                                                                                {editResep?.foto && (
-                                                                                    <div className="my-4 ">
-                                                                                        <Image
-                                                                                            alt="Foto Titipan"
-                                                                                            src={editResep.foto}
-                                                                                            height={200}
-                                                                                            width={200}
-                                                                                        ></Image>
-                                                                                    </div>
+                                                                                {productData && productData.length > 0 && (
+                                                                                    <Image
+                                                                                        src={imageUrlsList[productData.find(product => product.id === editResep?.product_id)?.photo!] || ''}
+                                                                                        width={100}
+                                                                                        height={50}
+                                                                                        alt='gambar doang'
+                                                                                    />
                                                                                 )}
-                                                                            </div>
-
-                                                                            <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
-                                                                                required
-                                                                                type="file"
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="foto_produk"
-                                                                            >
-                                                                                Bahan - Bahan:
-                                                                            </label>
-                                                                            <div className="overflow-y-auto h-full">
-                                                                                <input
-                                                                                    className="text-ellipsis block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none "
-                                                                                    id="foto_titipan"
-                                                                                    placeholder="foto_titipan"
-                                                                                    required
-                                                                                    type="description"
-                                                                                    value={editResep?.bahan}
-                                                                                ></input>
                                                                             </div>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -456,38 +635,47 @@ export default function TambahTitipan() {
                                                                             >
                                                                                 Langkah Pembuatan:
                                                                             </label>
-                                                                            <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
+                                                                            <textarea
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="deskripsi"
                                                                                 required
-                                                                                type="description"
-                                                                                value={editResep?.bahan}
-                                                                            ></input>
+                                                                                placeholder="Deskripsi"
+                                                                                value={submitEditResep?.instruction}
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+                                                                                    
+                                                                                    setSubmitEditResep({
+                                                                                        ...submitEditResep!,
+                                                                                        instruction: value,
+                                                                                    });
+                                                                                }}
+                                                                            ></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                            <button
+                                                                className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                type="submit"
+                                                                onClick={() => setOpenEditModal(false)}
+                                                            >
+                                                                Save
+                                                            </button>
+
+                                                            <button
+                                                                className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                                type="button"
+                                                                onClick={() => setOpenEditModal(false)}
+                                                                ref={cancelButtonEdit}
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
                                                         </form>
                                                     </div>
                                                 </div>
-                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    <button
-                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                        type="submit"
-                                                    >
-                                                        Save
-                                                    </button>
-
-                                                    <button
-                                                        className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
-                                                        type="button"
-                                                        onClick={() => setOpenEditModal(false)}
-                                                        ref={cancelButtonEdit}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </div>
+                                                
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
@@ -526,13 +714,13 @@ export default function TambahTitipan() {
                                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                                         >
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                                <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                            
+                                                <><div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:flex sm:items-start">
                                                         <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                                             <ExclamationTriangleIcon
                                                                 className="h-6 w-6 text-[#AA2B2B]"
-                                                                aria-hidden="true"
-                                                            />
+                                                                aria-hidden="true" />
                                                         </div>
                                                         <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                             <Dialog.Title
@@ -548,24 +736,23 @@ export default function TambahTitipan() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    <button
-                                                        type="button"
-                                                        className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                                        onClick={() => setOpenDeleteModal(false)}
-                                                    >
-                                                        Hapus
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-[#AA2B2B] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                                        onClick={() => setOpenDeleteModal(false)}
-                                                        ref={cancelButtonRef}
-                                                    >
-                                                        Batal
-                                                    </button>
-                                                </div>
+                                                </div><div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                        <button
+                                                            type="button"
+                                                            className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                            onClick={() => {setOpenDeleteModal(false); handleDelete(deleteResep?.id!);}}
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-[#AA2B2B] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                                            onClick={() => setOpenDeleteModal(false)}
+                                                            ref={cancelButtonRef}
+                                                        >
+                                                            Batal
+                                                        </button>
+                                                    </div></>
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
