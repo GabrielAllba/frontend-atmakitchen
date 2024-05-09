@@ -39,7 +39,7 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
         router.push('/');
     };
     return (
-        <Disclosure as="nav" className="bg-white border-[#FOF3F7] border ">
+        <Disclosure as="nav" className="bg-white border-[#FOF3F7] border fixed w-full z-50">
             {({ open }) => (
                 <>
                     <div className="mx-auto  px-2 sm:px-6 lg:px-8">

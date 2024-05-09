@@ -31,3 +31,51 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.swiper {
+    width: 100%;
+    height: 30rem;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+    display: flex;
+    height: min-content;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 30rem;
+    object-fit: cover;
+}
+
+.swiper {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    border-radius: 50%;
+    padding: 1.5rem;
+    background-color: white;
+    color: black !important;
+}
+.swiper-button-prev {
+    margin-right: 5rem !important;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 1rem !important;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: white !important;
+}
