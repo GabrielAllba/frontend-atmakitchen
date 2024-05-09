@@ -1,14 +1,17 @@
 'use client';
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
 import { Bahan, bahan_data as data } from '@/dummy_data/bahan';
 import { Dialog, Transition } from '@headlessui/react';
+import axios from 'axios';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
 const List: React.FC = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [loading, setLoading] = useState<boolean>(true);
+
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredData, setFilteredData] = useState<Bahan[]>(data);
 
@@ -19,6 +22,14 @@ const List: React.FC = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    //modal Edit
+    const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+    const cancelButtonEdit = useRef(null);
+    const [editBahan, setEditBahan] = useState<Bahan>();
+    const [BahanModal, setBahanModal] = useState<Bahan>();
+
+    
 
     useEffect(() => {
         const filtered = data.filter(
@@ -33,23 +44,27 @@ const List: React.FC = () => {
         setSearchQuery(e.target.value);
     };
 
-    //modal Edit
-    const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-    const cancelButtonEdit = useRef(null);
-    const [editBahan, setEditResep] = useState<Bahan>();
-    const [resepModal, setResepModal] = useState<Bahan>();
+    const fetchBahan = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: `${apiUrl}/bahan`,
+                params: {
+                    query: 'Bahan Baku',
+                },
+            }).then((response) => {
+                setFilteredData(response.data.bahan);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching bahans:', error);
+        }
+    };
 
     useEffect(() => {
-        if (editBahan) {
-            const matchingResep = data.find((p) => p.id === editBahan.id);
-
-            setEditResep(matchingResep);
-        }
-    }, [editBahan]);
-
-    const handleEditChange = (event) => {
-        setValue(event.target.value);
-    };
+        fetchBahan();
+    }, []);
 
     useEffect(() => {
         const filtered = data.filter(
@@ -58,6 +73,37 @@ const List: React.FC = () => {
         );
         setFilteredData(filtered);
     }, [searchQuery]);
+
+    //update Bahan
+    const [submitEditBahan, setSubmitEditBahan] = useState<Bahan>();
+
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
+        e.preventDefault();
+        console.log(submitEditBahan);
+
+        axios({
+            method: 'put',
+            url: apiUrl + '/bahan/' + itemId,
+            data: submitEditBahan,
+        })
+            .then((response) => {
+                console.log(response);
+                fetchBahan();
+                
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    };
+
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/bahan/${id}`);
+            fetchBahan();
+        } catch (error) {
+            console.error('Error deleting bahan:', error);
+        }
+    };
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -147,25 +193,24 @@ const List: React.FC = () => {
                                             </td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                <button
-                                                        onClick={() => {
-                                                            setEditResep(item);
-                                                            setOpenEditModal(true);
-                                                        }}
-                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                    >
+                                                <button 
+                                                    id="openBahan"
+                                                    onClick={() => {
+                                                        setEditBahan(item);
+                                                        setSubmitEditBahan(item);
+                                                        setOpenEditModal(true);
+                                                    }}
+                                                    className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
                                                         Edit
                                                     </button>
-                                                    <Link
-                                                        className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                        href=""
-                                                    >
+                                                    <button
                                                         onClick={() => {
-                                                            setEditResep(item);
-                                                            setOpenEditModal(true);
+                                                            handleDelete(item.id!);
                                                         }}
+                                                        className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
+                                                    >
                                                         Hapus
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -202,7 +247,6 @@ const List: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                        
                         <Transition.Root show={openEditModal} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -236,113 +280,112 @@ const List: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form className="font-poppins">
+                                                        <form className="space-y-6" action="#" method="PUT" onSubmit={(e) => handleUpdate(e, editBahan?.id!)}>
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
-                                                                        <p className=" text-[#AA2B2B] ">  Edit Bahan Baku</p>
+                                                                        <p className=" text-[#AA2B2B] ">
+                                                                            Edit {editBahan?.nama}
+                                                                        </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
                                                                         <div className="mb-4">
                                                                             <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                                                className="mb-2 font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="nama"
                                                                             >
                                                                                 Nama Bahan
                                                                             </label>
                                                                             <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                className=" w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                                 id="nama_bahan"
                                                                                 placeholder="Nama Bahan"
                                                                                 required
-                                                                                value={editBahan?.nama}
-                                                                                onChange={handleEditChange}
+                                                                                value={submitEditBahan?.nama}
                                                                                 type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+                                                                                    
+                                                                                    setSubmitEditBahan({
+                                                                                        ...submitEditBahan!,
+                                                                                        nama: value,
+                                                                                    });
+                                                                                }}
+                                                                                
                                                                             ></input>
                                                                         </div>
-                                                                        <div className="mb-4 ">
+                                                                        <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="merk-produk"
+                                                                                htmlFor="merk"
                                                                             >
                                                                                 Merk Bahan
                                                                             </label>
                                                                             <input
                                                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_produk"
-                                                                                placeholder="Merk Bahan"
+                                                                                id="merk_bahan"
+                                                                                placeholder=""
                                                                                 required
                                                                                 value={editBahan?.merk}
-                                                                                onChange={handleEditChange}
                                                                                 type="text"
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="harga_bahan"
+                                                                                htmlFor="stok"
                                                                             >
-                                                                                Harga Bahan:
-                                                                            </label>
-                                                                            <div className='overflow-y-auto h-full'>
-                                                                            <input
-                                                                                className="text-ellipsis block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none "
-                                                                                id="harga_bahan"
-                                                                                placeholder="merk_bahan"
-                                                                                required
-                                                                                type="text"
-                                                                                value={editBahan?.harga}
-                                                                                onChange={handleEditChange}
-                                                                            ></input>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="stok_bahan"
-                                                                            >
-                                                                                Stok Bahan:
+                                                                                Stok Bahan
                                                                             </label>
                                                                             <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                                 id="stok_bahan"
-                                                                                placeholder="stok_bahan"
+                                                                                placeholder="Stok Bahan"
                                                                                 required
-                                                                                type="text"
                                                                                 value={editBahan?.stok}
-                                                                                onChange={handleEditChange}
+                                                                                type="text"
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="satuan_bahan"
+                                                                                htmlFor="harga"
                                                                             >
-                                                                                Satuan Bahan:
+                                                                                Harga Bahan
                                                                             </label>
                                                                             <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="satuan_bahan"
-                                                                                placeholder="satuan_bahan"
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="harga_bahan"
+                                                                                placeholder="Harga Bahan"
                                                                                 required
+                                                                                value={editBahan?.harga}
                                                                                 type="text"
+                                                                            ></input>
+                                                                        </div>
+                                                                        <div className="mb-4">
+                                                                            <label
+                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                                                htmlFor="satuan"
+                                                                            >
+                                                                                Satuan Bahan
+                                                                            </label>
+                                                                            <input
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="satuan_bahan"
+                                                                                placeholder="Satuan Bahan"
+                                                                                required
                                                                                 value={editBahan?.satuan}
-                                                                                onChange={handleEditChange}
+                                                                                type="text"
                                                                             ></input>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    
+                                                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                                     <button
                                                         className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
                                                         type="submit"
-                                                        >
+                                                    >
                                                         Save
                                                     </button>
 
@@ -351,10 +394,14 @@ const List: React.FC = () => {
                                                         type="button"
                                                         onClick={() => setOpenEditModal(false)}
                                                         ref={cancelButtonEdit}
-                                                        >
+                                                    >
                                                         Cancel
                                                     </button>
                                                 </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                               
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
