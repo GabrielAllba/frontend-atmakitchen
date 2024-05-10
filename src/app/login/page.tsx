@@ -132,7 +132,7 @@ export default function AdminLogin() {
                                                 Password
                                             </label>
                                             <a
-                                                href=""
+                                                href="/change_password/"
                                                 className="block text-sm font-poppins font-medium leading-6 text-accent mb-2"
                                             >
                                                 Lupa Password?

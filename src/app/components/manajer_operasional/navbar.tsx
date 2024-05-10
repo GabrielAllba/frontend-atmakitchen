@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { FaUserFriends } from "react-icons/fa";
 
 const handleClickLink = () => {
     const drawerToggle = document.getElementById('my-drawer');
@@ -110,8 +111,45 @@ export default function Navbar() {
                                     <span>Home</span>
                                 </a>
                             </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <FaUserFriends  className="w-4 h-4"></FaUserFriends>
+                                    <span>Karyawan</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/karyawan/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/produk/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Karyawan</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/karyawan/tambah`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/produk/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Tambah Karyawan</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
                         </div>
-
+                        
                         <li className="py-2 " onClick={handleLogout}>
                             <a className="text-black font-poppins flex items-center">
                                 <BiLogOut className="w-4 h-4"></BiLogOut>
