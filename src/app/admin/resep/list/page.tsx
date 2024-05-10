@@ -204,6 +204,7 @@ const ListResep: React.FC = () => {
     const handleDelete = async (id: number) => {
         try {
             const response = await axios.delete(apiUrl + `/resep/${id}`);
+            console.log(response);
             fetchResep();
         } catch (error) {
             console.error('Error deleting product:', error);

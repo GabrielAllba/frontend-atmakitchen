@@ -10,6 +10,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 // import { SatuanTitipan, satuan_titipan_data } from '@/dummy_data/satuan_titipan';
 import { User, user_data } from '@/dummy_data/user_test';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import ListUser from '../list/page';
 
 export default function TambahKaryawan() {
     // const [penitipSelected, setPenitipSelected] = useState<Penitip>(penitip_data[0]);
@@ -224,105 +225,7 @@ export default function TambahKaryawan() {
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B] ">List User</p>
                                     </div>
-                                    <div className="p-4">
-                                        <div className="overflow-auto">
-                                            <table className="table-auto w-full overflow-auto">
-                                                <thead>
-                                                    <tr className="border">
-                                                        <th className="p-8 border text-start font-semibold">No.</th>
-                                                        <th className="p-8 border text-start font-semibold">
-                                                            Nama Karyawan
-                                                        </th>
-                                                        <th className="p-8 border text-start font-semibold">Email</th>
-                                                        <th className="p-8 border text-start font-semibold">
-                                                            Username
-                                                        </th>
-                                                        <th className="p-8 border text-start font-semibold">
-                                                            Tanggal Lahir
-                                                        </th>
-                                                        <th className="p-8 border text-start font-semibold">
-                                                            No. Telepon
-                                                        </th>
-                                                        <th className="p-8 border text-start font-semibold">
-                                                            total_point
-                                                        </th>
-                                                        <th className="p-8 border text-start font-semibold">Role</th>
-                                                        <th className="p-8 border text-start font-semibold">Aksi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {currentItems.map((item) => (
-                                                        <tr key={item.id} className="border text-[#7D848C]">
-                                                            <td className="p-4 border">{item.id}</td>
-                                                            <td className="p-4 border">{item.name}</td>
-                                                            <td className="p-4 border">{item.email}</td>
-                                                            <td className="p-4 border">{item.username}</td>
-                                                            <td className="p-4 border">{item.born_date}</td>
-                                                            <td className="p-4 border">{item.phone_number}</td>
-                                                            <td className="p-4 border">{item.total_point}</td>
-                                                            <td className="p-4 border">
-                                                                {item.role_id === 1 ? 'Manajer Operasional' : 'Admin'}
-                                                            </td>
-                                                            <td className="p-4 border">
-                                                                <div className="flex gap-2">
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            setEditResep(item);
-                                                                            setOpenEditModal(true);
-                                                                        }}
-                                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                                    >
-                                                                        Edit
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            setOpenDeleteModal(true);
-                                                                        }}
-                                                                        className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
-                                                                    >
-                                                                        Hapus
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                            <div className="flex justify-end my-8">
-                                                <button
-                                                    onClick={() => paginate(currentPage - 1)}
-                                                    disabled={currentPage === 1}
-                                                    className="p-4 border"
-                                                >
-                                                    Previous
-                                                </button>
-                                                {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map(
-                                                    (_, index) => (
-                                                        <button
-                                                            key={index}
-                                                            onClick={() => paginate(index + 1)}
-                                                            className={`p-4 ${
-                                                                currentPage === index + 1
-                                                                    ? 'bg-[#AA2B2B] text-white'
-                                                                    : 'bg-white text-black border'
-                                                            } `}
-                                                        >
-                                                            {index + 1}
-                                                        </button>
-                                                    ),
-                                                )}
-                                                <button
-                                                    onClick={() => paginate(currentPage + 1)}
-                                                    disabled={
-                                                        currentPage === Math.ceil(filteredData.length / itemsPerPage)
-                                                    }
-                                                    className="p-4 border"
-                                                >
-                                                    Next
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                   <ListUser></ListUser>
                                 </div>
                             </div>
                         </form>
