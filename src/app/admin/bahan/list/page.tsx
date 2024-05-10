@@ -29,15 +29,25 @@ const List: React.FC = () => {
     const [editBahan, setEditBahan] = useState<Bahan>();
     const [BahanModal, setBahanModal] = useState<Bahan>();
 
-    
-
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.harga.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setFilteredData(filtered);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
+            try {
+                const response = await axios.get(apiUrl + '/bahan/search', {
+                    params: {
+                        query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.bahans);
+            } catch (error) {
+                console.error('Error fetching bahans:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSearchResults();
     }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,10 +77,7 @@ const List: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = data.filter(
-            (item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
+        const filtered = data.filter((item) => item.nama.toLowerCase().includes(searchQuery.toLowerCase()));
         setFilteredData(filtered);
     }, [searchQuery]);
 
@@ -79,6 +86,7 @@ const List: React.FC = () => {
 
     const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
         e.preventDefault();
+        console.log('riel');
         console.log(submitEditBahan);
 
         axios({
@@ -89,11 +97,10 @@ const List: React.FC = () => {
             .then((response) => {
                 console.log(response);
                 fetchBahan();
-                
             })
             .catch((err) => {
                 console.log(err);
-            })
+            });
     };
 
     const handleDelete = async (id: number) => {
@@ -187,20 +194,22 @@ const List: React.FC = () => {
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
                                             <td className="p-4 border">{item.nama}</td>
-                                            <td className="p-4 border">{item.stok} {item.satuan}</td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
-                                            <td className="p-4 border">{item.merk}
+                                            <td className="p-4 border">
+                                                {item.stok} {item.satuan}
                                             </td>
+                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
+                                            <td className="p-4 border">{item.merk}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                <button 
-                                                    id="openBahan"
-                                                    onClick={() => {
-                                                        setEditBahan(item);
-                                                        setSubmitEditBahan(item);
-                                                        setOpenEditModal(true);
-                                                    }}
-                                                    className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
+                                                    <button
+                                                        id="openBahan"
+                                                        onClick={() => {
+                                                            setEditBahan(item);
+                                                            setSubmitEditBahan(item);
+                                                            setOpenEditModal(true);
+                                                        }}
+                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
+                                                    >
                                                         Edit
                                                     </button>
                                                     <button
@@ -280,7 +289,12 @@ const List: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form className="space-y-6" action="#" method="PUT" onSubmit={(e) => handleUpdate(e, editBahan?.id!)}>
+                                                        <form
+                                                            className="space-y-6"
+                                                            action="#"
+                                                            method="PUT"
+                                                            onSubmit={(e) => handleUpdate(e, editBahan?.id!)}
+                                                        >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
@@ -305,13 +319,12 @@ const List: React.FC = () => {
                                                                                 type="text"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-                                                                                    
+
                                                                                     setSubmitEditBahan({
                                                                                         ...submitEditBahan!,
                                                                                         nama: value,
                                                                                     });
                                                                                 }}
-                                                                                
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -326,8 +339,16 @@ const List: React.FC = () => {
                                                                                 id="merk_bahan"
                                                                                 placeholder=""
                                                                                 required
-                                                                                value={editBahan?.merk}
+                                                                                value={submitEditBahan?.merk || ''}
                                                                                 type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+
+                                                                                    setSubmitEditBahan({
+                                                                                        ...submitEditBahan!,
+                                                                                        merk: value,
+                                                                                    });
+                                                                                }}
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -342,8 +363,16 @@ const List: React.FC = () => {
                                                                                 id="stok_bahan"
                                                                                 placeholder="Stok Bahan"
                                                                                 required
-                                                                                value={editBahan?.stok}
+                                                                                value={submitEditBahan?.stok || 0}
                                                                                 type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+
+                                                                                    setSubmitEditBahan({
+                                                                                        ...submitEditBahan!,
+                                                                                        stok: parseFloat(value) || 0,
+                                                                                    });
+                                                                                }}
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -358,8 +387,16 @@ const List: React.FC = () => {
                                                                                 id="harga_bahan"
                                                                                 placeholder="Harga Bahan"
                                                                                 required
-                                                                                value={editBahan?.harga}
+                                                                                value={submitEditBahan?.harga || 0}
                                                                                 type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+
+                                                                                    setSubmitEditBahan({
+                                                                                        ...submitEditBahan!,
+                                                                                        harga: parseFloat(value) || 0,
+                                                                                    });
+                                                                                }}
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -374,34 +411,41 @@ const List: React.FC = () => {
                                                                                 id="satuan_bahan"
                                                                                 placeholder="Satuan Bahan"
                                                                                 required
-                                                                                value={editBahan?.satuan}
+                                                                                value={submitEditBahan?.satuan || ''}
                                                                                 type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+
+                                                                                    setSubmitEditBahan({
+                                                                                        ...submitEditBahan!,
+                                                                                        satuan: value,
+                                                                                    });
+                                                                                }}
                                                                             ></input>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    <button
-                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                        type="submit"
-                                                    >
-                                                        Save
-                                                    </button>
+                                                                <button
+                                                                    className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                    type="submit"
+                                                                >
+                                                                    Save
+                                                                </button>
 
-                                                    <button
-                                                        className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
-                                                        type="button"
-                                                        onClick={() => setOpenEditModal(false)}
-                                                        ref={cancelButtonEdit}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </div>
+                                                                <button
+                                                                    className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                                    type="button"
+                                                                    onClick={() => setOpenEditModal(false)}
+                                                                    ref={cancelButtonEdit}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>
-                                               
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
