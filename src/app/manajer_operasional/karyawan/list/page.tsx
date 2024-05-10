@@ -1,18 +1,22 @@
 'use client';
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
-// import { User, User_data as data } from '@/dummy_data/User';
-import { User as data } from '@/dummy_data/user';
+import { Resep, resep_data as data } from '@/dummy_data/resep';
 import { Dialog, Transition } from '@headlessui/react';
+import axios from 'axios';
+import { ProductFetch } from '@/dummy_data/product';
+import Image from 'next/image';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { GiConsoleController } from 'react-icons/gi';
+import { User } from '@/dummy_data/user';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
-const List: React.FC = () => {
+const ListUser: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<User[]>(data);
+    const [filteredData, setFilteredData] = useState<User[]>([]);
+    const [productData, setProductData] = useState<ProductFetch[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -29,61 +33,129 @@ const List: React.FC = () => {
     //modal detail
     const [openDetailModal, setOpenDetailModal] = useState<boolean>(false);
     const cancelButtonDetail = useRef(null);
-    const [editDetail, setDetailUser] = useState<User>();
+    const [editDetail, setDetailResep] = useState<Resep>();
 
-    useEffect(() => {
-        if (editDetail) {
-            const matchingUser = data.find((p) => p.id === editDetail.id);
+    // useEffect(() => {
+    //     if (editDetail) {
+    //         const matchingResep = data.find((p) => p.id === editDetail.id);
 
-            setDetailUser(matchingUser);
-        }
-    }, [editDetail]);
+    //         setDetailResep(matchingResep);
+    //     }
+    // }, [editDetail]);
 
     //modal Edit
     const [openEditModal, setOpenEditModal] = useState<boolean>(false);
     const cancelButtonEdit = useRef(null);
-    const [editUser, setEditUser] = useState<User>();
-    const [UserModal, setUserModal] = useState<User>();
+    const [editResep, setEditResep] = useState<Resep>();
+    const [resepModal, setResepModal] = useState<Resep>();
+    const [deleteResep, setDeleteResep] = useState<Resep>();
     // const [satuanModal, setSatuanModal] = useState<Penitip>();
 
-    useEffect(() => {
-        if (editUser) {
-            const matchingUser = data.find((p) => p.id === editUser.id);
+    // useEffect(() => {
+    //     if (editResep) {
+    //         const matchingResep = data.find((p) => p.id === editResep.id);
 
-            setEditUser(matchingUser);
-        }
-    }, [editUser]);
+    //         setEditResep(matchingResep);
+    //     }
+    // }, [editResep]);
 
     useEffect(() => {
-        const filtered = data.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
-        setFilteredData(filtered);
+        const fetchSearchResults = async () => {
+            setFilteredData([]);
+            setLoading(true);
+
+            try {
+                const response = await axios.get(apiUrl + '/resep/search', {
+                    params: {
+                        query: searchQuery,
+                    },
+                });
+                setFilteredData(response.data.resep);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSearchResults();
     }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         setSearchQuery(e.target.value);
+        if (searchQuery == '') {
+        }
     };
 
-    // const fetchUsersByRole = (roleId) => {
-    //     try {
-    //         setLoading(true);
-    //         axios({
-    //             method: 'get',
-    //             url: `${apiUrl}/users/${roleId}`,
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`, // Assuming you have an accessToken variable containing the JWT token
-    //             },
-    //         }).then((response) => {
-    //             // Handle the response data accordingly
-    //             console.log(response.data); // Assuming the response contains the users with the specified role
-    //             setLoading(false);
-    //         });
-    //     } catch (error) {
-    //         console.error('Error fetching users:', error);
-    //     }
-    // };
-    
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [loading, setLoading] = useState<boolean>(true);
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
 
+    const fetchUser = () => {
+        try {
+            setLoading(true);
+            axios({
+                method: 'get',
+                url: `${apiUrl}/users`,
+            }).then((response) => {
+                setFilteredData(response.data.user);
+                setLoading(false);
+            });
+        } catch (error) {
+            console.error('Error fetching User:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    //edit resep
+    const [submitEditResep, setSubmitEditResep] = useState<Resep>();
+    const [alert, setAlert] = useState<boolean>(false);
+
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
+        e.preventDefault();
+        console.log(submitEditResep);
+
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('instruction', submitEditResep!.instruction);
+
+        console.log(formData);
+
+        axios({
+            method: 'put',
+            url: apiUrl + '/resep/' + itemId,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then((response) => {
+                console.log(response);
+                setAlert(true);
+                fetchUser();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    //delete item
     const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await axios.delete(apiUrl + `/resep/${id}`);
+            console.log(response);
+            fetchResep();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    };
+
+    //search
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -116,7 +188,7 @@ const List: React.FC = () => {
                                                 fill="currentColor"
                                                 aria-hidden="true"
                                             >
-                                               <path
+                                                <path
                                                     fillRule="evenodd"
                                                     d="M10 12a1 1 0 01-.7-.29l-3-3a1 1 0 111.4-1.42L10 10.59l2.3-2.3a1 1 0 111.4 1.42l-3 3a1 1 0 01-.7.29z"
                                                     clipRule="evenodd"
@@ -155,13 +227,12 @@ const List: React.FC = () => {
                                 <thead>
                                     <tr className="border">
                                         <th className="p-8 border text-start font-semibold">No.</th>
-                                        <th className="p-8 border text-start font-semibold">Nama Karyawan</th>
+                                        <th className="p-8 border text-start font-semibold">Nama </th>
                                         <th className="p-8 border text-start font-semibold">Email</th>
                                         <th className="p-8 border text-start font-semibold">Username</th>
                                         <th className="p-8 border text-start font-semibold">Tanggal Lahir</th>
                                         <th className="p-8 border text-start font-semibold">No. Telepon</th>
                                         <th className="p-8 border text-start font-semibold">total_point</th>
-                                        <th className="p-8 border text-start font-semibold">Role</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -176,13 +247,10 @@ const List: React.FC = () => {
                                             <td className="p-4 border">{item.phone_number}</td>
                                             <td className="p-4 border">{item.total_point}</td>
                                             <td className="p-4 border">
-                                                {item.role_id === 1 ? 'Manajer Operasional' : 'Admin'}
-                                            </td>
-                                            <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => {
-                                                            setEditUser(item);
+                                                            setEditResep(item);
                                                             setOpenEditModal(true);
                                                         }}
                                                         className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
@@ -190,12 +258,15 @@ const List: React.FC = () => {
                                                         Edit
                                                     </button>
                                                     <button
+                                                        type="button"
+                                                        className="mt-3 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm   shadow-sm  bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] sm:mt-0 sm:w-auto"
                                                         onClick={() => {
+                                                            setDeleteResep(item);
                                                             setOpenDeleteModal(true);
                                                         }}
-                                                        className="flex items-center rounded-md bg-[#FDE7E7] px-4 py-1 font-poppins w-fit text-[#AA2B2B]"
+                                                        ref={cancelButtonRef}
                                                     >
-                                                        Hapus
+                                                        Delete
                                                     </button>
                                                 </div>
                                             </td>
@@ -233,6 +304,7 @@ const List: React.FC = () => {
                                 </button>
                             </div>
                         </div>
+
                         <Transition.Root show={openEditModal} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -266,13 +338,20 @@ const List: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form className="font-poppins">
+                                                        <form
+                                                            className="font-poppins"
+                                                            onSubmit={(e) => handleUpdate(e, editResep?.id!)}
+                                                        >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
-                                                                            {' '}
-                                                                            Edit {editUser?.name}
+                                                                            Edit Resep{' '}
+                                                                            {productData.find(
+                                                                                (product) =>
+                                                                                    product.id ===
+                                                                                    editResep?.product_id,
+                                                                            )?.name || 'Product Not Found'}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -281,15 +360,21 @@ const List: React.FC = () => {
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="nama"
                                                                             >
-                                                                                Nama Karyawan
+                                                                                Nama Produk
                                                                             </label>
                                                                             <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_produk"
-                                                                                placeholder="Nama Produk"
+                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="foto_titipan"
+                                                                                placeholder="foto_titipan"
                                                                                 required
-                                                                                value={editUser?.name}
-                                                                                type="text"
+                                                                                type="description"
+                                                                                value={
+                                                                                    productData.find(
+                                                                                        (product) =>
+                                                                                            product.id ===
+                                                                                            editResep?.product_id,
+                                                                                    )?.name || 'Product Not Found'
+                                                                                }
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4 ">
@@ -297,33 +382,26 @@ const List: React.FC = () => {
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="nama_produk"
                                                                             >
-                                                                                Email
+                                                                                Foto Produk
                                                                             </label>
-                                                                            <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_produk"
-                                                                                placeholder="Nama Produk"
-                                                                                required
-                                                                                value={editUser?.email}
-                                                                                type="text"
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="foto_produk"
-                                                                            >
-                                                                                Username
-                                                                            </label>
-                                                                            <div className="overflow-y-auto h-full">
-                                                                                <input
-                                                                                    className="text-ellipsis block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none "
-                                                                                    id="foto_titipan"
-                                                                                    placeholder="foto_titipan"
-                                                                                    required
-                                                                                    type="description"
-                                                                                    value={editUser?.username}
-                                                                                ></input>
+                                                                            <div className="flex justify-center m-4">
+                                                                                {productData &&
+                                                                                    productData.length > 0 && (
+                                                                                        <Image
+                                                                                            src={
+                                                                                                imageUrls[
+                                                                                                    productData.find(
+                                                                                                        (product) =>
+                                                                                                            product.id ===
+                                                                                                            editResep?.product_id,
+                                                                                                    )?.photo!
+                                                                                                ] || ''
+                                                                                            }
+                                                                                            width={100}
+                                                                                            height={50}
+                                                                                            alt="gambar doang"
+                                                                                        />
+                                                                                    )}
                                                                             </div>
                                                                         </div>
                                                                         <div className="mb-4">
@@ -331,92 +409,47 @@ const List: React.FC = () => {
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="foto_produk"
                                                                             >
-                                                                                Tanggal Lahir
+                                                                                Langkah Pembuatan:
                                                                             </label>
-                                                                            <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
+                                                                            <textarea
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="deskripsi"
                                                                                 required
-                                                                                type="description"
-                                                                                value={editUser?.born_date}
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="foto_produk"
-                                                                            >
-                                                                                No. Telepon
-                                                                            </label>
-                                                                            <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
-                                                                                required
-                                                                                type="description"
-                                                                                value={editUser?.phone_number}
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="foto_produk"
-                                                                            >
-                                                                                Total Poin
-                                                                            </label>
-                                                                            <input
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
-                                                                                required
-                                                                                type="description"
-                                                                                value={editUser?.total_point}
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="foto_produk"
-                                                                            >
-                                                                                Role
-                                                                            </label>
-                                                                            <input
-                                                                                disabled
-                                                                                className="h- block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="foto_titipan"
-                                                                                placeholder="foto_titipan"
-                                                                                required
-                                                                                type="description"
-                                                                                value={
-                                                                                    editUser?.role_id === 1
-                                                                                        ? 'Manajer Operasional'
-                                                                                        : 'Admin'
-                                                                                }
-                                                                            ></input>
+                                                                                placeholder="Deskripsi"
+                                                                                value={submitEditResep?.instruction}
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+
+                                                                                    setSubmitEditResep({
+                                                                                        ...submitEditResep!,
+                                                                                        instruction: value,
+                                                                                    });
+                                                                                }}
+                                                                            ></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                                <button
+                                                                    className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                    type="submit"
+                                                                    onClick={() => setOpenEditModal(false)}
+                                                                >
+                                                                    Save
+                                                                </button>
+
+                                                                <button
+                                                                    className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                                    type="button"
+                                                                    onClick={() => setOpenEditModal(false)}
+                                                                    ref={cancelButtonEdit}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
                                                         </form>
                                                     </div>
-                                                </div>
-                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    <button
-                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                        type="submit"
-                                                    >
-                                                        Save
-                                                    </button>
-
-                                                    <button
-                                                        className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
-                                                        type="button"
-                                                        onClick={() => setOpenEditModal(false)}
-                                                        ref={cancelButtonEdit}
-                                                    >
-                                                        Cancel
-                                                    </button>
                                                 </div>
                                             </Dialog.Panel>
                                         </Transition.Child>
@@ -456,46 +489,51 @@ const List: React.FC = () => {
                                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                                         >
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                                <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                                    <div className="sm:flex sm:items-start">
-                                                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                            <ExclamationTriangleIcon
-                                                                className="h-6 w-6 text-[#AA2B2B]"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </div>
-                                                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                            <Dialog.Title
-                                                                as="h3"
-                                                                className="text-base font-semibold leading-6 text-gray-900"
-                                                            >
-                                                                Hapus Resep
-                                                            </Dialog.Title>
-                                                            <div className="mt-2">
-                                                                <p className="text-sm text-gray-500">
-                                                                    Apakah anda yakin ingin menghapus resep ini ?
-                                                                </p>
+                                                <>
+                                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                                        <div className="sm:flex sm:items-start">
+                                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                                <ExclamationTriangleIcon
+                                                                    className="h-6 w-6 text-[#AA2B2B]"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </div>
+                                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                                                <Dialog.Title
+                                                                    as="h3"
+                                                                    className="text-base font-semibold leading-6 text-gray-900"
+                                                                >
+                                                                    Hapus Resep
+                                                                </Dialog.Title>
+                                                                <div className="mt-2">
+                                                                    <p className="text-sm text-gray-500">
+                                                                        Apakah anda yakin ingin menghapus resep ini ?
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                    <button
-                                                        type="button"
-                                                        className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                                        onClick={() => setOpenDeleteModal(false)}
-                                                    >
-                                                        Hapus
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-[#AA2B2B] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                                        onClick={() => setOpenDeleteModal(false)}
-                                                        ref={cancelButtonRef}
-                                                    >
-                                                        Batal
-                                                    </button>
-                                                </div>
+                                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                        <button
+                                                            type="button"
+                                                            className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                            onClick={() => {
+                                                                setOpenDeleteModal(false);
+                                                                handleDelete(deleteResep?.id!);
+                                                            }}
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-[#AA2B2B] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                                            onClick={() => setOpenDeleteModal(false)}
+                                                            ref={cancelButtonRef}
+                                                        >
+                                                            Batal
+                                                        </button>
+                                                    </div>
+                                                </>
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
@@ -509,4 +547,4 @@ const List: React.FC = () => {
     );
 };
 
-export default List;
+export default ListUser;
