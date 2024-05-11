@@ -285,12 +285,13 @@ const ListResep: React.FC = () => {
                                         <th className="p-8 border text-start font-semibold">No.</th>
                                         <th className="p-8 border text-start font-semibold">Nama Produk</th>
                                         <th className="p-8 border text-start font-semibold">Detail Cara Pembuatan</th>
+                                        <th className="p-8 border text-start font-semibold">List Bahan</th>
                                         <th className="p-8 border text-start font-semibold">Foto Produk</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {currentItems.map((item) => (
+                                    {currentItems.map((item, index) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
                                             <td className="p-4 border">
@@ -309,6 +310,16 @@ const ListResep: React.FC = () => {
                                                 >
                                                     Klik Untuk Detail Cara Pembuatan
                                                 </button>
+                                            </td>
+                                            <td className="p-4 border text-[#AA2B2B]">
+                                                {' '}
+                                                {filteredData[index]?.bahan_resep?.map((e, i) => (
+                                                    <div key={i}>
+                                                        <p>
+                                                            {e.bahan.nama}: {e.quantity} {e.unit}
+                                                        </p>
+                                                    </div>
+                                                ))}
                                             </td>
                                             <td className="p-4 border">
                                                 {productData && productData.length > 0 && (
