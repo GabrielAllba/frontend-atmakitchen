@@ -137,24 +137,26 @@ export default function TambahResep() {
                 console.log(err);
             });
 
-        for (let i = 0; i < addBahan!.length; i++) {
-            const bahan = addBahan![i];
-            const detailFormData = new FormData();
-            detailFormData.append('bahan_id', String(bahan.bahan.id));
-            detailFormData.append('quantity', String(bahan.quantity));
-            detailFormData.append('unit', String(bahan.bahan.satuan));
+        if (addBahan?.length! > 0) {
+            for (let i = 0; i < addBahan!.length; i++) {
+                const bahan = addBahan![i];
+                const detailFormData = new FormData();
+                detailFormData.append('bahan_id', String(bahan.bahan.id));
+                detailFormData.append('quantity', String(bahan.quantity));
+                detailFormData.append('unit', String(bahan.bahan.satuan));
 
-            await axios({
-                method: 'post',
-                url: apiUrl + '/resep/detail/' + bahan.recipe_id,
-                data: detailFormData,
-            })
-                .then((response) => {
-                    console.log(response);
+                await axios({
+                    method: 'post',
+                    url: apiUrl + '/resep/detail/' + bahan.recipe_id,
+                    data: detailFormData,
                 })
-                .catch((err) => {
-                    console.log(err);
-                });
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
         }
         setAddBahan([]);
         setAlert(true);
