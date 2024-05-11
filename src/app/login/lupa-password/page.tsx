@@ -93,7 +93,9 @@ export default function AdminLogin() {
                                 <h2 className=" text-wrap text-center text-2xl font-bold text-accent break-words">
                                     Atmakitchen
                                 </h2>
-                                <p className="mt-4 text-center text-sm text-[#555555]">Masukkan Email Untuk Reset Password</p>
+                                <p className="mt-4 text-center text-sm text-[#555555]">
+                                    Masukkan Email Untuk Reset Password
+                                </p>
                             </div>
                             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                                 <form onSubmit={handleSubmitPost} className="space-y-6" action="#" method="POST">
