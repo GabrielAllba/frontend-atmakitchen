@@ -96,7 +96,7 @@ const ListGaji: React.FC = () => {
                 url: `${apiUrl}/roles`,
             }).then((response) => {
                 // Filter out roles with name "Owner"
-                const filteredRoles = response.data.role.filter((role: { name: string; }) => role.name !== 'Owner');
+                const filteredRoles = response.data.role.filter((role: { name: string }) => role.name !== 'Owner');
                 setFilteredData(filteredRoles);
                 setLoading(false);
             });
@@ -104,7 +104,6 @@ const ListGaji: React.FC = () => {
             console.error('Error fetching roles:', error);
         }
     };
-    
 
     useEffect(() => {
         fetchRole();
@@ -121,7 +120,7 @@ const ListGaji: React.FC = () => {
         axios({
             method: 'put',
             url: apiUrl + '/roles/' + itemId,
-            data: submitEditRole
+            data: submitEditRole,
         })
             .then((response) => {
                 console.log(response);
@@ -138,7 +137,7 @@ const ListGaji: React.FC = () => {
     const handleDelete = async (id: number) => {
         try {
             const response = await axios.delete(apiUrl + `/roles/${id}`);
-            console.log(response)
+            console.log(response);
             fetchRole();
         } catch (error) {
             console.error('Error deleting role:', error);
@@ -168,8 +167,10 @@ const ListGaji: React.FC = () => {
                             <span className="mr-2">Show</span>
                             <Listbox value={itemsPerPage} onChange={(value: number) => setItemsPerPage(value)}>
                                 <div className="relative mt-1">
-                                    <Listbox.Button className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-de
-                                    ult focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <Listbox.Button
+                                        className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-de
+                                    ult focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    >
                                         <span className="block truncate">{itemsPerPage}</span>
                                         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                             <svg
@@ -241,7 +242,7 @@ const ListGaji: React.FC = () => {
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button
+                                                    {/* <button
                                                         type="button"
                                                         className="mt-3 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm   shadow-sm  bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] sm:mt-0 sm:w-auto"
                                                         onClick={() => {
@@ -251,7 +252,7 @@ const ListGaji: React.FC = () => {
                                                         ref={cancelButtonRef}
                                                     >
                                                         Delete
-                                                    </button>
+                                                    </button> */}
                                                 </div>
                                             </td>
                                         </tr>
@@ -331,7 +332,6 @@ const ListGaji: React.FC = () => {
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
                                                                             Edit Jabatan{editRole?.name}
-                                                                            
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -364,9 +364,16 @@ const ListGaji: React.FC = () => {
                                                                                 placeholder=""
                                                                                 required
                                                                                 type="text"
-                                                                                value={submitEditRole?.gaji_harian! || 0}
+                                                                                value={
+                                                                                    submitEditRole?.gaji_harian! || 0
+                                                                                }
                                                                                 onChange={(e) => {
-                                                                                    setSubmitEditRole({ ...submitEditRole!, gaji_harian: parseFloat(e.target.value!)});
+                                                                                    setSubmitEditRole({
+                                                                                        ...submitEditRole!,
+                                                                                        gaji_harian: parseFloat(
+                                                                                            e.target.value!,
+                                                                                        ),
+                                                                                    });
                                                                                 }}
                                                                             ></input>
                                                                         </div>
