@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect, useRef, Fragment } from 'react';
-import Link from 'next/link';
 import { Listbox } from '@headlessui/react';
 import { Resep, resep_data as data } from '@/dummy_data/resep';
 import { Dialog, Transition } from '@headlessui/react';
@@ -8,7 +7,6 @@ import axios from 'axios';
 import { ProductFetch } from '@/dummy_data/product';
 import Image from 'next/image';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { GiConsoleController } from 'react-icons/gi';
 import { User } from '@/dummy_data/user';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
@@ -35,29 +33,13 @@ const ListUser: React.FC = () => {
     const cancelButtonDetail = useRef(null);
     const [editDetail, setDetailResep] = useState<Resep>();
 
-    // useEffect(() => {
-    //     if (editDetail) {
-    //         const matchingResep = data.find((p) => p.id === editDetail.id);
-
-    //         setDetailResep(matchingResep);
-    //     }
-    // }, [editDetail]);
-
     //modal Edit
     const [openEditModal, setOpenEditModal] = useState<boolean>(false);
     const cancelButtonEdit = useRef(null);
     const [editResep, setEditResep] = useState<Resep>();
     const [resepModal, setResepModal] = useState<Resep>();
-    const [deleteResep, setDeleteResep] = useState<Resep>();
+    const [deleteUser, setDeleteUser] = useState<User>();
     // const [satuanModal, setSatuanModal] = useState<Penitip>();
-
-    // useEffect(() => {
-    //     if (editResep) {
-    //         const matchingResep = data.find((p) => p.id === editResep.id);
-
-    //         setEditResep(matchingResep);
-    //     }
-    // }, [editResep]);
 
     useEffect(() => {
         const fetchSearchResults = async () => {
@@ -65,12 +47,12 @@ const ListUser: React.FC = () => {
             setLoading(true);
 
             try {
-                const response = await axios.get(apiUrl + '/resep/search', {
+                const response = await axios.get(apiUrl + '/users/cari', {
                     params: {
                         query: searchQuery,
                     },
                 });
-                setFilteredData(response.data.resep);
+                setFilteredData(response.data.user);
             } catch (error) {
                 console.error('Error fetching products:', error);
             } finally {
@@ -147,9 +129,9 @@ const ListUser: React.FC = () => {
 
     const handleDelete = async (id: number) => {
         try {
-            const response = await axios.delete(apiUrl + `/resep/${id}`);
+            const response = await axios.delete(apiUrl + `/users/${id}`);
             console.log(response);
-            fetchResep();
+            fetchUser();
         } catch (error) {
             console.error('Error deleting product:', error);
         }
@@ -250,7 +232,7 @@ const ListUser: React.FC = () => {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => {
-                                                            setEditResep(item);
+                                                            // setEditResep(item);
                                                             setOpenEditModal(true);
                                                         }}
                                                         className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
@@ -261,7 +243,7 @@ const ListUser: React.FC = () => {
                                                         type="button"
                                                         className="mt-3 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm   shadow-sm  bg-[#FDE7E7] hover:bg-[#AA2B2B] text-[#AA2B2B] hover:text-[#FDE7E7] sm:mt-0 sm:w-auto"
                                                         onClick={() => {
-                                                            setDeleteResep(item);
+                                                            setDeleteUser(item);
                                                             setOpenDeleteModal(true);
                                                         }}
                                                         ref={cancelButtonRef}
@@ -503,11 +485,11 @@ const ListUser: React.FC = () => {
                                                                     as="h3"
                                                                     className="text-base font-semibold leading-6 text-gray-900"
                                                                 >
-                                                                    Hapus Resep
+                                                                    Hapus User
                                                                 </Dialog.Title>
                                                                 <div className="mt-2">
                                                                     <p className="text-sm text-gray-500">
-                                                                        Apakah anda yakin ingin menghapus resep ini ?
+                                                                        Apakah anda yakin ingin menghapus user ini ?
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -518,8 +500,9 @@ const ListUser: React.FC = () => {
                                                             type="button"
                                                             className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                                             onClick={() => {
+                                                                console.log(deleteUser);
                                                                 setOpenDeleteModal(false);
-                                                                handleDelete(deleteResep?.id!);
+                                                                handleDelete(deleteUser?.id!);
                                                             }}
                                                         >
                                                             Hapus

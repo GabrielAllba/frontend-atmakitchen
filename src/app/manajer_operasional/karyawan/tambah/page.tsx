@@ -32,35 +32,18 @@ export default function TambahKaryawan() {
         setFilteredData(filtered);
     }, [searchQuery]);
 
-    // modal
-    // const [openModal, setOpenModal] = useState<boolean>(false);
-    // const cancelButtonRef = useRef(null);
-    // const [editTitipan, setEditTitipan] = useState<Titipan>();
-    // const [penitipModal, setPenitipModal] = useState<Penitip>();
-    // const [satuanModal, setSatuanModal] = useState<Penitip>();
-
-    // useEffect(() => {
-    //     if (editTitipan) {
-    //         const matchingPenitip = penitip_data.find((p) => p.id === editTitipan.id_penitip);
-    //         const matchingSatuan = satuan_titipan_data.find((p) => p.nama === editTitipan.satuan);
-
-    //         setPenitipModal(matchingPenitip);
-    //         setSatuanModal(matchingSatuan);
-    //     }
-    // }, [editTitipan]);
-
     const [openDetailModal, setOpenDetailModal] = useState<boolean>(false);
     const cancelButtonDetail = useRef(null);
     const [editDetail, setDetailResep] = useState<User>();
     const cancelButtonRef = useRef(null);
 
-    useEffect(() => {
-        if (editDetail) {
-            const matchingResep = user_data.find((p) => p.id === editDetail.id_resep);
+    // useEffect(() => {
+    //     if (editDetail) {
+    //         const matchingResep = user_data.find((p) => p.id === editDetail.id_resep);
 
-            setDetailResep(matchingResep);
-        }
-    }, [editDetail]);
+    //         setDetailResep(matchingResep);
+    //     }
+    // }, [editDetail]);
 
     //modal Edit
     const [openEditModal, setOpenEditModal] = useState<boolean>(false);
@@ -225,7 +208,7 @@ export default function TambahKaryawan() {
                                     <div className="border-b p-4">
                                         <p className=" text-[#AA2B2B] ">List User</p>
                                     </div>
-                                   <ListUser></ListUser>
+                                    <ListUser></ListUser>
                                 </div>
                             </div>
                         </form>
