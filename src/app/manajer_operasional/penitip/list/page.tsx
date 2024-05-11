@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import Link from 'next/link';
 import { Listbox } from '@headlessui/react';
-import { Bahan, bahan_data as data } from '@/dummy_data/bahan';
+import { Consignment, consignment_data as data } from '@/dummy_data/consignment';
 import { Dialog, Transition } from '@headlessui/react';
 import axios from 'axios';
 
@@ -13,7 +13,7 @@ const List: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<Bahan[]>(data);
+    const [filteredData, setFilteredData] = useState<Consignment[]>(data);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -26,89 +26,73 @@ const List: React.FC = () => {
     //modal Edit
     const [openEditModal, setOpenEditModal] = useState<boolean>(false);
     const cancelButtonEdit = useRef(null);
-    const [editBahan, setEditBahan] = useState<Bahan>();
-    const [BahanModal, setBahanModal] = useState<Bahan>();
+    const [editConsign, setEditConsign] = useState<Consignment>();
+    const [ConsignModal, setConsignModal] = useState<Consignment>();
+
+    
 
     useEffect(() => {
-        const fetchSearchResults = async () => {
-            setFilteredData([]);
-            setLoading(true);
-
-            try {
-                const response = await axios.get(apiUrl + '/bahan/search', {
-                    params: {
-                        query: searchQuery,
-                    },
-                });
-                setFilteredData(response.data.bahans);
-            } catch (error) {
-                console.error('Error fetching bahans:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSearchResults();
+        const filtered = data.filter(
+            (item) =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredData(filtered);
     }, [searchQuery]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     };
 
-    const fetchBahan = () => {
+    const fetchConsign = () => {
         try {
             setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/bahan`,
+                url: `${apiUrl}/consignation`,
                 params: {
-                    query: 'Bahan Baku',
+                    query: 'Consignment',
                 },
             }).then((response) => {
-                setFilteredData(response.data.bahan);
+                setFilteredData(response.data.consignation);
                 setLoading(false);
             });
         } catch (error) {
-            console.error('Error fetching bahans:', error);
+            console.error('Error fetching consigns:', error);
         }
     };
 
     useEffect(() => {
-        fetchBahan();
+        fetchConsign();
     }, []);
 
-    useEffect(() => {
-        const filtered = data.filter((item) => item.nama.toLowerCase().includes(searchQuery.toLowerCase()));
-        setFilteredData(filtered);
-    }, [searchQuery]);
-
-    //update Bahan
-    const [submitEditBahan, setSubmitEditBahan] = useState<Bahan>();
+    //update Consign
+    const [submitEditConsign, setSubmitEditConsign] = useState<Consignment>();
 
     const handleUpdate = (e: React.FormEvent<HTMLFormElement>, itemId: number) => {
         e.preventDefault();
-        console.log('riel');
-        console.log(submitEditBahan);
+        console.log(submitEditConsign);
 
         axios({
             method: 'put',
-            url: apiUrl + '/bahan/' + itemId,
-            data: submitEditBahan,
+            url: apiUrl + '/consignation/' + itemId,
+            data: submitEditConsign,
         })
             .then((response) => {
                 console.log(response);
-                fetchBahan();
+                fetchConsign();
+                
             })
             .catch((err) => {
                 console.log(err);
-            });
+            })
     };
 
     const handleDelete = async (id: number) => {
         try {
-            const response = await axios.delete(apiUrl + `/bahan/${id}`);
-            fetchBahan();
+            const response = await axios.delete(apiUrl + `/consignation/${id}`);
+            fetchConsign();
         } catch (error) {
-            console.error('Error deleting bahan:', error);
+            console.error('Error deleting consign:', error);
         }
     };
 
@@ -118,7 +102,7 @@ const List: React.FC = () => {
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
                         <div className="flex items-center pb-4 flex-wrap">
-                            <p className="text-[#AA2B2B] font-semibold">Data Bahan Baku</p>
+                            <p className="text-[#AA2B2B] font-semibold">Data Penitip</p>
                             <form>
                                 <input
                                     type="text"
@@ -181,35 +165,33 @@ const List: React.FC = () => {
                             <table className="table-auto w-full overflow-auto">
                                 <thead>
                                     <tr className="border">
-                                        <th className="p-8 border text-start font-semibold">ID</th>
-                                        <th className="p-8 border text-start font-semibold">Nama Bahan Baku</th>
-                                        <th className="p-8 border text-start font-semibold">Stock</th>
-                                        <th className="p-8 border text-start font-semibold">Harga Satuan</th>
-                                        <th className="p-8 border text-start font-semibold">Merk Bahan</th>
+                                        <th className="p-8 border text-start font-semibold">Nama</th>
+                                        <th className="p-8 border text-start font-semibold">Alamat</th>
+                                        <th className="p-8 border text-start font-semibold">Telepon</th>
+                                        <th className="p-8 border text-start font-semibold">Bank Account</th>
+                                        <th className="p-8 border text-start font-semibold">Bank Number</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
-                                            <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.nama}</td>
-                                            <td className="p-4 border">
-                                                {item.stok} {item.satuan}
+                                            <td className="p-4 border">{item.name}</td>
+                                            <td className="p-4 border">{item.address}</td>
+                                            <td className="p-4 border">{item.phone_number}</td>
+                                            <td className="p-4 border">{item.bank_account}</td>
+                                            <td className="p-4 border">{item.bank_number}
                                             </td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
-                                            <td className="p-4 border">{item.merk}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                    <button
-                                                        id="openBahan"
-                                                        onClick={() => {
-                                                            setEditBahan(item);
-                                                            setSubmitEditBahan(item);
-                                                            setOpenEditModal(true);
-                                                        }}
-                                                        className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                    >
+                                                <button 
+                                                    id="openConsign"
+                                                    onClick={() => {
+                                                        setEditConsign(item);
+                                                        setSubmitEditConsign(item);
+                                                        setOpenEditModal(true);
+                                                    }}
+                                                    className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
                                                         Edit
                                                     </button>
                                                     <button
@@ -289,17 +271,12 @@ const List: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form
-                                                            className="space-y-6"
-                                                            action="#"
-                                                            method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, editBahan?.id!)}
-                                                        >
+                                                        <form className="space-y-6" action="#" method="PUT" onSubmit={(e) => handleUpdate(e, editConsign?.id!)}>
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
-                                                                            Edit {editBahan?.nama}
+                                                                            Edit Data Penitip {editConsign?.name}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -308,45 +285,46 @@ const List: React.FC = () => {
                                                                                 className="mb-2 font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="nama"
                                                                             >
-                                                                                Nama Bahan
+                                                                                Nama Penitip
                                                                             </label>
                                                                             <input
                                                                                 className=" w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_bahan"
-                                                                                placeholder="Nama Bahan"
+                                                                                id="nama_consign"
+                                                                                placeholder="Nama Penitip"
                                                                                 required
-                                                                                value={submitEditBahan?.nama}
+                                                                                value={submitEditConsign?.name}
                                                                                 type="text"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        nama: value,
+                                                                                    
+                                                                                    setSubmitEditConsign({
+                                                                                        ...submitEditConsign!,
+                                                                                        name: value,
                                                                                     });
                                                                                 }}
+                                                                                
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="merk"
+                                                                                htmlFor="address"
                                                                             >
-                                                                                Merk Bahan
+                                                                                Alamat Penitip
                                                                             </label>
                                                                             <input
                                                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="merk_bahan"
-                                                                                placeholder="Merk Bahan"
+                                                                                id="address"
+                                                                                placeholder="Alamat Penitip"
                                                                                 required
-                                                                                value={submitEditBahan?.merk || ''}
+                                                                                value={submitEditConsign?.address}
                                                                                 type="text"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        merk: value,
+                                                                                    
+                                                                                    setSubmitEditConsign({
+                                                                                        ...submitEditConsign!,
+                                                                                        address: value,
                                                                                     });
                                                                                 }}
                                                                             ></input>
@@ -354,71 +332,71 @@ const List: React.FC = () => {
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="stok"
+                                                                                htmlFor="phone_number"
                                                                             >
-                                                                                Stok Bahan
+                                                                                Telepon
                                                                             </label>
                                                                             <input
                                                                                 className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="stok_bahan"
-                                                                                placeholder="Stok Bahan"
+                                                                                id="phone_number"
+                                                                                placeholder="Telepon"
                                                                                 required
-                                                                                value={submitEditBahan?.stok || 0}
+                                                                                value={submitEditConsign?.phone_number}
                                                                                 type="text"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        stok: parseFloat(value) || 0,
-                                                                                    });
+                                                                                
+                                                                                        setSubmitEditConsign({
+                                                                                            ...submitEditConsign!,
+                                                                                            phone_number: value,
+                                                                                        });
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="mb-4">
+                                                                            <label
+                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                                                htmlFor="bank_account"
+                                                                            >
+                                                                                Bank Account
+                                                                            </label>
+                                                                            <input
+                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                                                id="bank_accout"
+                                                                                placeholder="Bank Account"
+                                                                                required
+                                                                                value={submitEditConsign?.bank_account}
+                                                                                type="text"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+                                                                                
+                                                                                        setSubmitEditConsign({
+                                                                                            ...submitEditConsign!,
+                                                                                            bank_account: value,
+                                                                                        });
                                                                                 }}
                                                                             ></input>
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="harga"
+                                                                                htmlFor="bank_number"
                                                                             >
-                                                                                Harga Bahan
+                                                                                Bank Number
                                                                             </label>
                                                                             <input
                                                                                 className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="harga_bahan"
-                                                                                placeholder="Harga Bahan"
+                                                                                id="bank_number"
+                                                                                placeholder="Bank Number"
                                                                                 required
-                                                                                value={submitEditBahan?.harga || 0}
+                                                                                value={submitEditConsign?.bank_number}
                                                                                 type="text"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        harga: parseFloat(value) || 0,
-                                                                                    });
-                                                                                }}
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="satuan"
-                                                                            >
-                                                                                Satuan Bahan
-                                                                            </label>
-                                                                            <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="satuan_bahan"
-                                                                                placeholder="Satuan Bahan"
-                                                                                required
-                                                                                value={submitEditBahan?.satuan || ''}
-                                                                                type="text"
-                                                                                onChange={(e) => {
-                                                                                    const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        satuan: value,
+                                                                                    
+                                                                                    setSubmitEditConsign({
+                                                                                        ...submitEditConsign!,
+                                                                                        bank_number: value,
                                                                                     });
                                                                                 }}
                                                                             ></input>
@@ -427,26 +405,27 @@ const List: React.FC = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                                <button
-                                                                    className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                                    type="submit"
-                                                                    onClick={() => setOpenEditModal(false)}
-                                                                >
-                                                                    Save
-                                                                </button>
+                                                    <button
+                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                        type="submit"
+                                                        onClick={() => setOpenEditModal(false)}
+                                                    >
+                                                        Save
+                                                    </button>
 
-                                                                <button
-                                                                    className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
-                                                                    type="button"
-                                                                    onClick={() => setOpenEditModal(false)}
-                                                                    ref={cancelButtonEdit}
-                                                                >
-                                                                    Cancel
-                                                                </button>
-                                                            </div>
+                                                    <button
+                                                        className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                        type="button"
+                                                        onClick={() => setOpenEditModal(false)}
+                                                        ref={cancelButtonEdit}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
                                                         </form>
                                                     </div>
                                                 </div>
+                                               
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
