@@ -5,16 +5,13 @@ import { Bahan } from '@/dummy_data/bahan';
 import axios from 'axios';
 import { Alert } from '@mui/material';
 
-export default function TambahBahan()
-{
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;    
-   
+export default function TambahBahan() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     const [isPosting, setIsPosting] = useState<boolean>(false);
 
     const [bahan, setBahan] = useState<Bahan>({
         nama: '',
-        harga: 0,
-        merk: '',
         stok: 0,
         satuan: '',
     });
@@ -39,8 +36,6 @@ export default function TambahBahan()
                 console.log(response);
                 setBahan({
                     nama: '',
-                    harga: 0,
-                    merk: '',
                     stok: 0,
                     satuan: '',
                 });
@@ -95,75 +90,10 @@ export default function TambahBahan()
                                                     required
                                                     type="text"
                                                     value={bahan.nama}
-                                                    onChange={(e) =>
-                                                        setBahan({ ...bahan, nama: e.target.value })
-                                                    }
+                                                    onChange={(e) => setBahan({ ...bahan, nama: e.target.value })}
                                                 ></input>
                                             </div>
 
-                                            <div className="mb-4">
-                                                <label
-                                                    className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                    htmlFor="merk_bahan"
-                                                >
-                                                    Merk Bahan
-                                                </label>
-                                                <input
-                                                    className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
-                                                    id="merk_bahan"
-                                                    placeholder="Merk Bahan"
-                                                    required
-                                                    type="text"
-                                                    value={bahan.merk}
-                                                    onChange={(e) =>
-                                                        setBahan({ ...bahan, merk: e.target.value })
-                                                    }
-                                                />
-                                            </div>
-
-                                            <div className="mb-4">
-                                                <label
-                                                    className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                    htmlFor="harga_bahan"
-                                                >
-                                                    Harga Bahan
-                                                </label>
-                                                <input
-                                                    className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                    id="harga_bahan"
-                                                    placeholder="Harga Bahan"
-                                                    required
-                                                    type="number"
-                                                    value={bahan.harga.toString()}
-                                                    onChange={(e) =>
-                                                        setBahan({
-                                                            ...bahan,
-                                                            harga: parseFloat(e.target.value),
-                                                        })
-                                                    }
-                                                ></input>
-                                            </div>
-                                            <div className="mb-4">
-                                                <label
-                                                    className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                    htmlFor="stok_bahan"
-                                                >
-                                                    Stok
-                                                </label>
-                                                <input
-                                                    className=" block w-full resize-none rounded-lg border  border-[#DADDE2] p-2.5 font-poppins text-sm text-gray-900 outline-none bg-white"
-                                                    id="stok_bahan"
-                                                    placeholder="Stok Bahan"
-                                                    required
-                                                    value={bahan.stok.toString()}
-                                                    onChange={(e) =>
-                                                        setBahan({
-                                                            ...bahan,
-                                                            stok: parseFloat(e.target.value),
-                                                        })
-                                                    }
-                                                ></input>
-                                            </div>
                                             <div className="mb-4">
                                                 <label
                                                     className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
@@ -177,9 +107,7 @@ export default function TambahBahan()
                                                     placeholder="Satuan Bahan"
                                                     required
                                                     value={bahan.satuan}
-                                                    onChange={(e) =>
-                                                        setBahan({ ...bahan, satuan: e.target.value })
-                                                    }
+                                                    onChange={(e) => setBahan({ ...bahan, satuan: e.target.value })}
                                                 ></input>
                                             </div>
                                         </div>
@@ -203,7 +131,6 @@ export default function TambahBahan()
         </>
     );
 }
-
 
 // const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 

@@ -131,39 +131,71 @@ export default function EditHampers({ params }: { params: { id: number } }) {
         setProduk(produkData[0]);
     }, [produkData]);
 
-    // handle submit tambah produk
     function handleTambahProduk(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        console.log(updateHampers);
 
         const newProduk: ProdukHampers = {
             produk: produk,
             jumlah: jumlahProduk,
         };
 
-        const newHampers: Hampers = {
-            ...updateHampers,
-            produk_hampers: [...(updateHampers?.produk_hampers || []), newProduk],
-        };
+        let updatedProdukHampers;
+        const existingProductIndex = updateHampers?.produk_hampers?.findIndex((p) => p.produk.id === produk.id);
 
-        setUpdateHampers(newHampers);
-        setJumlahProduk(0);
+        if (existingProductIndex !== -1 && updateHampers?.produk_hampers) {
+            const jumlah = updateHampers.produk_hampers[existingProductIndex!].jumlah + jumlahProduk;
+            updatedProdukHampers = updateHampers.produk_hampers.map((p, index) =>
+                index === existingProductIndex ? { ...p, jumlah: p.jumlah + jumlahProduk } : p,
+            );
+            const newHampers: Hampers = {
+                ...updateHampers,
+                produk_hampers: updatedProdukHampers,
+            };
 
-        const detailFormData = new FormData();
-        detailFormData.append('jumlah', String(newProduk.jumlah!));
-        detailFormData.append('product_id', String(newProduk.produk.id!));
+            setUpdateHampers(newHampers);
+            setJumlahProduk(0);
 
-        axios({
-            method: 'post',
-            url: apiUrl + '/hampers/detail/' + updateHampers?.id,
-            data: detailFormData,
-        })
-            .then((response) => {
-                console.log(response);
+            const detailFormData = new FormData();
+            detailFormData.append('jumlah', String(jumlah));
+            detailFormData.append('product_id', String(newProduk.produk.id));
+
+            axios({
+                method: 'put',
+                url: `${apiUrl}/hampers/detail/${updateHampers.id}`,
+                data: detailFormData,
             })
-            .catch((err) => {
-                console.log(err);
-            });
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            updatedProdukHampers = [...(updateHampers?.produk_hampers || []), newProduk];
+            const newHampers: Hampers = {
+                ...updateHampers,
+                produk_hampers: updatedProdukHampers,
+            };
+
+            setUpdateHampers(newHampers);
+            setJumlahProduk(0);
+
+            const detailFormData = new FormData();
+            detailFormData.append('jumlah', String(newProduk.jumlah));
+            detailFormData.append('product_id', String(newProduk.produk.id));
+
+            axios({
+                method: 'post',
+                url: `${apiUrl}/hampers/detail/${updateHampers?.id}`,
+                data: detailFormData,
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -91,7 +91,6 @@ export default function TambahHampers() {
         getLatestId();
     }, []);
 
-    // handle submit tambah produk
     function handleTambahProduk(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -101,19 +100,28 @@ export default function TambahHampers() {
             jumlah: jumlahProduk,
         };
 
-        setAddProduk((prevProduk) => [...(prevProduk || []), newProduk]);
+        const existingProductIndex = addHampers?.produk_hampers?.findIndex((p) => p.produk === produk);
+
+        let updatedProdukHampers;
+        if (existingProductIndex !== -1) {
+            updatedProdukHampers = addHampers?.produk_hampers?.map((p, index) =>
+                index === existingProductIndex ? { ...p, jumlah: p.jumlah + jumlahProduk } : p,
+            );
+        } else {
+            updatedProdukHampers = [...(addHampers?.produk_hampers || []), newProduk];
+        }
 
         const newHampers: Hampers = {
             ...addHampers,
-            produk_hampers: [...(addHampers?.produk_hampers || []), newProduk],
+            produk_hampers: updatedProdukHampers,
         };
 
         setAddHampers(newHampers);
         setJumlahProduk(0);
 
-        // console.log(addProduk);
-        console.log(addHampers);
+        console.log(newHampers);
     }
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files && files.length > 0) {

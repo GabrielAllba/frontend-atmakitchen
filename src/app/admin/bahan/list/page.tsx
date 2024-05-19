@@ -184,8 +184,7 @@ const List: React.FC = () => {
                                         <th className="p-8 border text-start font-semibold">ID</th>
                                         <th className="p-8 border text-start font-semibold">Nama Bahan Baku</th>
                                         <th className="p-8 border text-start font-semibold">Stock</th>
-                                        <th className="p-8 border text-start font-semibold">Harga Satuan</th>
-                                        <th className="p-8 border text-start font-semibold">Merk Bahan</th>
+
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -197,8 +196,7 @@ const List: React.FC = () => {
                                             <td className="p-4 border">
                                                 {item.stok} {item.satuan}
                                             </td>
-                                            <td className="p-4 border text-[#AA2B2B]">Rp. {item.harga}</td>
-                                            <td className="p-4 border">{item.merk}</td>
+
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
@@ -327,30 +325,7 @@ const List: React.FC = () => {
                                                                                 }}
                                                                             ></input>
                                                                         </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="merk"
-                                                                            >
-                                                                                Merk Bahan
-                                                                            </label>
-                                                                            <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="merk_bahan"
-                                                                                placeholder="Merk Bahan"
-                                                                                required
-                                                                                value={submitEditBahan?.merk || ''}
-                                                                                type="text"
-                                                                                onChange={(e) => {
-                                                                                    const { value } = e.target;
 
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        merk: value,
-                                                                                    });
-                                                                                }}
-                                                                            ></input>
-                                                                        </div>
                                                                         <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
@@ -371,30 +346,6 @@ const List: React.FC = () => {
                                                                                     setSubmitEditBahan({
                                                                                         ...submitEditBahan!,
                                                                                         stok: parseFloat(value) || 0,
-                                                                                    });
-                                                                                }}
-                                                                            ></input>
-                                                                        </div>
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="harga"
-                                                                            >
-                                                                                Harga Bahan
-                                                                            </label>
-                                                                            <input
-                                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="harga_bahan"
-                                                                                placeholder="Harga Bahan"
-                                                                                required
-                                                                                value={submitEditBahan?.harga || 0}
-                                                                                type="text"
-                                                                                onChange={(e) => {
-                                                                                    const { value } = e.target;
-
-                                                                                    setSubmitEditBahan({
-                                                                                        ...submitEditBahan!,
-                                                                                        harga: parseFloat(value) || 0,
                                                                                     });
                                                                                 }}
                                                                             ></input>

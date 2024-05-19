@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Listbox } from '@headlessui/react';
 import { ProductFetch } from '@/dummy_data/product';
 import axios from 'axios';
+import { Alert } from '@mui/material';
 
 const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
 
@@ -12,6 +13,7 @@ const List: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState<boolean>(true);
+    const [alertError, setAlertError] = useState<boolean>(false);
 
     const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
 
@@ -108,10 +110,24 @@ const List: React.FC = () => {
             fetchProducts();
         } catch (error) {
             console.error('Error deleting product:', error);
+            setAlertError(true);
         }
     };
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
+            {alertError && (
+                <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
+                    <Alert
+                        severity="error"
+                        className="font-poppins mb-4"
+                        onClose={() => {
+                            setAlertError(false);
+                        }}
+                    >
+                        <p>Produk tersebut sedang dipakai di hampers!</p>
+                    </Alert>
+                </div>
+            )}
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
@@ -192,7 +208,7 @@ const List: React.FC = () => {
                                     {currentItems.map((item) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.description}</td>
+                                            <td className="p-4 border">{item.name}</td>
                                             <td className="p-4 border">{item.stock}</td>
                                             <td className="p-4 border text-[#AA2B2B]">Rp. {item.price}</td>
                                             <td className="p-4 border">

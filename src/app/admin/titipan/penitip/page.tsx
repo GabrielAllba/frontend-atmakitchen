@@ -102,6 +102,7 @@ export default function TambahPenitip() {
             fetchPenitip();
         } catch (error) {
             console.error('Error deleting consignation:', error);
+            setAlertError(true);
         }
     };
 
@@ -174,6 +175,8 @@ export default function TambahPenitip() {
             });
     };
 
+    const [alertError, setAlertError] = useState<boolean>(false);
+
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             {alert && (
@@ -186,6 +189,19 @@ export default function TambahPenitip() {
                         }}
                     >
                         <p>Berhasil menambah penitip!</p>
+                    </Alert>
+                </div>
+            )}
+            {alertError && (
+                <div className="flex justify-center w-screen fixed top-20 left-0 z-50">
+                    <Alert
+                        severity="error"
+                        className="font-poppins mb-4"
+                        onClose={() => {
+                            setAlertError(false);
+                        }}
+                    >
+                        <p>Penitip tersebut memiliki titipan!</p>
                     </Alert>
                 </div>
             )}

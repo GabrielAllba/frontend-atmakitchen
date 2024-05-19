@@ -1,8 +1,6 @@
 interface Bahan {
     id?: number;
     nama: string;
-    merk: string;
-    harga: number;
     stok: number;
     satuan: string;
 }
