@@ -10,8 +10,9 @@ interface Item {
     name: string;
     description: string;
     price: number;
-    imageUrl: string;
     quantity: number;
+    total_price: number;
+    imageUrl: string;
     status: string;
     jenis: string;
     opsi_pengambilan: string;
@@ -20,7 +21,7 @@ interface Item {
 }
 
 const option = [
-    { opsi: 'Menunggu Perhitungan Jarak' },
+    { opsi: 'Menunggu Jarak' },
     { opsi: 'Menunggu Pembayaran' },
     { opsi: 'Sudah Bayar' },
     { opsi: 'Pembayaran Terverifikasi' },
@@ -38,11 +39,12 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue.jpg',
-        status: 'Menunggu Perhitungan Jarak',
+        status: 'Menunggu Jarak',
     },
     {
         id: 2,
@@ -50,6 +52,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Dikirim Kurir',
         jenis: 'pre-order',
@@ -62,6 +65,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
@@ -74,6 +78,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
@@ -86,6 +91,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
@@ -98,6 +104,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
@@ -110,6 +117,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
@@ -122,6 +130,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
@@ -134,6 +143,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
@@ -146,6 +156,7 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
+        total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
@@ -159,6 +170,8 @@ export default function Cart({ isAuth }: { isAuth: boolean }) {
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
     const [selectAllChecked, setSelectAllChecked] = useState<boolean>(false);
 
+    const [totalPriceTransaction, setTotalPriceTransaction] = useState<number>(0);
+
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('id-ID', {
             weekday: 'long',
@@ -169,29 +182,35 @@ export default function Cart({ isAuth }: { isAuth: boolean }) {
     };
 
     const handleCheckboxChange = (item: Item) => {
-        setSelectedItems((prevSelectedItems) =>
-            prevSelectedItems.includes(item)
-                ? prevSelectedItems.filter((itemId) => itemId !== item)
-                : [...prevSelectedItems, item],
-        );
+        setSelectedItems((prevSelectedItems) => {
+            const isSelected = prevSelectedItems.some((selectedItem) => selectedItem.id === item.id);
+            const newSelectedItems = isSelected
+                ? prevSelectedItems.filter((selectedItem) => selectedItem.id !== item.id)
+                : [...prevSelectedItems, item];
 
-        const allItemIds = fetchItems.map((item) => item.id);
-        const areAllItemsSelected = allItemIds.every((itemId) => selectedItems.includes(item));
-        if (!areAllItemsSelected) {
-            setSelectAllChecked(false);
-        } else {
-            setSelectAllChecked(true);
-        }
+            const newTotalPrice = newSelectedItems.reduce((sum, selectedItem) => sum + selectedItem.total_price, 0);
+            setTotalPriceTransaction(newTotalPrice);
+
+            return newSelectedItems;
+        });
+
+        const allItemIds = fetchItems.map((fetchItem) => fetchItem.id);
+        const areAllItemsSelected = allItemIds.every((itemId) =>
+            selectedItems.some((selectedItem) => selectedItem.id === itemId),
+        );
+        setSelectAllChecked(areAllItemsSelected);
     };
 
     const handleSelectAll = () => {
         if (selectedItems.length === fetchItems.length) {
             setSelectedItems([]);
             setSelectAllChecked(false);
+            setTotalPriceTransaction(0); // Reset total price when deselecting all
         } else {
-            const allItemIds = fetchItems.map((item) => item);
-            setSelectedItems(allItemIds);
+            setSelectedItems(fetchItems);
             setSelectAllChecked(true);
+            const newTotalPrice = fetchItems.reduce((sum, item) => sum + item.total_price, 0);
+            setTotalPriceTransaction(newTotalPrice);
         }
     };
 
@@ -209,11 +228,25 @@ export default function Cart({ isAuth }: { isAuth: boolean }) {
     }, []);
 
     const handleQuantityChange = (id: number, newQuantity: number) => {
-        setSelectedItems((prevSelectedItems) =>
-            prevSelectedItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)),
-        );
+        setSelectedItems((prevSelectedItems) => {
+            const newSelectedItems = prevSelectedItems.map((item) =>
+                item.id === id ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price } : item,
+            );
+
+            const updatedItem = newSelectedItems.find((item) => item.id === id);
+            if (updatedItem) {
+                console.log(updatedItem);
+            }
+
+            const newTotalPrice = newSelectedItems.reduce((sum, selectedItem) => sum + selectedItem.total_price, 0);
+            setTotalPriceTransaction(newTotalPrice);
+
+            return newSelectedItems;
+        });
         setFetchItems((prevFetchItems) =>
-            prevFetchItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)),
+            prevFetchItems.map((item) =>
+                item.id === id ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price } : item,
+            ),
         );
     };
     return (
@@ -259,62 +292,80 @@ export default function Cart({ isAuth }: { isAuth: boolean }) {
                                     />
                                     <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                                         <div className="mt-5 sm:mt-0">
-                                            <h2 className="text-lg text-gray-900">{item.name}</h2>
-                                            <p className="mt-1 text-xs text-gray-700">{item.description}</p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <p className="text-xs text-black">Jenis : </p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                                <div>
+                                                    <h2 className="text-base font-bold text-black">{item.name}</h2>
+                                                    <p className="mt-1 text-xs text-gray-700">{item.description}</p>
+                                                </div>
 
-                                                {item.jenis == 'pre-order' && (
-                                                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                        {item.jenis}
-                                                    </span>
-                                                )}
-                                                {item.jenis == 'ready stock' && (
-                                                    <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                        {item.jenis}
-                                                    </span>
-                                                )}
+                                                <div className="flex items-start gap-2 flex-col">
+                                                    <p className="text-xs text-black">Jenis Order</p>
+
+                                                    {item.jenis == 'pre-order' && (
+                                                        <p className="flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                            {item.jenis}
+                                                        </p>
+                                                    )}
+                                                    {item.jenis == 'ready stock' && (
+                                                        <p className="flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                            {item.jenis}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-black">Tanggal Pengiriman :</p>
+                                                    <p className="text-xs text-black">
+                                                        <b>{formatDate(item.tanggal_pengiriman!)}</b>
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-black ">Harga Satuan :</p>
+                                                    <p className="text-xs text-black ">
+                                                        <b>Rp. {item.price.toLocaleString('id-ID')}</b>
+                                                    </p>
+                                                </div>
+                                                <div className="flex justify-between sm:space-y-6 sm:mt-0 sm:block text-black flex-wrap gap-4">
+                                                    <div className="flex items-center border-gray-100">
+                                                        <span
+                                                            className="cursor-pointer rounded-l py-1 px-3 duration-100 text-black border"
+                                                            onClick={() =>
+                                                                handleQuantityChange(
+                                                                    item.id,
+                                                                    Math.max(1, item.quantity - 1),
+                                                                )
+                                                            }
+                                                        >
+                                                            -
+                                                        </span>
+                                                        <input
+                                                            className="h-8 w-8 border bg-white text-center text-xs outline-none appearance-none"
+                                                            type="number"
+                                                            value={item.quantity}
+                                                            onChange={(e) => {
+                                                                handleQuantityChange(item.id, parseInt(e.target.value));
+                                                            }}
+                                                            readOnly
+                                                            min="1"
+                                                        />
+                                                        <span
+                                                            className="cursor-pointer rounded-r py-1 px-3 duration-100 text-black border"
+                                                            onClick={() =>
+                                                                handleQuantityChange(item.id, item.quantity + 1)
+                                                            }
+                                                        >
+                                                            +
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm">
+                                                            Rp. {item.total_price.toLocaleString('id-ID')}
+                                                        </p>
+                                                        <div className="cursor-pointer text-red-600">
+                                                            <PiTrashLight className="text-lg" />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <p className="text-xs text-black mt-2">
-                                                Tanggal Pengiriman :{' '}
-                                                <span>
-                                                    <b>{formatDate(item.tanggal_pengiriman!)}</b>
-                                                </span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block text-black flex-wrap gap-4">
-                                    <div className="flex items-center border-gray-100">
-                                        <span
-                                            className="cursor-pointer rounded-l py-1 px-3 duration-100 text-black border"
-                                            onClick={() =>
-                                                handleQuantityChange(item.id, Math.max(1, item.quantity - 1))
-                                            }
-                                        >
-                                            -
-                                        </span>
-                                        <input
-                                            className="h-8 w-8 border bg-white text-center text-xs outline-none appearance-none"
-                                            type="number"
-                                            value={item.quantity}
-                                            onChange={(e) => {
-                                                handleQuantityChange(item.id, parseInt(e.target.value));
-                                            }}
-                                            readOnly
-                                            min="1"
-                                        />
-                                        <span
-                                            className="cursor-pointer rounded-r py-1 px-3 duration-100 text-black border"
-                                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                        >
-                                            +
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="text-sm">Rp. {item.price.toLocaleString('id-ID')}</p>
-                                        <div className="cursor-pointer text-red-600">
-                                            <PiTrashLight className="text-lg" />
                                         </div>
                                     </div>
                                 </div>
@@ -340,17 +391,22 @@ export default function Cart({ isAuth }: { isAuth: boolean }) {
                         <div className="flex justify-between items-center flex-wrap">
                             <p className="text-base font-bold text-black">Total</p>
                             <div className="">
-                                <p className="mb-1 text-lg font-bold text-black">Rp. 259.000</p>
+                                <p className="mb-1 text-lg font-bold text-black">
+                                    Rp. {totalPriceTransaction.toLocaleString('id-ID')}
+                                </p>
                             </div>
                         </div>
-                        <button
-                            className="mt-6 w-full rounded-md bg-[#ffca1b] py-1.5  text-black hover:bg-[#ffca1bf1]"
-                            onClick={() => {
-                                console.log(selectedItems);
-                            }}
-                        >
-                            Check out
-                        </button>
+
+                        {selectedItems.length !== 0 && (
+                            <button
+                                className="mt-6 w-full rounded-md bg-[#ffca1b] py-1.5  text-black hover:bg-[#ffca1bf1]"
+                                onClick={() => {
+                                    console.log(selectedItems);
+                                }}
+                            >
+                                Check out
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

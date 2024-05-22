@@ -6,29 +6,29 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
+
 import Box from '@mui/material/Box';
 import { BsCart3 } from 'react-icons/bs';
-import { Alert } from '@mui/material';
+
 import { useRouter } from 'next/navigation';
 import { Listbox } from '@headlessui/react';
 
 // start tabs
 
-interface TabPanelProps {
+interface TabPanelPropsTitipan {
     children?: React.ReactNode;
     index: number;
     value: number;
 }
 
-function a11yProps(index: number) {
+function a22Props(index: number) {
     return {
         id: `simple-tab-${index}`,
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
 
-function CustomTabPanel(props: TabPanelProps) {
+function CustomTabPanelTitipan(props: TabPanelPropsTitipan) {
     const { children, value, index, ...other } = props;
 
     return (
@@ -39,24 +39,20 @@ function CustomTabPanel(props: TabPanelProps) {
             aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
+            {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
         </div>
     );
 }
 
 // end tabs
 
-export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
+export default function TitipanHome({ isAuthTitipan }: { isAuthTitipan: boolean }) {
     const today = new Date().toISOString().split('T')[0];
 
-    const [deliveryDate, setDeliveryDate] = useState(today);
+    const [deliveryDateTitipan, setDeliveryDateTitipan] = useState(today);
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDeliveryDate(event.target.value);
+        setDeliveryDateTitipan(event.target.value);
     };
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('id-ID', {
@@ -70,29 +66,29 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
     const option = [{ opsi: 'Dikirim Kurir' }, { opsi: 'Pickup Mandiri' }];
     const router = useRouter();
     // tabs
-    const [value, setValue] = useState(0);
+    const [valueTitipan, setValueTitipan] = useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
+        setValueTitipan(newValue);
     };
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
-    const [loading, setLoading] = useState<boolean>(true);
+    const [imageUrlsTitipan, setImageUrlsTitipan] = useState<{ [key: string]: string }>({});
+    const [loadingAwal, setLoadingAwal] = useState<boolean>(true);
     const [alertErrorAuth, setAlertErrorAuth] = useState<boolean>(false);
 
-    const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
+    const [filteredDataTitipan, setFilteredDataTitipan] = useState<ProductFetch[]>([]);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
-    const [opsiPengiriman, setOpsiPengiriman] = useState<string>(option[0].opsi);
+    const [opsiPengirimanTitipan, setOpsiPengirimanTitipan] = useState<string>(option[0].opsi);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItemsTitipan = filteredDataTitipan.slice(indexOfFirstItem, indexOfLastItem);
 
     const fetchProducts = () => {
         try {
-            setLoading(true);
+            setLoadingAwal(true);
             axios({
                 method: 'get',
                 url: `${apiUrl}/product/type`,
@@ -100,10 +96,10 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                     query: 'Titipan',
                 },
             }).then((response) => {
-                setFilteredData(response.data.product);
+                setFilteredDataTitipan(response.data.product);
                 fetchAllImages(response.data.product);
-                console.log(imageUrls);
-                setLoading(false);
+                console.log(imageUrlsTitipan);
+                setLoadingAwal(false);
             });
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -131,24 +127,24 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                 imageUrls[product.photo] = imageUrl;
             }
         }
-        setImageUrls(imageUrls);
+        setImageUrlsTitipan(imageUrls);
     };
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
-    const [loadingPanelCheckout, setLoadingPanelCheckout] = useState<boolean>(true);
-    const [productCheckout, setProductCheckout] = useState<ProductFetch>();
+    const [loadingPanelCheckoutTitipan, setLoadingPanelCheckoutTitipan] = useState<boolean>(true);
+    const [productCheckoutTitipan, setProductCheckoutTitipan] = useState<ProductFetch>();
 
     const handleClickBeli = async (id: number) => {
         try {
-            setLoadingPanelCheckout(true);
+            setLoadingPanelCheckoutTitipan(true);
             const response = await axios.get(apiUrl + '/product/' + id);
-            setProductCheckout(response.data.product);
+            setProductCheckoutTitipan(response.data.product);
             const firstProduct = response.data.product;
             await fetchImage(firstProduct.photo);
-            setLoadingPanelCheckout(false);
+            setLoadingPanelCheckoutTitipan(false);
         } catch (error) {
             console.error('Error fetching products:', error);
         }
@@ -162,16 +158,21 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
 
     return (
         <div className="font-poppins pb-8">
-            <p className="text-2xl text-[#5A5A5A]">Produk Lainnya</p>
+            <p className="text-2xl text-[#5A5A5A]">Lainnya</p>
             <div className="py-8 overflow-x-auto">
                 <div className="flex space-x-4 md:space-x-6 lg:space-x-8">
-                    {currentItems.map((product) => (
+                    {currentItemsTitipan.map((product) => (
                         <div
                             key={product.id}
                             className="w-72 flex-shrink-0 card bg-base-100 rounded-md rounded-t-md border text-black"
                         >
                             <div className="max-h-40 overflow-hidden flex items-center justify-center rounded-t-md">
-                                <Image src={imageUrls[product.photo!]} width={1000} height={1000} alt={product.name} />
+                                <Image
+                                    src={imageUrlsTitipan[product.photo!]}
+                                    width={1000}
+                                    height={1000}
+                                    alt={product.name}
+                                />
                             </div>
 
                             <div className="card-body bg-white">
@@ -187,7 +188,7 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                 <p className="text-sm text-[#6B7280]">{product.description}</p>
                                 <p className="text-lg font-semibold ">Rp. {product.price}</p>
                                 <div className="drawer drawer-end">
-                                    <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
+                                    <input id="my-drawer-5" type="checkbox" className="drawer-toggle" />
 
                                     <div
                                         className="drawer-content w-full flex"
@@ -196,7 +197,7 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                         }}
                                     >
                                         <label
-                                            htmlFor="my-drawer-4"
+                                            htmlFor="my-drawer-5"
                                             className="w-full rounded-lg bg-[#ffca1b] px-2 py-2 text-center font-poppins text-sm font-semibold text-[#1c1c1c] outline-none hover:bg-[#f4be0e] cursor-pointer"
                                         >
                                             Beli
@@ -205,60 +206,50 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
 
                                     <div className="drawer-side z-50">
                                         <label
-                                            htmlFor="my-drawer-4"
+                                            htmlFor="my-drawer-5"
                                             aria-label="close sidebar"
                                             className="drawer-overlay"
                                         ></label>
-                                        <ul className="menu p-4 w-80 md:w-96 min-h-full  text-black font-poppins bg-white">
+                                        <div className="menu p-4 w-80 md:w-96 min-h-full text-black font-poppins bg-white">
                                             {/* sidebar checkout */}
-                                            {loadingPanelCheckout && (
+                                            {loadingPanelCheckoutTitipan && (
                                                 <div className="flex justify-center items-center font-poppins text-black text-center mt-4">
                                                     <span className="loading loading-ring loading-lg"></span>
                                                 </div>
                                             )}
-                                            {!loadingPanelCheckout && (
+                                            {!loadingPanelCheckoutTitipan && (
                                                 <Box sx={{ width: '100%' }}>
                                                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                                         <Tabs
-                                                            value={value}
+                                                            value={valueTitipan}
                                                             onChange={handleChange}
                                                             aria-label="basic tabs example"
                                                         >
-                                                            <Tab label="Ready Stock" {...a11yProps(0)} />
-                                                            <Tab label="Pre-order" {...a11yProps(1)} />
+                                                            <Tab label="Ready Stock" {...a22Props(0)} />
                                                         </Tabs>
                                                     </Box>
 
                                                     {/* ready stock */}
-                                                    <CustomTabPanel value={value} index={0}>
-                                                        <p className="flex items-center rounded-md bg-purple-50 p-2 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 my-2 space-x-1 ">
-                                                            <div>
-                                                                <span>Jika memilih</span>
-                                                                <span className="font-bold"> Ready Stock </span>
-                                                                <span>, pesanan ini akan dikirim pada</span>
-                                                                <span className="font-bold"> {getCurrentDate()} </span>
-                                                            </div>
-                                                        </p>
-
+                                                    <CustomTabPanelTitipan value={valueTitipan} index={0}>
                                                         <Image
-                                                            src={imageUrls[productCheckout!.photo!]}
+                                                            src={imageUrlsTitipan[productCheckoutTitipan!.photo!]}
                                                             width={1000}
                                                             height={1000}
-                                                            alt={productCheckout!.name}
+                                                            alt={productCheckoutTitipan!.name}
                                                         />
 
                                                         <div className="pt-4 lg:col-span-2 lg:border-gray-200 lg:pr-8">
                                                             <h1 className="font-bold  text-gray-900 text-xl">
-                                                                {productCheckout!.name}
+                                                                {productCheckoutTitipan!.name}
                                                             </h1>
                                                         </div>
                                                         <div className="pt-2">
                                                             <h3 className="sr-only">Description</h3>
 
                                                             <div className="space-y-6">
-                                                                <p className="text-base text-gray-900">
-                                                                    {productCheckout!.description}
-                                                                </p>
+                                                                <span className="text-base text-gray-900">
+                                                                    {productCheckoutTitipan!.description}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                         <div className="pt-2">
@@ -266,103 +257,16 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
 
                                                             <div className="flex gap-2">
                                                                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                                    Stock: {productCheckout!.stock}
-                                                                </span>
-                                                                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                                    Quota Hari Ini: {productCheckout!.daily_quota}
+                                                                    Stock: {productCheckoutTitipan!.stock}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <div className="pt-2">
                                                             <p className="text-lg font-semibold ">
-                                                                Rp. {productCheckout!.price}
+                                                                Rp. {productCheckoutTitipan!.price}
                                                             </p>
                                                         </div>
-                                                        <div className="pt-2">
-                                                            <label
-                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                htmlFor="nama_produk"
-                                                            >
-                                                                Jumlah :
-                                                            </label>
-                                                            <input
-                                                                className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                id="jumlah"
-                                                                placeholder="Jumlah"
-                                                                required
-                                                                type="number"
-                                                            ></input>
-                                                        </div>
 
-                                                        <div className="pt-4 flex flex-col gap-2">
-                                                            <button
-                                                                className="flex items-center justify-center border bg-[#AA2B2B] ml-1 text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-                                                                onClick={() => {
-                                                                    !isAuth && router.push('/login');
-                                                                }}
-                                                            >
-                                                                Tambah ke cart
-                                                                <span className="ml-1">
-                                                                    <BsCart3></BsCart3>
-                                                                </span>
-                                                            </button>
-                                                            <label
-                                                                htmlFor="my-drawer-4"
-                                                                className="flex items-center justify-center border border-[#AA2B2B] ml-1 bg-white text-[#AA2B2B] rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-                                                            >
-                                                                Close
-                                                            </label>
-                                                        </div>
-                                                    </CustomTabPanel>
-
-                                                    {/* pre order */}
-                                                    <CustomTabPanel value={value} index={1}>
-                                                        <p className="flex items-center rounded-md bg-purple-50 p-2 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 my-2 space-x-1 ">
-                                                            <div>
-                                                                <span>Jika memilih</span>
-                                                                <span className="font-bold"> Pre-order </span>
-                                                                <span>
-                                                                    , pesanan ini akan dikirim sesuai tanggal yang
-                                                                    dipilih
-                                                                </span>
-                                                            </div>
-                                                        </p>
-
-                                                        <Image
-                                                            src={imageUrls[productCheckout!.photo!]}
-                                                            width={1000}
-                                                            height={1000}
-                                                            alt={productCheckout!.name}
-                                                        />
-
-                                                        <div className="pt-4 lg:col-span-2 lg:border-gray-200 lg:pr-8">
-                                                            <h1 className="font-bold  text-gray-900 text-xl">
-                                                                {productCheckout!.name}
-                                                            </h1>
-                                                        </div>
-                                                        <div className="pt-2">
-                                                            <h3 className="sr-only">Description</h3>
-
-                                                            <div className="space-y-6">
-                                                                <p className="text-base text-gray-900">
-                                                                    {productCheckout!.description}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pt-2">
-                                                            <h3 className="sr-only">Informasi</h3>
-
-                                                            <div className="flex gap-2">
-                                                                <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                                    Stock: {productCheckout!.stock}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pt-2">
-                                                            <p className="text-lg font-semibold ">
-                                                                Rp. {productCheckout!.price}
-                                                            </p>
-                                                        </div>
                                                         <div className="pt-2">
                                                             <label
                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
@@ -387,13 +291,15 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                                                 Opsi Pengambilan
                                                             </label>
                                                             <Listbox
-                                                                value={opsiPengiriman}
-                                                                onChange={(value: string) => setOpsiPengiriman(value)}
+                                                                value={opsiPengirimanTitipan}
+                                                                onChange={(value: string) =>
+                                                                    setOpsiPengirimanTitipan(value)
+                                                                }
                                                             >
                                                                 <div className="relative mt-1">
                                                                     <Listbox.Button className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                                         <span className="block truncate">
-                                                                            {opsiPengiriman}
+                                                                            {opsiPengirimanTitipan}
                                                                         </span>
                                                                         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                                                             <svg
@@ -447,18 +353,18 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                 htmlFor="alamat_pengiriman"
                                                             >
-                                                                Tanggal Pengiriman
+                                                                {opsiPengirimanTitipan === 'Pickup Mandiri' &&
+                                                                    'Tanggal Pengambilan'}
+                                                                {opsiPengirimanTitipan === 'Dikirim Kurir' &&
+                                                                    'Tanggal Pengiriman'}
                                                             </label>
-                                                            <span className="mb-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                                Quota {formatDate(deliveryDate)} :
-                                                                {productCheckout!.daily_quota}
-                                                            </span>
+
                                                             <input
                                                                 type="date"
                                                                 className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
                                                                 placeholder="Tanggal Pengiriman"
                                                                 name="tanggal_pengiriman"
-                                                                value={deliveryDate}
+                                                                value={deliveryDateTitipan}
                                                                 min={today}
                                                                 onChange={handleDateChange}
                                                             />
@@ -468,7 +374,7 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                                             <button
                                                                 className="flex items-center justify-center border bg-[#AA2B2B] ml-1 text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
                                                                 onClick={() => {
-                                                                    !isAuth && router.push('/login');
+                                                                    !isAuthTitipan && router.push('/login');
                                                                 }}
                                                             >
                                                                 Tambah ke cart
@@ -478,16 +384,16 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
                                                             </button>
 
                                                             <label
-                                                                htmlFor="my-drawer-4"
+                                                                htmlFor="my-drawer-5"
                                                                 className="flex items-center justify-center border border-[#AA2B2B] ml-1 bg-white text-[#AA2B2B] rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
                                                             >
                                                                 Close
                                                             </label>
                                                         </div>
-                                                    </CustomTabPanel>
+                                                    </CustomTabPanelTitipan>
                                                 </Box>
                                             )}
-                                        </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

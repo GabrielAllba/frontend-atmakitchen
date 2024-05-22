@@ -54,7 +54,12 @@ export default function Transaksi() {
         return (
             <>
                 <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
-                <div className="px-10 md:px-24 py-36">
+                <div className="px-10 md:px-24 py-36 pb-0">
+                    <div className="justify-between mb-2 rounded-lg bg-white pb-4 sm:flex sm:justify-start">
+                        <h2 className="text-4xl font-bold text-gray-900">Transaksi</h2>
+                    </div>
+                </div>
+                <div className="px-10 md:px-24 py-36 pt-8">
                     <TransaksiTabs></TransaksiTabs>
                 </div>
 

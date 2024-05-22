@@ -40,7 +40,7 @@ function a11yProps(index: number) {
 
 const option = [
     { opsi: 'Semua' },
-    { opsi: 'Menunggu Perhitungan Jarak' },
+    { opsi: 'Menunggu Jarak' },
     { opsi: 'Menunggu Pembayaran' },
     { opsi: 'Sudah Bayar' },
     { opsi: 'Pembayaran Terverifikasi' },

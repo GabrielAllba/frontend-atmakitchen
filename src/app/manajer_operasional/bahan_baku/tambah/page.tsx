@@ -266,6 +266,7 @@ export default function BeliBahanBaku() {
                                             </div>
                                             <label>
                                                 <input
+                                                    required
                                                     type="date"
                                                     className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                     placeholder="Tanggal Pembelian"

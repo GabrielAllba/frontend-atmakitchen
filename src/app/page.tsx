@@ -11,6 +11,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import ProdukHome from './components/customer/ProdukHome';
 import TitipanHome from './components/customer/TitipanHome';
+import HampersHome from './components/customer/HampersHome';
 
 export default function Index() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -99,7 +100,10 @@ export default function Index() {
                     <ProdukHome isAuth={isAuthenticated}></ProdukHome>
                 </div>
                 <div className="px-10 md:px-24 py-0 md:py-0">
-                    <TitipanHome isAuth={isAuthenticated}></TitipanHome>
+                    <HampersHome isAuth={isAuthenticated}></HampersHome>
+                </div>
+                <div className="px-10 md:px-24 py-0 md:py-0">
+                    <TitipanHome isAuthTitipan={isAuthenticated}></TitipanHome>
                 </div>
                 <div className="px-10 md:px-24 py-8 pb-16">
                     <hr className="border border-[#fffff] border-collapse" />

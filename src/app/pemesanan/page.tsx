@@ -10,6 +10,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import Cart from '../components/customer/Cart';
+import TitipanHome from '../components/customer/TitipanHome';
 
 export default function Index() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
