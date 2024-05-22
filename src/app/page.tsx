@@ -9,6 +9,8 @@ import Image from 'next/image';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import ProdukHome from './components/customer/ProdukHome';
+import TitipanHome from './components/customer/TitipanHome';
 
 export default function Index() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -23,7 +25,8 @@ export default function Index() {
             try {
                 const response = await axios.get(`${apiUrl}/customer/token/validate/${token}`);
                 if (response.status === 200) {
-                    router.push('/customer');
+                    // router.push('/customer');
+                    setIsAuthenticated(true);
                     return;
                 } else {
                     setIsAuthenticated(false);
@@ -49,7 +52,7 @@ export default function Index() {
         return (
             <>
                 <NavbarCustomer isAuth={isAuthenticated}></NavbarCustomer>
-                <div className="p-24">
+                <div className="px-10 md:px-24 py-36 md:py-24">
                     <Swiper
                         slidesPerView={1}
                         spaceBetween={30}
@@ -64,7 +67,18 @@ export default function Index() {
                         <SwiperSlide>
                             <div className="relative">
                                 <Image alt="images" src="/images/slider/1.jpg" width={1000} height={1000}></Image>
-                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40"></div>
+                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40 "></div>
+                                <div className="absolute top-0 flex justify-center h-full w-full items-end">
+                                    <div className="p-20">
+                                        <p className="text-white text-xl md:text-4xl font-poppins">
+                                            Buy cake, give love!
+                                        </p>
+                                        <p className="text-[#d8d8d8] pt-4 font-poppins text-sm">
+                                            In everything we do we believe in creating emotional and memorable
+                                            experiences. Share happiness with your loved ones.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
@@ -80,6 +94,16 @@ export default function Index() {
                             </div>
                         </SwiperSlide>
                     </Swiper>
+                </div>
+                <div className="px-10 md:px-24 py-0 md:py-0">
+                    <ProdukHome isAuth={isAuthenticated}></ProdukHome>
+                </div>
+                <div className="px-10 md:px-24 py-0 md:py-0">
+                    <TitipanHome isAuth={isAuthenticated}></TitipanHome>
+                </div>
+                <div className="px-10 md:px-24 py-8 pb-16">
+                    <hr className="border border-[#fffff] border-collapse" />
+                    <p className="pt-8 text-[#393939] text-sm">© 2024 Atma Kitchen. Powered by Riel, Ayas, Arif</p>
                 </div>
             </>
         );

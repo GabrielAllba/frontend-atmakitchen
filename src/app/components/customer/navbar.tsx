@@ -19,12 +19,10 @@ interface NavbarCustomerProps {
     isAuth: boolean;
 }
 
-const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
+const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }: { isAuth: boolean }) => {
     const router = useRouter();
 
     const [searchQuery, setSearchQuery] = useState<string>('');
-
-    const [isLogin, setIsLogin] = useState<boolean>(isAuth);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -37,6 +35,7 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
         router.push('/');
+        window.location.reload();
     };
     return (
         <Disclosure as="nav" className="bg-white border-[#FOF3F7] border fixed w-full z-50">
@@ -114,11 +113,13 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
                                 </form>
 
                                 <div className="flex items-center">
-                                    {isLogin && (
+                                    {isAuth && (
                                         <div className="flex items-center">
                                             <div>
                                                 <div className="flex items-center relative">
-                                                    <CiShoppingCart className="w-5 h-5 text-black"></CiShoppingCart>
+                                                    <Link href="/pemesanan">
+                                                        <CiShoppingCart className="w-5 h-5 text-black "></CiShoppingCart>
+                                                    </Link>
                                                 </div>
                                             </div>
                                             <Menu as="div" className="relative">
@@ -140,13 +141,26 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
                                                         <Menu.Item>
                                                             {({ active }) => (
                                                                 <Link
-                                                                    href="#"
+                                                                    href="/"
                                                                     className={classNames(
                                                                         active ? 'bg-gray-100' : '',
-                                                                        'block px-4 py-2 text-sm text-gray-700',
+                                                                        'block px-4 py-2 text-sm text-gray-700 ',
                                                                     )}
                                                                 >
                                                                     Profile
+                                                                </Link>
+                                                            )}
+                                                        </Menu.Item>
+                                                        <Menu.Item>
+                                                            {({ active }) => (
+                                                                <Link
+                                                                    href="/transaksi"
+                                                                    className={classNames(
+                                                                        active ? 'bg-gray-100' : '',
+                                                                        'block px-4 py-2 text-sm text-gray-700 ',
+                                                                    )}
+                                                                >
+                                                                    Transaksi Saya
                                                                 </Link>
                                                             )}
                                                         </Menu.Item>
@@ -169,7 +183,7 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
                                             </Menu>
                                         </div>
                                     )}
-                                    {!isLogin && (
+                                    {!isAuth && (
                                         <div className="hidden md:flex">
                                             <Link
                                                 href="/login"
@@ -188,7 +202,7 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }) => {
                                 </div>
                             </div>
                         </div>
-                        {!isLogin && (
+                        {!isAuth && (
                             <div className="flex md:hidden mb-4 justify-around">
                                 <div className="flex flex-shrink-0 items-center gap-1">
                                     <Image
