@@ -3,7 +3,7 @@ interface Transaction {
     user_id?: number | null;
     invoice_number?: string | null;
     lunas_pada?: string | null;
-    tanggal_ambil?: string | null;
+    tanggal_pemesanan?: string | null;
     nama_penerima?: string | null;
     alamat_penerima?: string | null;
     no_telp_penerima?: string | null;
@@ -13,7 +13,7 @@ interface Transaction {
     delivery_fee?: number | null;
     total_price?: number | null;
     transfer_nominal?: number | null;
-    point_user?: number | null;
+    point_used?: number | null;
     point_income?: number | null;
     payment_date?: string | null;
     payment_proof?: File | null;
@@ -25,7 +25,7 @@ interface TransactionFetch {
     user_id?: number | null;
     invoice_number?: string | null;
     lunas_pada?: string | null;
-    tanggal_ambil?: string | null;
+    tanggal_pemesanan?: string | null;
     nama_penerima?: string | null;
     alamat_penerima?: string | null;
     no_telp_penerima?: string | null;
@@ -35,11 +35,10 @@ interface TransactionFetch {
     delivery_fee?: number | null;
     total_price?: number | null;
     transfer_nominal?: number | null;
-    point_user?: number | null;
+    point_used?: number | null;
     point_income?: number | null;
     payment_date?: string | null;
     payment_proof?: string | null | null;
-
     total_poin_user?: number | null;
 }
 

@@ -147,6 +147,7 @@ export default function Navbar() {
                                     </li>
                                 </ul>
                             </li>
+
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">
                                     <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>

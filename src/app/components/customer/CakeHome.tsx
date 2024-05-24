@@ -56,6 +56,11 @@ const getNext2Day = (): string => {
     today.setDate(today.getDate() + 2);
     return today.toISOString().split('T')[0];
 };
+const getToday = (): string => {
+    const today = new Date();
+    today.setDate(today.getDate());
+    return today.toISOString().split('T')[0];
+};
 export default function CakeHome({ isAuth }: { isAuth: boolean }) {
     const today = new Date().toISOString().split('T')[0];
     const [next2today, setNext2today] = useState<string>(getNext2Day());
@@ -98,6 +103,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const [quota, setQuota] = useState<number>(0);
 
     const fetchProducts = () => {
         try {
@@ -110,6 +116,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                 },
             }).then((response) => {
                 setFilteredData(response.data.product);
+
                 fetchAllImages(response.data.product);
                 console.log(imageUrls);
                 setLoading(false);
@@ -149,7 +156,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
 
     const [loadingPanelCheckout, setLoadingPanelCheckout] = useState<boolean>(true);
     const [productCheckout, setProductCheckout] = useState<ProductFetch>();
-
+    const [quotaHariIni, setQuotaHariIni] = useState<number>(0);
     const handleClickBeli = async (id: number) => {
         try {
             setLoadingPanelCheckout(true);
@@ -158,10 +165,58 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
             const firstProduct = response.data.product;
             await fetchImage(firstProduct.photo);
             setLoadingPanelCheckout(false);
+            const response_quota = await axios.get(apiUrl + '/quota/product', {
+                params: {
+                    product_id: firstProduct?.id,
+                    tanggal: deliveryDateNext2Day,
+                },
+            });
+            if (response_quota.data.quotas.length == 0) {
+                setQuota(firstProduct.daily_quota);
+            } else {
+                setQuota(response_quota.data.quotas[0].quota);
+            }
+
+            const response_quota_today = await axios.get(apiUrl + '/quota/product', {
+                params: {
+                    product_id: firstProduct.id,
+                    tanggal: getToday(),
+                },
+            });
+            console.log('adfadfadsfadsf');
+            console.log(getToday());
+            if (response_quota_today.data.quotas.length == 0) {
+                setQuotaHariIni(firstProduct.daily_quota);
+            } else {
+                setQuotaHariIni(response_quota_today.data.quotas[0].quota);
+            }
         } catch (error) {
             console.error('Error fetching products:', error);
         }
     };
+
+    useEffect(() => {
+        const fetchQuota = async () => {
+            try {
+                const response_quota = await axios.get(apiUrl + '/quota/product', {
+                    params: {
+                        product_id: productCheckout?.id,
+                        tanggal: deliveryDateNext2Day,
+                    },
+                });
+
+                if (response_quota.data.quotas.length === 0) {
+                    setQuota(productCheckout?.daily_quota!);
+                } else {
+                    setQuota(response_quota.data.quotas[0].quota);
+                }
+            } catch (error) {
+                console.error('Error fetching quota:', error);
+            }
+        };
+
+        fetchQuota();
+    }, [deliveryDateNext2Day]);
 
     useEffect(() => {
         setNext2today(getNext2Day());
@@ -242,9 +297,6 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                                 <div className="flex gap-2">
                                     <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                                         Stock: {product.stock}
-                                    </span>
-                                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                        Quota Hari Ini: {product.daily_quota}
                                     </span>
                                 </div>
                                 <p className="text-sm text-[#6B7280]">{product.description}</p>
@@ -453,8 +505,10 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                                                                     'Tanggal Pengiriman'}
                                                             </label>
                                                             <span className="mb-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                                Quota {formatDate(deliveryDateNext2Day)} :
-                                                                {productCheckout!.daily_quota}
+                                                                Quota Hari Ini {formatDate(today)} :{quotaHariIni}
+                                                            </span>
+                                                            <span className="mb-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                                Quota {formatDate(deliveryDateNext2Day)} :{quota}
                                                             </span>
                                                             <input
                                                                 type="date"

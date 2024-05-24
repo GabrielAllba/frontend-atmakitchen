@@ -24,14 +24,23 @@ const option = [
     { opsi: 'Selesai' },
 ];
 
+interface Nota {
+    transaksi: Transaction[];
+    detail_transaksi: TransactionDetail[];
+}
+
 export default function TransaksiContent({ status }: { status: string }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [testImage, setTestImage] = useState<string[]>([]);
+    const [emailCustomer, setEmailCustomer] = useState<string>();
 
     const [fetchTransaction, setFetchTransaction] = useState<Transaction[]>([]);
     const [fetchTransactionDetail, setFetchTransactionDetail] = useState<TransactionDetail[]>([]);
 
     const [open, setOpen] = useState(false);
     const [clickedIdTransaksi, setClickedIdTransaksi] = useState<string>('');
+    const [notaTransaksi, setNotaTransaksi] = useState<Nota>();
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
 
     const cancelButtonRef = useRef(null);
 
@@ -87,6 +96,21 @@ export default function TransaksiContent({ status }: { status: string }) {
                 console.error('Error fetching transaction details by user:', error);
             }
         }
+
+        try {
+            axios({
+                method: 'get',
+                url: `${apiUrl}/transaction_details/invoice/photos/user/` + user.id,
+            }).then((response) => {
+                if (response.data.photos) {
+                    fetchAllImages(response.data.photos);
+                    const photos = response.data.photos;
+                    setTestImage(photos);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching photos:', error);
+        }
     }, []);
 
     const formatDate = (date: string) => {
@@ -102,8 +126,40 @@ export default function TransaksiContent({ status }: { status: string }) {
         const files = e.target.files;
         if (files && files.length > 0) {
             const file = files[0];
-            // setProduct({ ...product, photo: file });
         }
+    };
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            return objectURL;
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return '';
+        }
+    };
+
+    const fetchAllImages = async (item: []) => {
+        const imageUrls: { [key: string]: string } = {};
+
+        for (let i = 0; i < item.length; i++) {
+            const imageUrl = await fetchImage(item[i]);
+            imageUrls[i] = imageUrl;
+        }
+
+        setImageUrls(imageUrls);
+    };
+
+    const handleNota = (invoiceNumber: string) => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        setEmailCustomer(user.email);
+
+        const transaksi = fetchTransaction.filter((i) => i.invoice_number === invoiceNumber);
+        const detail_transaksi = fetchTransactionDetail.filter((detail) => detail.invoice_number === invoiceNumber);
+        setNotaTransaksi({ transaksi, detail_transaksi });
     };
 
     return (
@@ -111,37 +167,47 @@ export default function TransaksiContent({ status }: { status: string }) {
             {fetchTransactionDetail &&
                 fetchTransactionDetail.map((item, index) => (
                     <div key={item.id} className="item-container">
-                        <div className="border shadow-sm flex items-center w-full justify-between p-6 rounded-md flex-wrap">
+                        <div className="border shadow-sm flex items-center w-full justify-center p-6 rounded-md flex-wrap">
                             <div className="justify-between mb-2 rounded-lg sm:flex sm:justify-start ">
-                                {/* <div className="flex max-w-20 max-h-20">
-                                <Image
-                                    className="rounded"
-                                    src={item.imageUrl}
-                                    height={100}
-                                    width={200}
-                                    alt={item.name}
-                                />
-                            </div> */}
                                 <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                                     <div className="mt-5 sm:mt-0">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-8 ">
+                                            <div className="flex max-w-20 max-h-20">
+                                                <Image
+                                                    className="rounded"
+                                                    src={imageUrls[index]}
+                                                    height={100}
+                                                    width={200}
+                                                    alt={'image-' + index}
+                                                />
+                                            </div>
                                             <div className="gap-1">
                                                 <span
                                                     className="text-xs cursor-pointer"
                                                     onClick={() => {
                                                         setOpen(true);
                                                         setClickedIdTransaksi(item.invoice_number!);
+                                                        handleNota(item.invoice_number!);
                                                     }}
                                                 >
                                                     No. Transaksi : <b>{item.invoice_number}</b>
                                                 </span>
 
-                                                <div className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md mb-1 w-max">
+                                                <div className="flex items-center px-2 py-1 border border-gray-300 rounded-md mb-1 w-max">
                                                     <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                                                     <span className="text-xs">{item.transaction_status}</span>
                                                 </div>
 
-                                                <h2 className="text-base font-bold text-black">{item.product?.name}</h2>
+                                                {item.product && (
+                                                    <h2 className=" font-bold text-black text-left text-clip text-xs">
+                                                        {item.product?.name}
+                                                    </h2>
+                                                )}
+                                                {item.hampers && (
+                                                    <h2 className="text-base font-bold text-black text-xs">
+                                                        {item.hampers?.hampers_name}
+                                                    </h2>
+                                                )}
 
                                                 {/* <p className="mt-1 text-xs text-gray-700">{item.description}</p> */}
                                             </div>
@@ -196,13 +262,19 @@ export default function TransaksiContent({ status }: { status: string }) {
                                             <div className="flex flex-col">
                                                 <p className="text-xs">
                                                     Kuantitas :{' '}
-                                                    <span>
-                                                        <b>{item.product_quantity}</b>
-                                                    </span>{' '}
+                                                    <span>{item.product && <b>{item.product_quantity}</b>}</span>{' '}
+                                                    <span>{item.hampers && <b>{item.hampers_quantity}</b>}</span>{' '}
                                                 </p>
-                                                <p className="text-xs  font-bold">
-                                                    Rp. {item.product?.price.toLocaleString('id-ID')}
-                                                </p>
+                                                {item.product && (
+                                                    <p className="text-xs  font-bold">
+                                                        Rp. {item.product?.price.toLocaleString('id-ID')}
+                                                    </p>
+                                                )}
+                                                {item.hampers && (
+                                                    <p className="text-xs  font-bold">
+                                                        Rp. {item.hampers?.price!.toLocaleString('id-ID')}
+                                                    </p>
+                                                )}
                                             </div>
                                             {item.transaction_status === 'Menunggu Pembayaran' && (
                                                 <div>
@@ -224,7 +296,7 @@ export default function TransaksiContent({ status }: { status: string }) {
                     </div>
                 ))}
 
-            {/* start modal */}
+            {/* start modal nota*/}
 
             <Transition.Root show={open} as={Fragment}>
                 <Dialog className="relative z-50" initialFocus={cancelButtonRef} onClose={setOpen}>
@@ -252,7 +324,11 @@ export default function TransaksiContent({ status }: { status: string }) {
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
                                 <Dialog.Panel className="relative transform rounded-lg bg-white text-left  transition-all sm:my-8 w-full max-w-4xl ">
-                                    <Invoice id={clickedIdTransaksi}></Invoice>
+                                    <Invoice
+                                        nota={notaTransaksi!}
+                                        email={emailCustomer!}
+                                        id={clickedIdTransaksi}
+                                    ></Invoice>
                                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                         <button
                                             type="button"

@@ -12,6 +12,7 @@ import { Listbox } from '@headlessui/react';
 import { TransactionDetail } from '@/dummy_data/transaction_detaill';
 import { Cart } from '@/dummy_data/cart';
 import { useRouter } from 'next/navigation';
+import { User } from '@/dummy_data/user';
 
 const option_pengiriman = [{ opsi: 'Dikirim Kurir' }, { opsi: 'Pickup Mandiri' }];
 
@@ -27,7 +28,28 @@ const option = [
     { opsi: 'Sudah di-pickup' },
     { opsi: 'Selesai' },
 ];
+const getToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+const isWithinBirthdayRange = (bornDateStr: string) => {
+    const today = new Date();
+    const bornDate = new Date(bornDateStr);
 
+    // Normalize today's year to the born date year for comparison
+    const thisYearBornDate = new Date(today.getFullYear(), bornDate.getMonth(), bornDate.getDate());
+
+    const bornDateMinus3Days = new Date(thisYearBornDate);
+    bornDateMinus3Days.setDate(bornDateMinus3Days.getDate() - 3);
+
+    const bornDatePlus3Days = new Date(thisYearBornDate);
+    bornDatePlus3Days.setDate(bornDatePlus3Days.getDate() + 3);
+
+    return today >= bornDateMinus3Days && today <= bornDatePlus3Days;
+};
 export default function CartPage({ isAuth }: { isAuth: boolean }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
@@ -43,6 +65,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
     const [alamatPengiriman, setAlamatPengiriman] = useState<string>('');
 
     const [totalPriceTransaction, setTotalPriceTransaction] = useState<number>(0);
+    const [userFetch, setUserFetch] = useState<User>();
 
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('id-ID', {
@@ -109,6 +132,17 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
         } catch (error) {
             console.error('Error fetching carts:', error);
         }
+
+        try {
+            axios({
+                method: 'get',
+                url: `${apiUrl}/users/` + user.id,
+            }).then((response) => {
+                setUserFetch(response.data.user);
+            });
+        } catch (error) {
+            console.error('Error fetching carts:', error);
+        }
     }, []);
 
     const handleQuantityChange = (id: number, newQuantity: number) => {
@@ -161,7 +195,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
         // Calculate the total price of the selected items
-        const totalPrice = selectedItems.reduce((sum, item) => sum + item.total_price, 0);
+        let totalPriceFix = selectedItems.reduce((sum, item) => sum + item.total_price, 0);
 
         // Generate a unique invoice number
         const invoiceNumber = await axios({
@@ -176,7 +210,58 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
 
         console.log(invoiceNumber);
 
-        // Create the new transaction object
+        const poinnominal = 100;
+        const user_poin = userFetch?.total_point || 0; // Ensure user_poin is 0 if undefined
+        const user_poin_nominal = poinnominal * user_poin;
+
+        // Apply points to the total price
+        let nominal_pemakaian_poin;
+        let sisa_poin;
+
+        if (totalPriceFix > user_poin_nominal) {
+            nominal_pemakaian_poin = user_poin_nominal;
+            sisa_poin = 0;
+        } else {
+            nominal_pemakaian_poin = totalPriceFix;
+            sisa_poin = (user_poin_nominal - nominal_pemakaian_poin) / poinnominal;
+        }
+
+        let totalPriceFixReal = totalPriceFix;
+
+        let earnedPoints = 0;
+
+        // Calculate points for each segment
+        if (totalPriceFixReal >= 1000000) {
+            earnedPoints += Math.floor(totalPriceFixReal / 1000000) * 200;
+            totalPriceFixReal %= 1000000;
+        }
+        if (totalPriceFixReal >= 500000) {
+            earnedPoints += Math.floor(totalPriceFixReal / 500000) * 75;
+            totalPriceFixReal %= 500000;
+        }
+        if (totalPriceFixReal >= 100000) {
+            earnedPoints += Math.floor(totalPriceFixReal / 100000) * 15;
+            totalPriceFixReal %= 100000;
+        }
+        if (totalPriceFixReal >= 10000) {
+            earnedPoints += Math.floor(totalPriceFixReal / 10000);
+            totalPriceFixReal %= 10000;
+        }
+
+        if (isWithinBirthdayRange(userFetch?.born_date!)) {
+            earnedPoints *= 2;
+        }
+
+        let point_user_skrg = 0;
+        point_user_skrg = userFetch?.total_point! + earnedPoints;
+
+        await axios({
+            method: 'put',
+            url: `${apiUrl}/users/update-points/${userFetch?.id!}/${
+                userFetch?.total_point! + earnedPoints - nominal_pemakaian_poin / 100
+            }`,
+        });
+
         const newTransaction: Transaction = {
             user_id: user.id,
             alamat_penerima: alamatPengiriman,
@@ -186,16 +271,16 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
             delivery_fee: null,
             distance: null,
             lunas_pada: null,
-            point_income: null,
-            transfer_nominal: null,
+            point_income: earnedPoints,
+            transfer_nominal: totalPriceFix - (nominal_pemakaian_poin / 100) * 100,
             transaction_status: 'Menunggu Jarak',
-            total_price: totalPrice,
+            total_price: totalPriceFix,
             invoice_number: invoiceNumber,
             payment_date: null,
             payment_proof: null,
-            point_user: null,
-            total_poin_user: null,
-            tanggal_ambil: null,
+            point_used: nominal_pemakaian_poin / 100,
+            total_poin_user: userFetch?.total_point! + earnedPoints - nominal_pemakaian_poin / 100,
+            tanggal_pemesanan: getToday(),
         };
 
         // Create the transaction details based on selected items
@@ -249,6 +334,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
             await Promise.all(detailPromises);
             console.log('Transaction details saved:', transactionDetails);
 
+            // Clear the selected items from cart
             selectedItems.map((item) => {
                 return axios({
                     method: 'delete',
@@ -256,6 +342,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                 });
             });
 
+            // Redirect to transactions page
             router.push('/transaksi');
         } catch (error) {
             console.error('Failed to save transaction:', error);
