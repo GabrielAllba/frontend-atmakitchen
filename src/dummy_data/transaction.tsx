@@ -1,45 +1,46 @@
 interface Transaction {
-    id: number;
-    user_id?: number;
-    invoice_number?: string;
-    lunas_pada?: string;
-    tanggal_ambil?: string;
-    nama_penerima?: string;
-    alamat_penerima?: string;
-    delivery?: string;
-    transaction_status?: string;
-    distance?: number;
-    delivery_fee?: number;
-    total_price?: number;
-    transfer_nominal?: number;
-    point_user?: number;
-    point_income?: number;
-    payment_date?: string;
+    id?: number | null;
+    user_id?: number | null;
+    invoice_number?: string | null;
+    lunas_pada?: string | null;
+    tanggal_ambil?: string | null;
+    nama_penerima?: string | null;
+    alamat_penerima?: string | null;
+    no_telp_penerima?: string | null;
+    delivery?: string | null;
+    transaction_status?: string | null;
+    distance?: number | null;
+    delivery_fee?: number | null;
+    total_price?: number | null;
+    transfer_nominal?: number | null;
+    point_user?: number | null;
+    point_income?: number | null;
+    payment_date?: string | null;
     payment_proof?: File | null;
-    poin_user?: number;
-    total_poin_user?: number;
+    total_poin_user?: number | null;
 }
 
 interface TransactionFetch {
-    id: number;
-    user_id?: number;
-    invoice_number?: string;
-    lunas_pada?: string;
-    tanggal_ambil?: string;
-    nama_penerima?: string;
-    alamat_penerima?: string;
-    delivery?: string;
-    transaction_status?: string;
-    distance?: number;
-    delivery_fee?: number;
-    total_price?: number;
-    transfer_nominal?: number;
-    point_user?: number;
-    point_income?: number;
-    payment_date?: string;
-    payment_proof?: string | null;
-    poin_user?: number;
-    total_poin_user?: number;
+    id?: number | null;
+    user_id?: number | null;
+    invoice_number?: string | null;
+    lunas_pada?: string | null;
+    tanggal_ambil?: string | null;
+    nama_penerima?: string | null;
+    alamat_penerima?: string | null;
+    no_telp_penerima?: string | null;
+    delivery?: string | null;
+    transaction_status?: string | null;
+    distance?: number | null;
+    delivery_fee?: number | null;
+    total_price?: number | null;
+    transfer_nominal?: number | null;
+    point_user?: number | null;
+    point_income?: number | null;
+    payment_date?: string | null;
+    payment_proof?: string | null | null;
+
+    total_poin_user?: number | null;
 }
 
 const transaction_data: Transaction[] = [

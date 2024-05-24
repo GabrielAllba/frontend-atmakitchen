@@ -182,9 +182,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
             total_price: productCheckout?.price! * jumlahBeli,
             status: productCheckout?.status!,
             jenis: jenis,
-            opsi_pengambilan: opsiPengiriman,
             tanggal_pengiriman: null,
-            tanggal_pengambilan: null,
         };
         if (jenis == 'pre-order') {
             newCart = {
@@ -195,9 +193,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                 total_price: productCheckout?.price! * jumlahBeli,
                 status: productCheckout?.status!,
                 jenis: jenis,
-                opsi_pengambilan: opsiPengiriman,
                 tanggal_pengiriman: deliveryDateNext2Day,
-                tanggal_pengambilan: null,
             };
         } else {
             newCart = {
@@ -208,9 +204,7 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                 total_price: productCheckout?.price! * jumlahBeli,
                 status: productCheckout?.status!,
                 jenis: jenis,
-                opsi_pengambilan: opsiPengiriman,
                 tanggal_pengiriman: null,
-                tanggal_pengambilan: null,
             };
         }
 
@@ -364,70 +358,6 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                                                             ></input>
                                                         </div>
 
-                                                        <div className="pt-2">
-                                                            <label
-                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                htmlFor="alamat_pengiriman"
-                                                            >
-                                                                Opsi Pengambilan
-                                                            </label>
-                                                            <Listbox
-                                                                value={opsiPengiriman}
-                                                                onChange={(value: string) => setOpsiPengiriman(value)}
-                                                            >
-                                                                <div className="relative mt-1">
-                                                                    <Listbox.Button className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                                        <span className="block truncate">
-                                                                            {opsiPengiriman}
-                                                                        </span>
-                                                                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                                                            <svg
-                                                                                className="h-5 w-5 text-gray-400"
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                viewBox="0 0 20 20"
-                                                                                fill="currentColor"
-                                                                                aria-hidden="true"
-                                                                            >
-                                                                                <path
-                                                                                    fillRule="evenodd"
-                                                                                    d="M10 12a1 1 0 01-.7-.29l-3-3a1 1 0 111.4-1.42L10 10.59l2.3-2.3a1 1 0 111.4 1.42l-3 3a1 1 0 01-.7.29z"
-                                                                                    clipRule="evenodd"
-                                                                                />
-                                                                            </svg>
-                                                                        </span>
-                                                                    </Listbox.Button>
-                                                                    <Listbox.Options className=" absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                                                        {option.map((opt) => (
-                                                                            <Listbox.Option
-                                                                                key={opt.opsi}
-                                                                                value={opt.opsi}
-                                                                                className={({ active, selected }) =>
-                                                                                    `${
-                                                                                        active
-                                                                                            ? 'text-white bg-indigo-600'
-                                                                                            : 'text-gray-900'
-                                                                                    }
-                                        cursor-default select-none relative`
-                                                                                }
-                                                                            >
-                                                                                {({ selected }) => (
-                                                                                    <span
-                                                                                        className={`${
-                                                                                            selected
-                                                                                                ? 'font-semibold'
-                                                                                                : 'font-normal'
-                                                                                        } block truncate`}
-                                                                                    >
-                                                                                        {opt.opsi}
-                                                                                    </span>
-                                                                                )}
-                                                                            </Listbox.Option>
-                                                                        ))}
-                                                                    </Listbox.Options>
-                                                                </div>
-                                                            </Listbox>
-                                                        </div>
-
                                                         <div className="pt-4 flex flex-col gap-2">
                                                             <button
                                                                 className="flex items-center justify-center border bg-[#AA2B2B] ml-1 text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
@@ -512,69 +442,6 @@ export default function CakeHome({ isAuth }: { isAuth: boolean }) {
                                                             ></input>
                                                         </div>
 
-                                                        <div className="pt-2">
-                                                            <label
-                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                htmlFor="alamat_pengiriman"
-                                                            >
-                                                                Opsi Pengambilan
-                                                            </label>
-                                                            <Listbox
-                                                                value={opsiPengiriman}
-                                                                onChange={(value: string) => setOpsiPengiriman(value)}
-                                                            >
-                                                                <div className="relative mt-1">
-                                                                    <Listbox.Button className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                                        <span className="block truncate">
-                                                                            {opsiPengiriman}
-                                                                        </span>
-                                                                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                                                            <svg
-                                                                                className="h-5 w-5 text-gray-400"
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                viewBox="0 0 20 20"
-                                                                                fill="currentColor"
-                                                                                aria-hidden="true"
-                                                                            >
-                                                                                <path
-                                                                                    fillRule="evenodd"
-                                                                                    d="M10 12a1 1 0 01-.7-.29l-3-3a1 1 0 111.4-1.42L10 10.59l2.3-2.3a1 1 0 111.4 1.42l-3 3a1 1 0 01-.7.29z"
-                                                                                    clipRule="evenodd"
-                                                                                />
-                                                                            </svg>
-                                                                        </span>
-                                                                    </Listbox.Button>
-                                                                    <Listbox.Options className=" absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                                                        {option.map((opt) => (
-                                                                            <Listbox.Option
-                                                                                key={opt.opsi}
-                                                                                value={opt.opsi}
-                                                                                className={({ active, selected }) =>
-                                                                                    `${
-                                                                                        active
-                                                                                            ? 'text-white bg-indigo-600'
-                                                                                            : 'text-gray-900'
-                                                                                    }
-                                        cursor-default select-none relative`
-                                                                                }
-                                                                            >
-                                                                                {({ selected }) => (
-                                                                                    <span
-                                                                                        className={`${
-                                                                                            selected
-                                                                                                ? 'font-semibold'
-                                                                                                : 'font-normal'
-                                                                                        } block truncate`}
-                                                                                    >
-                                                                                        {opt.opsi}
-                                                                                    </span>
-                                                                                )}
-                                                                            </Listbox.Option>
-                                                                        ))}
-                                                                    </Listbox.Options>
-                                                                </div>
-                                                            </Listbox>
-                                                        </div>
                                                         <div className="pt-2">
                                                             <label
                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"

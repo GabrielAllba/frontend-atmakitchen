@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { PiTrashLight } from 'react-icons/pi';
-import ShippingAddress from './ShippingAddress';
 import { Hampers, HampersFetch } from '@/dummy_data/hampers';
 import { Product, ProductFetch } from '@/dummy_data/product';
 import axios from 'axios';
+import { CiLocationOn } from 'react-icons/ci';
+import { Transaction, TransactionFetch } from '@/dummy_data/transaction';
+import { Listbox } from '@headlessui/react';
+import { TransactionDetail } from '@/dummy_data/transaction_detaill';
 
 interface Cart {
     id: number;
@@ -22,291 +25,9 @@ interface Cart {
     tanggal_pengiriman?: string;
     tanggal_pengambilan?: string;
 }
-const items: Cart[] = [
-    {
-        id: 1,
-        jenis_item: 'Titipan',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 1,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
 
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
+const option_pengiriman = [{ opsi: 'Dikirim Kurir' }, { opsi: 'Pickup Mandiri' }];
 
-        status: 'Menunggu Jarak',
-    },
-    {
-        id: 2,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 2,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Dikirim Kurir',
-        jenis: 'pre-order',
-
-        status: 'Menunggu Pembayaran',
-    },
-    {
-        id: 3,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 3,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'ready stock',
-
-        status: 'Sudah Bayar',
-    },
-    {
-        id: 4,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 4,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-
-        status: 'Pembayaran Terverifikasi',
-    },
-    {
-        id: 5,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 5,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'ready stock',
-
-        status: 'Diterima',
-    },
-    {
-        id: 6,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 6,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-
-        status: 'Diproses',
-    },
-    {
-        id: 7,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 7,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-
-        status: 'Siap di-pickup',
-    },
-    {
-        id: 8,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 8,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'ready stock',
-
-        status: 'Sedang dikirim',
-    },
-    {
-        id: 9,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 9,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-
-        status: 'Sudah di-pickup',
-    },
-    {
-        id: 10,
-        jenis_item: 'Produk Toko',
-        product: {
-            photo: '/images/produk/kue.jpg',
-            id: 10,
-            name: 'Kue Stego',
-            price: 259000,
-            description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
-            stock: 100,
-            daily_quota: 10,
-            status: 'available',
-            product_type_id: 1,
-            consignation_id: null,
-        },
-        quantity: 1,
-        total_price: 259000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-
-        status: 'Selesai',
-    },
-    {
-        id: 11,
-        jenis_item: 'Hampers',
-        hampers: {
-            price: 210000,
-            id: 1,
-            hampers_name: 'Hampers A',
-            photo: '/images/produk/kue3.jpg',
-            deskripsi: 'Hampers A merupakan hampers yang diproduksi di Bekasi menggunakan tepung ',
-            produk_hampers: [
-                {
-                    id: 1,
-                    jumlah: 1,
-                    product: {
-                        id: 1,
-                        name: 'Gourmet Wine',
-                        price: 100000,
-                        description: 'A fine selection of gourmet wine.',
-                        stock: 20,
-                        daily_quota: 5,
-                        status: 'available',
-                        product_type_id: 2,
-                        consignation_id: null,
-                        photo: '/images/produk/kue.jpg',
-                    },
-                },
-                {
-                    id: 2,
-                    jumlah: 1,
-                    product: {
-                        id: 2,
-                        name: 'Soto Babat',
-                        price: 100000,
-                        description: 'A fine selection of gourmet wine.',
-                        stock: 20,
-                        daily_quota: 5,
-                        status: 'available',
-                        product_type_id: 2,
-                        consignation_id: null,
-                        photo: '/images/produk/kue.jpg',
-                    },
-                },
-            ],
-        },
-        quantity: 1,
-        total_price: 260000,
-        tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
-        jenis: 'pre-order',
-        status: 'Menunggu Jarak',
-    },
-];
 const option = [
     { opsi: 'Menunggu Jarak' },
     { opsi: 'Menunggu Pembayaran' },
@@ -323,9 +44,15 @@ const option = [
 export default function CartPage({ isAuth }: { isAuth: boolean }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+    const [opsiPengiriman, setOpsiPengiriman] = useState<string>(option_pengiriman[0].opsi);
+
     const [fetchItems, setFetchItems] = useState<Cart[]>([]);
     const [selectedItems, setSelectedItems] = useState<Cart[]>([]);
     const [selectAllChecked, setSelectAllChecked] = useState<boolean>(false);
+
+    const [namaPenerima, setNamaPenerima] = useState<string>('');
+    const [noTelpPenerima, setNoTelpPenerima] = useState<string>('');
+    const [alamatPengiriman, setAlamatPengiriman] = useState<string>('');
 
     const [totalPriceTransaction, setTotalPriceTransaction] = useState<number>(0);
 
@@ -438,15 +165,225 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
             return newSelectedItems;
         });
     };
+
+    const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Retrieve user data from localStorage
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Calculate the total price of the selected items
+        const totalPrice = selectedItems.reduce((sum, item) => sum + item.total_price, 0);
+
+        // Generate a unique invoice number
+        const invoiceNumber = await axios({
+            method: 'post',
+            url: apiUrl + '/invoice_number',
+        })
+            .then((response) => response.data.invoice_number)
+            .catch((error) => {
+                console.error('Failed to generate invoice number:', error);
+                return ''; // Return an empty string if there's an error
+            });
+
+        console.log(invoiceNumber);
+
+        // Create the new transaction object
+        const newTransaction: Transaction = {
+            user_id: user.id,
+            alamat_penerima: alamatPengiriman,
+            nama_penerima: namaPenerima,
+            delivery: opsiPengiriman,
+            delivery_fee: null,
+            distance: null,
+            lunas_pada: null,
+            point_income: null,
+            transfer_nominal: null,
+            transaction_status: 'Menunggu Jarak',
+            total_price: totalPrice,
+            invoice_number: invoiceNumber,
+            payment_date: null,
+            payment_proof: null,
+            point_user: null,
+            total_poin_user: null,
+            tanggal_ambil: null,
+        };
+
+        // Create the transaction details based on selected items
+        const transactionDetails: TransactionDetail[] = selectedItems.map((item) => {
+            const detail: TransactionDetail = {
+                invoice_number: invoiceNumber,
+                product_id: item.product?.id === 0 ? null : item.product?.id,
+                product_quantity: item.jenis_item === 'Produk Toko' ? item.quantity : null,
+                product_price: item.jenis_item === 'Produk Toko' ? item.product?.price : null,
+                hampers_id: item.hampers?.id === 0 ? null : item.hampers?.id,
+                hampers_quantity: item.jenis_item === 'Hampers' ? item.quantity : null,
+                hampers_price: item.jenis_item === 'Hampers' ? item.hampers?.price : null,
+            };
+            return detail;
+        });
+
+        try {
+            // Save the new transaction
+            const transactionResponse = await axios({
+                method: 'post',
+                url: apiUrl + '/transactions',
+                data: newTransaction,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            });
+
+            console.log('Transaction saved:', transactionResponse.data);
+
+            // Save the transaction details
+            const detailPromises = transactionDetails.map((detail) => {
+                return axios({
+                    method: 'post',
+                    url: apiUrl + '/transaction_details',
+                    data: detail,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
+                });
+                console.log(detail);
+            });
+
+            await Promise.all(detailPromises);
+            console.log('Transaction details saved:', transactionDetails);
+        } catch (error) {
+            console.error('Failed to save transaction:', error);
+        }
+    };
+
     return (
         <>
             <div className="mx-auto max-w-6xl justify-center px-6 md:flex md:space-x-6 xl:px-0 font-poppins">
-                <div className="rounded-lg w-full">
+                <form className="rounded-lg w-full">
                     <div className="justify-between mb-2 rounded-lg bg-white pb-4 sm:flex sm:justify-start">
                         <h2 className="text-4xl font-bold text-gray-900">Keranjang Belanja</h2>
                     </div>
                     <div className="py-2 mb-8 flex gap-2 ">
-                        <ShippingAddress></ShippingAddress>
+                        <div className="border rounded-lg p-8 shadow-sm mt-4 font-poppins w-full">
+                            <h2 className="text-lg font-bold text-red-500 flex items-center">
+                                <CiLocationOn className="hidden md:flex h-5 w-5 mr-2 text-red-500"></CiLocationOn>
+                                Alamat Pengiriman
+                            </h2>
+
+                            <hr className="my-4" />
+                            <div className="flex justify-start items-center mb-2 gap-4 flex-wrap">
+                                <div className="pt-2">
+                                    <label
+                                        className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                        htmlFor="nama_produk"
+                                    >
+                                        Nama Penerima
+                                    </label>
+                                    <input
+                                        className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                        id="nama_penerima"
+                                        placeholder="Nama Penerima"
+                                        required
+                                        type="text"
+                                        value={namaPenerima}
+                                        onChange={(e) => {
+                                            setNamaPenerima(e.target.value);
+                                        }}
+                                    ></input>
+                                </div>
+                                <div className="pt-2">
+                                    <label
+                                        className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                        htmlFor="no_telp_penerima"
+                                    >
+                                        No Telp Penerima
+                                    </label>
+                                    <input
+                                        className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                        id="no_telp_penerima"
+                                        placeholder="No Telp Penerima"
+                                        required
+                                        type="text"
+                                        value={noTelpPenerima}
+                                        onChange={(e) => {
+                                            setNoTelpPenerima(e.target.value);
+                                        }}
+                                    ></input>
+                                </div>
+                                <div className="pt-2">
+                                    <label
+                                        className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                        htmlFor="alamat_pengiriman"
+                                    >
+                                        Alamat Pengiriman
+                                    </label>
+                                    <input
+                                        className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                        id="alamat_pengiriman"
+                                        placeholder="Alamat Pengiriman"
+                                        required
+                                        type="text"
+                                        value={alamatPengiriman}
+                                        onChange={(e) => {
+                                            setAlamatPengiriman(e.target.value);
+                                        }}
+                                    ></input>
+                                </div>
+
+                                <div className="pt-2">
+                                    <p className="mb-2 block font-poppins text-sm font-medium text-[#111827]">
+                                        Opsi Pengiriman
+                                    </p>
+                                    <Listbox
+                                        value={opsiPengiriman}
+                                        onChange={(value: string) => setOpsiPengiriman(value)}
+                                    >
+                                        <div className="relative">
+                                            <Listbox.Button className="relative w-max bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <span className="block truncate text-black">{opsiPengiriman}</span>
+                                                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                    <svg
+                                                        className="h-5 w-5 text-gray-400"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M10 12a1 1 0 01-.7-.29l-3-3a1 1 0 111.4-1.42L10 10.59l2.3-2.3a1 1 0 111.4 1.42l-3 3a1 1 0 01-.7.29z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </span>
+                                            </Listbox.Button>
+                                            <Listbox.Options className=" absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                                {option_pengiriman.map((opt) => (
+                                                    <Listbox.Option
+                                                        key={opt.opsi}
+                                                        value={opt.opsi}
+                                                        className={({ active, selected }) =>
+                                                            `${active ? 'text-white bg-indigo-600' : 'text-gray-900'}
+                                        cursor-default select-none relative p-2`
+                                                        }
+                                                    >
+                                                        {({ selected }) => (
+                                                            <span
+                                                                className={`${
+                                                                    selected ? 'font-semibold' : 'font-normal'
+                                                                } block truncate`}
+                                                            >
+                                                                {opt.opsi}
+                                                            </span>
+                                                        )}
+                                                    </Listbox.Option>
+                                                ))}
+                                            </Listbox.Options>
+                                        </div>
+                                    </Listbox>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {fetchItems.length !== 0 && (
                         <div className="py-2 mb-4 flex gap-2">
@@ -475,7 +412,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                     <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between ">
                                         <div className="mt-5 sm:mt-0">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-10">
-                                                <div className="mx-4">
+                                                <div className="mx-4 text-wrap">
                                                     {item.jenis_item === 'Produk Toko' && (
                                                         <h2 className="text-base font-bold text-black">
                                                             {item.product?.name}
@@ -511,17 +448,17 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                                     )}
 
                                                     {item.jenis_item === 'Produk Toko' && (
-                                                        <p className="mt-1 text-xs text-gray-700 min-w-40">
-                                                            {item.product?.description}
-                                                        </p>
-                                                    )}
-                                                    {item.jenis_item === 'Titipan' && (
                                                         <p className="mt-1 text-xs text-gray-700 lg:min-w-40">
                                                             {item.product?.description}
                                                         </p>
                                                     )}
+                                                    {item.jenis_item === 'Titipan' && (
+                                                        <p className="mt-1 text-xs text-gray-700 lg:lg:min-w-40">
+                                                            {item.product?.description}
+                                                        </p>
+                                                    )}
                                                     {item.jenis_item === 'Hampers' && (
-                                                        <p className="mt-1 text-xs text-gray-700 min-w-40">
+                                                        <p className="mt-1 text-xs text-gray-700 lg:min-w-40">
                                                             {item.hampers?.deskripsi}
                                                         </p>
                                                     )}
@@ -625,6 +562,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                             </span>
                         </div>
                         <hr className="my-4" /> */}
+
                         <div className="flex justify-between items-center flex-wrap">
                             <p className="text-base font-bold text-black">Total</p>
                             <div className="">
@@ -634,18 +572,26 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                             </div>
                         </div>
 
+                        <div className="pt-2">
+                            <label
+                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                htmlFor="alamat_pengiriman"
+                            >
+                                Opsi Pengambilan
+                            </label>
+                        </div>
                         {selectedItems.length !== 0 && (
                             <button
                                 className="mt-6 w-full rounded-md bg-[#ffca1b] py-1.5  text-black hover:bg-[#ffca1bf1]"
-                                onClick={() => {
-                                    console.log(selectedItems);
+                                onClick={(e: any) => {
+                                    handleCheckout(e);
                                 }}
                             >
                                 Check out
                             </button>
                         )}
                     </div>
-                </div>
+                </form>
             </div>
         </>
     );

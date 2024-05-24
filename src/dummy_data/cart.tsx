@@ -13,9 +13,7 @@ interface Cart {
     total_price: number;
     status?: string;
     jenis: string;
-    opsi_pengambilan: string;
     tanggal_pengiriman?: string | null;
-    tanggal_pengambilan?: string | null;
 }
 const cart_data: Cart[] = [
     {
@@ -37,7 +35,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Menunggu Jarak',
@@ -61,7 +59,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Dikirim Kurir',
+
         jenis: 'pre-order',
 
         status: 'Menunggu Pembayaran',
@@ -84,7 +82,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'ready stock',
 
         status: 'Sudah Bayar',
@@ -107,7 +105,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Pembayaran Terverifikasi',
@@ -130,7 +128,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'ready stock',
 
         status: 'Diterima',
@@ -153,7 +151,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Diproses',
@@ -176,7 +174,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Siap di-pickup',
@@ -199,7 +197,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'ready stock',
 
         status: 'Sedang dikirim',
@@ -222,7 +220,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Sudah di-pickup',
@@ -245,7 +243,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
 
         status: 'Selesai',
@@ -297,7 +295,7 @@ const cart_data: Cart[] = [
         quantity: 1,
         total_price: 260000,
         tanggal_pengiriman: '2022-10-10',
-        opsi_pengambilan: 'Pickup Mandiri',
+
         jenis: 'pre-order',
         status: 'Menunggu Jarak',
     },
