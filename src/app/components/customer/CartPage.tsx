@@ -10,21 +10,8 @@ import { CiLocationOn } from 'react-icons/ci';
 import { Transaction, TransactionFetch } from '@/dummy_data/transaction';
 import { Listbox } from '@headlessui/react';
 import { TransactionDetail } from '@/dummy_data/transaction_detaill';
-
-interface Cart {
-    id: number;
-    user_id?: number;
-    product?: ProductFetch;
-    jenis_item: string;
-    hampers?: HampersFetch;
-    quantity: number;
-    total_price: number;
-    status: string;
-    jenis: string;
-    opsi_pengambilan: string;
-    tanggal_pengiriman?: string;
-    tanggal_pengambilan?: string;
-}
+import { Cart } from '@/dummy_data/cart';
+import { useRouter } from 'next/navigation';
 
 const option_pengiriman = [{ opsi: 'Dikirim Kurir' }, { opsi: 'Pickup Mandiri' }];
 
@@ -43,6 +30,7 @@ const option = [
 
 export default function CartPage({ isAuth }: { isAuth: boolean }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const router = useRouter();
 
     const [opsiPengiriman, setOpsiPengiriman] = useState<string>(option_pengiriman[0].opsi);
 
@@ -193,6 +181,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
             user_id: user.id,
             alamat_penerima: alamatPengiriman,
             nama_penerima: namaPenerima,
+            no_telp_penerima: noTelpPenerima,
             delivery: opsiPengiriman,
             delivery_fee: null,
             distance: null,
@@ -211,7 +200,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
 
         // Create the transaction details based on selected items
         const transactionDetails: TransactionDetail[] = selectedItems.map((item) => {
-            const detail: TransactionDetail = {
+            let detail: TransactionDetail = {
                 invoice_number: invoiceNumber,
                 product_id: item.product?.id === 0 ? null : item.product?.id,
                 product_quantity: item.jenis_item === 'Produk Toko' ? item.quantity : null,
@@ -219,7 +208,16 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                 hampers_id: item.hampers?.id === 0 ? null : item.hampers?.id,
                 hampers_quantity: item.jenis_item === 'Hampers' ? item.quantity : null,
                 hampers_price: item.jenis_item === 'Hampers' ? item.hampers?.price : null,
+                jenis: item.jenis,
+                tanggal_pengiriman: item.tanggal_pengiriman,
+                transaction_status: 'Menunggu Jarak',
+                jenis_item: item.jenis_item,
             };
+
+            if (item.jenis_item == 'Titipan') {
+                detail.product_quantity = item.quantity;
+                detail.product_price = item.product?.price;
+            }
             return detail;
         });
 
@@ -246,11 +244,19 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                         'Content-Type': 'application/json; charset=utf-8',
                     },
                 });
-                console.log(detail);
             });
 
             await Promise.all(detailPromises);
             console.log('Transaction details saved:', transactionDetails);
+
+            selectedItems.map((item) => {
+                return axios({
+                    method: 'delete',
+                    url: apiUrl + '/cart/' + item.id,
+                });
+            });
+
+            router.push('/transaksi');
         } catch (error) {
             console.error('Failed to save transaction:', error);
         }
@@ -481,7 +487,10 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                                 <div>
                                                     <p className="text-xs text-black">Tanggal Pengiriman :</p>
                                                     <p className="text-xs text-black">
-                                                        <b>{formatDate(item.tanggal_pengiriman!)}</b>
+                                                        {item.tanggal_pengiriman && (
+                                                            <b>{formatDate(item.tanggal_pengiriman!)}</b>
+                                                        )}
+                                                        {!item.tanggal_pengiriman && <b>Hari ini / besok</b>}
                                                     </p>
                                                 </div>
                                                 <div>
@@ -504,7 +513,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                                             className="cursor-pointer rounded-l py-1 px-3 duration-100 text-black border"
                                                             onClick={() =>
                                                                 handleQuantityChange(
-                                                                    item.id,
+                                                                    item!.id!,
                                                                     Math.max(1, item.quantity - 1),
                                                                 )
                                                             }
@@ -516,7 +525,10 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                                             type="number"
                                                             value={item.quantity}
                                                             onChange={(e) => {
-                                                                handleQuantityChange(item.id, parseInt(e.target.value));
+                                                                handleQuantityChange(
+                                                                    item!.id!,
+                                                                    parseInt(e.target.value),
+                                                                );
                                                             }}
                                                             readOnly
                                                             min="1"
@@ -524,7 +536,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                                                         <span
                                                             className="cursor-pointer rounded-r py-1 px-3 duration-100 text-black border"
                                                             onClick={() =>
-                                                                handleQuantityChange(item.id, item.quantity + 1)
+                                                                handleQuantityChange(item!.id!, item.quantity + 1)
                                                             }
                                                         >
                                                             +
