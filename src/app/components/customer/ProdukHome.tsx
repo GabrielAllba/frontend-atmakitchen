@@ -12,6 +12,7 @@ import { BsCart3 } from 'react-icons/bs';
 import { Alert } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { Listbox } from '@headlessui/react';
+import { Cart } from '@/dummy_data/cart';
 
 // start tabs
 
@@ -50,13 +51,20 @@ function CustomTabPanel(props: TabPanelProps) {
 
 // end tabs
 
+const getNext2Day = (): string => {
+    const today = new Date();
+    today.setDate(today.getDate() + 2);
+    return today.toISOString().split('T')[0];
+};
 export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
     const today = new Date().toISOString().split('T')[0];
+    const [next2today, setNext2today] = useState<string>(getNext2Day());
 
     const [deliveryDate, setDeliveryDate] = useState(today);
+    const [deliveryDateNext2Day, setDeliveryDateNext2Day] = useState(next2today);
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDeliveryDate(event.target.value);
+        setDeliveryDateNext2Day(event.target.value);
     };
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('id-ID', {
@@ -79,6 +87,7 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [alertErrorAuth, setAlertErrorAuth] = useState<boolean>(false);
+    const [alert, setAlert] = useState<boolean>(false);
 
     const [filteredData, setFilteredData] = useState<ProductFetch[]>([]);
 
@@ -154,10 +163,70 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
         }
     };
 
-    const getCurrentDate = (): string => {
-        const today = new Date();
-        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-        return today.toLocaleDateString('en-US', options);
+    useEffect(() => {
+        setNext2today(getNext2Day());
+        setDeliveryDateNext2Day(getNext2Day());
+    }, []);
+
+    const [jumlahBeli, setJumlahBeli] = useState<number>(0);
+
+    const handleTambahKeCart = (e: React.FormEvent<HTMLFormElement>, jenis: string) => {
+        e.preventDefault();
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let newCart: Cart = {
+            user_id: user.id,
+            product_id: productCheckout?.id,
+            jenis_item: 'Produk Toko',
+            quantity: jumlahBeli,
+            total_price: productCheckout?.price! * jumlahBeli,
+            status: productCheckout?.status!,
+            jenis: jenis,
+            opsi_pengambilan: opsiPengiriman,
+            tanggal_pengiriman: null,
+            tanggal_pengambilan: null,
+        };
+        if (jenis == 'pre-order') {
+            newCart = {
+                user_id: user.id,
+                product_id: productCheckout?.id,
+                jenis_item: 'Produk Toko',
+                quantity: jumlahBeli,
+                total_price: productCheckout?.price! * jumlahBeli,
+                status: productCheckout?.status!,
+                jenis: jenis,
+                opsi_pengambilan: opsiPengiriman,
+                tanggal_pengiriman: deliveryDateNext2Day,
+                tanggal_pengambilan: null,
+            };
+        } else {
+            newCart = {
+                user_id: user.id,
+                product_id: productCheckout?.id,
+                jenis_item: 'Produk Toko',
+                quantity: jumlahBeli,
+                total_price: productCheckout?.price! * jumlahBeli,
+                status: productCheckout?.status!,
+                jenis: jenis,
+                opsi_pengambilan: opsiPengiriman,
+                tanggal_pengiriman: null,
+                tanggal_pengambilan: null,
+            };
+        }
+
+        axios({
+            method: 'post',
+            url: apiUrl + '/cart',
+            data: newCart,
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+        }).then((response) => {
+            console.log(response);
+        });
+
+        console.log(newCart);
+        setAlert(true);
     };
 
     return (
@@ -287,6 +356,10 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                                 id="jumlah"
                                                                 placeholder="Jumlah"
                                                                 required
+                                                                value={jumlahBeli}
+                                                                onChange={(e) => {
+                                                                    setJumlahBeli(parseFloat(e.target.value));
+                                                                }}
                                                                 type="number"
                                                             ></input>
                                                         </div>
@@ -354,34 +427,13 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                                 </div>
                                                             </Listbox>
                                                         </div>
-                                                        <div className="pt-2">
-                                                            <label
-                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                htmlFor="alamat_pengiriman"
-                                                            >
-                                                                {opsiPengiriman === 'Pickup Mandiri' &&
-                                                                    'Tanggal Pengambilan'}
-                                                                {opsiPengiriman === 'Dikirim Kurir' &&
-                                                                    'Tanggal Pengiriman'}
-                                                            </label>
-
-                                                            <input
-                                                                type="date"
-                                                                className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
-                                                                placeholder="Tanggal Pengiriman"
-                                                                name="tanggal_pengiriman"
-                                                                value={deliveryDate}
-                                                                min={today}
-                                                                max={today}
-                                                                onChange={handleDateChange}
-                                                            />
-                                                        </div>
 
                                                         <div className="pt-4 flex flex-col gap-2">
                                                             <button
                                                                 className="flex items-center justify-center border bg-[#AA2B2B] ml-1 text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-                                                                onClick={() => {
+                                                                onClick={(e: any) => {
                                                                     !isAuth && router.push('/login');
+                                                                    isAuth && handleTambahKeCart(e, 'ready-stock');
                                                                 }}
                                                             >
                                                                 Tambah ke cart
@@ -452,6 +504,10 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                                 id="jumlah"
                                                                 placeholder="Jumlah"
                                                                 required
+                                                                value={jumlahBeli}
+                                                                onChange={(e) => {
+                                                                    setJumlahBeli(parseFloat(e.target.value));
+                                                                }}
                                                                 type="number"
                                                             ></input>
                                                         </div>
@@ -530,7 +586,7 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                                     'Tanggal Pengiriman'}
                                                             </label>
                                                             <span className="mb-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                                Quota {formatDate(deliveryDate)} :
+                                                                Quota {formatDate(deliveryDateNext2Day)} :
                                                                 {productCheckout!.daily_quota}
                                                             </span>
                                                             <input
@@ -538,8 +594,8 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                                 className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
                                                                 placeholder="Tanggal Pengiriman"
                                                                 name="tanggal_pengiriman"
-                                                                value={deliveryDate}
-                                                                min={today}
+                                                                value={deliveryDateNext2Day}
+                                                                min={next2today}
                                                                 onChange={handleDateChange}
                                                             />
                                                         </div>
@@ -547,8 +603,9 @@ export default function ProdukHome({ isAuth }: { isAuth: boolean }) {
                                                         <div className="pt-4 flex flex-col gap-2">
                                                             <button
                                                                 className="flex items-center justify-center border bg-[#AA2B2B] ml-1 text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-                                                                onClick={() => {
+                                                                onClick={(e: any) => {
                                                                     !isAuth && router.push('/login');
+                                                                    isAuth && handleTambahKeCart(e, 'pre-order');
                                                                 }}
                                                             >
                                                                 Tambah ke cart

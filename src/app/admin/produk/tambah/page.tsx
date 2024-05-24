@@ -46,6 +46,7 @@ export default function Produk() {
         product_type_id: 0,
         consignation_id: null,
         photo: null,
+        tag: '',
     });
 
     const [alert, setAlert] = useState<boolean>(false);
@@ -63,6 +64,7 @@ export default function Produk() {
         formData.append('status', product.status);
         formData.append('product_type_id', String(product.product_type_id));
         formData.append('consignation_id', String(product.consignation_id));
+        formData.append('tag', String(product.tag));
 
         if (product.photo) {
             formData.append('photo', product.photo);
@@ -90,6 +92,7 @@ export default function Produk() {
                     product_type_id: 0,
                     consignation_id: null,
                     photo: null,
+                    tag: '',
                 });
 
                 const fileInput = document.getElementById('foto_produk') as HTMLInputElement;
@@ -236,6 +239,25 @@ export default function Produk() {
                                                             setProduct({ ...product, description: e.target.value })
                                                         }
                                                     ></textarea>
+                                                </div>
+                                                <div className="mb-4">
+                                                    <label
+                                                        className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
+                                                        htmlFor="nama_produk"
+                                                    >
+                                                        Tag
+                                                    </label>
+                                                    <input
+                                                        className=" block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                        id="tag"
+                                                        placeholder="Tag Produk"
+                                                        required
+                                                        type="text"
+                                                        value={product.tag}
+                                                        onChange={(e) =>
+                                                            setProduct({ ...product, tag: e.target.value })
+                                                        }
+                                                    ></input>
                                                 </div>
                                             </div>
                                         </div>

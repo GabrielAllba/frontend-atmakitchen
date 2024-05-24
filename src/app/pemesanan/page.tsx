@@ -9,7 +9,7 @@ import Image from 'next/image';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import Cart from '../components/customer/Cart';
+import Cart from '../components/customer/CartPage';
 import TitipanHome from '../components/customer/TitipanHome';
 
 export default function Index() {

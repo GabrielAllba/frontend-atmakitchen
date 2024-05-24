@@ -96,11 +96,11 @@ export default function TambahHampers() {
 
         const newProduk: ProdukHampers = {
             id: (addHampers?.produk_hampers?.length || 0) + 1,
-            produk: produk,
+            product: produk,
             jumlah: jumlahProduk,
         };
 
-        const existingProductIndex = addHampers?.produk_hampers?.findIndex((p) => p.produk === produk);
+        const existingProductIndex = addHampers?.produk_hampers?.findIndex((p) => p.product === produk);
 
         let updatedProdukHampers;
         if (existingProductIndex !== -1) {
@@ -151,7 +151,7 @@ export default function TambahHampers() {
             if (addHampers.produk_hampers && addHampers.produk_hampers.length > 0) {
                 addHampers.produk_hampers.forEach((product, index) => {
                     formData.append(`product_hampers[${index}][hampers_id]`, String(addHampers.id));
-                    formData.append(`product_hampers[${index}][product_id]`, String(product.produk.id));
+                    formData.append(`product_hampers[${index}][product_id]`, String(product.product.id));
                     formData.append(`product_hampers[${index}][jumlah]`, String(product.jumlah));
                 });
             }
@@ -176,7 +176,7 @@ export default function TambahHampers() {
                 const detailFormData = new FormData();
                 detailFormData.append('id', String(addHampers.id!));
                 detailFormData.append('jumlah', String(product.jumlah!));
-                detailFormData.append('product_id', String(product.produk.id!));
+                detailFormData.append('product_id', String(product.product.id!));
 
                 await axios({
                     method: 'post',
@@ -391,7 +391,7 @@ export default function TambahHampers() {
                                                         return (
                                                             <tr key={item.id} className="border text-[#7D848C]">
                                                                 <td className="p-4 border">{item.id}</td>
-                                                                <td className="p-4 border">{item.produk?.name}</td>
+                                                                <td className="p-4 border">{item.product?.name}</td>
                                                                 <td className="p-4 border">{item.jumlah}</td>
 
                                                                 <td className="p-4 border">

@@ -6,21 +6,25 @@ import Image from 'next/image';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { PiTrashLight } from 'react-icons/pi';
 import Invoice from './Invoice';
+import { Hampers } from '@/dummy_data/hampers';
 
 interface Item {
     id: number;
     name: string;
     description: string;
     price: number;
+    jenis_item: string;
+    hampers?: Hampers;
     quantity: number;
     total_price: number;
     imageUrl: string;
     status: string;
     jenis: string;
+    no_transaksi: string;
     opsi_pengambilan: string;
     tanggal_pengiriman?: string;
     tanggal_pengambilan?: string;
-    no_transaksi: string;
+    bukti_pembayaran?: string;
 }
 
 const option = [
@@ -38,13 +42,14 @@ const option = [
 const items: Item[] = [
     {
         id: 1,
+        jenis_item: 'Titipan',
         name: 'Kue Stego',
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue.jpg',
@@ -56,9 +61,10 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
         opsi_pengambilan: 'Dikirim Kurir',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
@@ -70,13 +76,15 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
         imageUrl: '/images/produk/kue2.jpg',
         status: 'Sudah Bayar',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
     },
     {
         id: 4,
@@ -84,9 +92,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
@@ -98,9 +108,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
         imageUrl: '/images/produk/kue2.jpg',
@@ -112,9 +124,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
@@ -126,9 +140,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
@@ -140,9 +156,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'ready stock',
         imageUrl: '/images/produk/kue2.jpg',
@@ -154,9 +172,11 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
@@ -168,13 +188,70 @@ const items: Item[] = [
         description: 'Kue Stego merupakan kue yang diproduksi di Bekasi menggunakan tepung maizena',
         price: 259000,
         quantity: 1,
-        no_transaksi: '21.01.01',
+        jenis_item: 'Produk Toko',
         total_price: 259000,
         tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
         opsi_pengambilan: 'Pickup Mandiri',
         jenis: 'pre-order',
         imageUrl: '/images/produk/kue2.jpg',
         status: 'Selesai',
+    },
+    {
+        id: 11,
+        jenis_item: 'Hampers',
+        name: 'Luxury Gift Basket',
+        description: 'A luxurious basket filled with gourmet treats and fine wines.',
+        price: 200000,
+        hampers: {
+            id: 1,
+
+            produk_hampers: [
+                {
+                    id: 1,
+                    jumlah: 1,
+                    product: {
+                        id: 1,
+
+                        name: 'Gourmet Wine',
+                        price: 100000,
+                        description: 'A fine selection of gourmet wine.',
+                        stock: 20,
+                        daily_quota: 5,
+                        status: 'available',
+                        product_type_id: 2,
+                        consignation_id: null,
+                        photo: null,
+                    },
+                },
+                {
+                    id: 2,
+                    jumlah: 1,
+                    product: {
+                        id: 2,
+                        name: 'Soto Babat',
+                        price: 100000,
+                        description: 'A fine selection of gourmet wine.',
+                        stock: 20,
+                        daily_quota: 5,
+                        status: 'available',
+                        product_type_id: 2,
+                        consignation_id: null,
+                        photo: null,
+                    },
+                },
+            ],
+        },
+        quantity: 2,
+        total_price: 260000,
+        tanggal_pengiriman: '2022-10-10',
+        no_transaksi: '21.01.01',
+        bukti_pembayaran: '/images/produk/kue3.jpg',
+        opsi_pengambilan: 'Pickup Mandiri',
+        jenis: 'pre-order',
+        imageUrl: '/images/produk/kue2.jpg',
+        status: 'Menunggu Jarak',
     },
 ];
 
@@ -201,17 +278,33 @@ export default function TransaksiContent({ status }: { status: string }) {
         });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            // setProduct({ ...product, photo: file });
+        }
+    };
+
     return (
         <div className="text-black font-poppins">
-            {fetchItems.map((item) => (
+            {fetchItems.map((item, index) => (
                 <div key={item.id} className="item-container">
                     <div className="border shadow-sm flex items-center w-full justify-between p-6 rounded-md flex-wrap">
                         <div className="justify-between mb-2 rounded-lg sm:flex sm:justify-start ">
-                            <Image className="rounded" src={item.imageUrl} height={40} width={100} alt={item.name} />
+                            <div className="flex max-w-20 max-h-20">
+                                <Image
+                                    className="rounded"
+                                    src={item.imageUrl}
+                                    height={100}
+                                    width={200}
+                                    alt={item.name}
+                                />
+                            </div>
                             <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                                 <div className="mt-5 sm:mt-0">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                        <div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-8">
+                                        <div className="gap-1">
                                             <span
                                                 className="text-xs cursor-pointer"
                                                 onClick={() => {
@@ -222,16 +315,35 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                 No. Transaksi : <b>{item.no_transaksi}</b>
                                             </span>
 
-                                            <div className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md mb-1">
+                                            <div className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md mb-1 w-max">
                                                 <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                                                 <span className="text-xs">{item.status}</span>
                                             </div>
+
                                             <h2 className="text-base font-bold text-black">{item.name}</h2>
-                                            <p className="mt-1 text-xs text-gray-700">{item.description}</p>
+
+                                            {/* <p className="mt-1 text-xs text-gray-700">{item.description}</p> */}
                                         </div>
 
                                         <div className="flex items-start gap-2 flex-col">
                                             <p className="text-xs text-black">Jenis Order</p>
+                                            {item.jenis_item == 'Hampers' && (
+                                                <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
+                                                    {item.jenis_item}
+                                                </span>
+                                            )}
+
+                                            {item.jenis_item == 'Produk Toko' && (
+                                                <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
+                                                    {item.jenis_item}
+                                                </span>
+                                            )}
+
+                                            {item.jenis_item == 'Titipan' && (
+                                                <span className="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">
+                                                    {item.jenis_item}
+                                                </span>
+                                            )}
                                             {item.jenis == 'pre-order' && (
                                                 <p className="flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
                                                     {item.jenis}
@@ -266,6 +378,32 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                 Rp. {item.price.toLocaleString('id-ID')}
                                             </p>
                                         </div>
+                                        {item.status === 'Menunggu Pembayaran' && (
+                                            <div>
+                                                <p className="text-xs text-black">Bukti Pembayaran</p>
+                                                <input
+                                                    className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                    id="foto_produk"
+                                                    type="file"
+                                                    required
+                                                    onChange={handleFileChange}
+                                                ></input>
+                                            </div>
+                                        )}
+                                        {index >= 2 && (
+                                            <div>
+                                                <p className="text-xs text-black">Bukti Pembayaran</p>
+                                                <div className="flex max-w-20 max-h-20 mt-2">
+                                                    <Image
+                                                        className="rounded"
+                                                        src={item.bukti_pembayaran!}
+                                                        height={100}
+                                                        width={200}
+                                                        alt={item.name}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

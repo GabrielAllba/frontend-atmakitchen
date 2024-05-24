@@ -9,7 +9,7 @@ import Image from 'next/image';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import Cart from '../components/customer/Cart';
+import Cart from '../components/customer/CartPage';
 import TransaksiTabs from '../components/customer/TransaksiTabs';
 
 export default function Transaksi() {
@@ -59,7 +59,7 @@ export default function Transaksi() {
                         <h2 className="text-4xl font-bold text-gray-900">Transaksi</h2>
                     </div>
                 </div>
-                <div className="px-10 md:px-24 py-36 pt-8">
+                <div className="px-4 md:px-24 py-36 pt-8">
                     <TransaksiTabs></TransaksiTabs>
                 </div>
 

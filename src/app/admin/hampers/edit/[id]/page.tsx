@@ -135,12 +135,12 @@ export default function EditHampers({ params }: { params: { id: number } }) {
         event.preventDefault();
 
         const newProduk: ProdukHampers = {
-            produk: produk,
+            product: produk,
             jumlah: jumlahProduk,
         };
 
         let updatedProdukHampers;
-        const existingProductIndex = updateHampers?.produk_hampers?.findIndex((p) => p.produk.id === produk.id);
+        const existingProductIndex = updateHampers?.produk_hampers?.findIndex((p) => p.product.id === produk.id);
 
         if (existingProductIndex !== -1 && updateHampers?.produk_hampers) {
             const jumlah = updateHampers.produk_hampers[existingProductIndex!].jumlah + jumlahProduk;
@@ -157,7 +157,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
 
             const detailFormData = new FormData();
             detailFormData.append('jumlah', String(jumlah));
-            detailFormData.append('product_id', String(newProduk.produk.id));
+            detailFormData.append('product_id', String(newProduk.product.id));
 
             axios({
                 method: 'put',
@@ -182,7 +182,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
 
             const detailFormData = new FormData();
             detailFormData.append('jumlah', String(newProduk.jumlah));
-            detailFormData.append('product_id', String(newProduk.produk.id));
+            detailFormData.append('product_id', String(newProduk.product.id));
 
             axios({
                 method: 'post',
@@ -437,7 +437,7 @@ export default function EditHampers({ params }: { params: { id: number } }) {
                                                         return (
                                                             <tr key={item.id} className="border text-[#7D848C]">
                                                                 {/* <td className="p-4 border">{item.id}</td> */}
-                                                                <td className="p-4 border">{item.produk?.name}</td>
+                                                                <td className="p-4 border">{item.product?.name}</td>
                                                                 <td className="p-4 border">{item.jumlah}</td>
                                                                 <td className="p-4 border">
                                                                     <div className="flex gap-2">

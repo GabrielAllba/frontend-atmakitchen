@@ -9,6 +9,7 @@ interface Product {
     product_type_id: number;
     consignation_id: number | null;
     photo: File | null;
+    tag?: string;
 }
 
 interface ProductFetch {
@@ -22,6 +23,7 @@ interface ProductFetch {
     product_type_id: number;
     consignation_id: number | null;
     photo: string | null;
+    tag?: string;
 }
 
 const produk_data: Product[] = [];

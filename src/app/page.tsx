@@ -12,6 +12,8 @@ import 'swiper/css/navigation';
 import ProdukHome from './components/customer/ProdukHome';
 import TitipanHome from './components/customer/TitipanHome';
 import HampersHome from './components/customer/HampersHome';
+import MinumanHome from './components/customer/MinumanHome';
+import CakeHome from './components/customer/CakeHome';
 
 export default function Index() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -85,13 +87,35 @@ export default function Index() {
                         <SwiperSlide>
                             <div className="relative">
                                 <Image alt="images" src="/images/slider/2.jpg" width={1000} height={1000}></Image>
-                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40"></div>
+                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40 "></div>
+                                <div className="absolute top-0 flex justify-center h-full w-full items-end">
+                                    <div className="p-20">
+                                        <p className="text-white text-xl md:text-4xl font-poppins">
+                                            Buy cake, give love!
+                                        </p>
+                                        <p className="text-[#d8d8d8] pt-4 font-poppins text-sm">
+                                            In everything we do we believe in creating emotional and memorable
+                                            experiences. Share happiness with your loved ones.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
                             <div className="relative">
                                 <Image alt="images" src="/images/slider/3.jpg" width={1000} height={1000}></Image>
-                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40"></div>
+                                <div className="banner h-full w-full bg-black absolute top-0 right-0 opacity-40 "></div>
+                                <div className="absolute top-0 flex justify-center h-full w-full items-end">
+                                    <div className="p-20">
+                                        <p className="text-white text-xl md:text-4xl font-poppins">
+                                            Buy cake, give love!
+                                        </p>
+                                        <p className="text-[#d8d8d8] pt-4 font-poppins text-sm">
+                                            In everything we do we believe in creating emotional and memorable
+                                            experiences. Share happiness with your loved ones.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </SwiperSlide>
                     </Swiper>
@@ -100,10 +124,16 @@ export default function Index() {
                     <ProdukHome isAuth={isAuthenticated}></ProdukHome>
                 </div>
                 <div className="px-10 md:px-24 py-0 md:py-0">
+                    <CakeHome isAuth={isAuthenticated}></CakeHome>
+                </div>
+                <div className="px-10 md:px-24 py-0 md:py-0">
+                    <MinumanHome isAuth={isAuthenticated}></MinumanHome>
+                </div>
+                <div className="px-10 md:px-24 py-0 md:py-0">
                     <HampersHome isAuth={isAuthenticated}></HampersHome>
                 </div>
                 <div className="px-10 md:px-24 py-0 md:py-0">
-                    <TitipanHome isAuthTitipan={isAuthenticated}></TitipanHome>
+                    <TitipanHome isAuth={isAuthenticated}></TitipanHome>
                 </div>
                 <div className="px-10 md:px-24 py-8 pb-16">
                     <hr className="border border-[#fffff] border-collapse" />
