@@ -1,17 +1,16 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 import { Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { Transaction, transaction_data } from '@/dummy_data/transactions';
+import { Transaction, transaction_data } from '@/dummy_data/transaction';
 
 import axios from 'axios';
 import { Alert } from '@mui/material';
 
 const EditJarak: React.FC = () => {
-
     //jumlah menampilkan halaman
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -28,7 +27,6 @@ const EditJarak: React.FC = () => {
     const [openUpdateModal, setopenUpdateModal] = useState<boolean>(false);
     const [updateModal, setUpdateModal] = useState<Transaction>();
     const cancelButtonEdit = useRef(null);
-
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -113,29 +111,33 @@ const EditJarak: React.FC = () => {
                                     {currentItems.map((item, index) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">{item.nomor_transaksi}
+                                            <td className="p-4 border">
+                                                {item.invoice_number}
                                                 {/* {productData.find((product) => product.id === item.product_id)?.name ||
                                                     'Product Not Found'} */}
                                             </td>
-                                            <td className="p-4 border ">{item.nama_pemesan}</td>
-                                            <td className="p-4 border ">{item.alamat}</td>
-                                            <td className="p-4 border">{item.jarak === 0 ? (
+                                            <td className="p-4 border ">{item.nama_penerima}</td>
+                                            <td className="p-4 border ">{item.alamat_penerima}</td>
+                                            <td className="p-4 border">
+                                                {item.distance === 0 ? (
                                                     <span className="font-bold text-[#AA2B2B]">Belum di update</span>
                                                 ) : (
-                                                    item.jarak
-                                                )}</td>
-                                            <td className="p-4 border">{item.biaya}</td>
-                                            <td className="p-4 border">{item.total}</td>
+                                                    item.distance
+                                                )}
+                                            </td>
+                                            <td className="p-4 border">{item.delivery_fee}</td>
+                                            <td className="p-4 border">{item.total_price}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
-                                                    <button className="rounded-md relative h-12 w-40 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-[#AA2B2B] before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
-                                                    onClick={() => {
-                                                        setUpdateModal(item);
-                                                        setopenUpdateModal(true);
-                                                    }}>                                                        
+                                                    <button
+                                                        className="rounded-md relative h-12 w-40 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-[#AA2B2B] before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
+                                                        onClick={() => {
+                                                            setUpdateModal(item);
+                                                            setopenUpdateModal(true);
+                                                        }}
+                                                    >
                                                         <span className="relative z-10">Update Jarak</span>
                                                     </button>
-                                                    
                                                 </div>
                                             </td>
                                         </tr>
@@ -215,7 +217,8 @@ const EditJarak: React.FC = () => {
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] ">
-                                                                            Edit Jarak pada Transaksi nomor {updateModal?.nomor_transaksi}
+                                                                            Edit Jarak pada Transaksi nomor{' '}
+                                                                            {updateModal?.invoice_number}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -231,7 +234,7 @@ const EditJarak: React.FC = () => {
                                                                                 id="nama_bahan"
                                                                                 placeholder="Nama Bahan"
                                                                                 required
-                                                                                value={updateModal?.jarak}
+                                                                                value={updateModal?.distance}
                                                                                 type="number"
                                                                                 // onChange={(e) => {
                                                                                 //     const { value } = e.target;
@@ -256,7 +259,7 @@ const EditJarak: React.FC = () => {
                                                                                 id="stok_bahan"
                                                                                 placeholder="Stok Bahan"
                                                                                 required
-                                                                                value={updateModal?.biaya}
+                                                                                value={updateModal?.delivery_fee}
                                                                                 type="text"
                                                                                 // onChange={(e) => {
                                                                                 //     const { value } = e.target;
@@ -303,6 +306,5 @@ const EditJarak: React.FC = () => {
             </div>
         </div>
     );
-
-}
+};
 export default EditJarak;
