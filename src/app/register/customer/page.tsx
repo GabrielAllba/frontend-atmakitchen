@@ -20,10 +20,11 @@ export default function Register() {
         born_date: '',
         phone_number: '',
         total_point: 0,
-        role_id: 1,
+        role_id: 2,
     };
     const [user, setUser] = useState<User>(emptyUser);
     const [alert, setAlert] = useState<boolean>(false);
+    const [alertFailed, setAlertFailed] = useState<boolean>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -35,18 +36,33 @@ export default function Register() {
     };
 
     function newUser() {
-        axios({
-            method: 'post',
-            url: apiUrl + '/customer/signup',
-            data: user,
-        })
-            .then((response) => {
-                setUser(emptyUser);
-                if (response.status === 200) {
-                    setAlert(true);
-                    setTimeout(() => {
-                        window.location.href = '/login';  // Ganti '/login' dengan URL halaman login Anda
-                    }, 2000);  // 2000 ms = 2 detik, sesuaikan dengan kebutuhan Anda
+        // Check if the email already exists
+        axios.get(apiUrl + '/customer/email-exists?email=' + user.email)
+            .then((emailExistsResponse) => {
+                console.log(user.email);
+                if (emailExistsResponse.data.exists) {
+                    // Email already exists, show an alert or handle accordingly
+                    console.log('Email already exists');
+                    setAlertFailed(true);
+                } else {
+                    // Email doesn't exist, proceed with user creation
+                    axios({
+                        method: 'post',
+                        url: apiUrl + '/customer/signup',
+                        data: user,
+                    })
+                    .then((response) => {
+                        setUser(emptyUser);
+                        if (response.status === 200) {
+                            setAlert(true);
+                            setTimeout(() => {
+                                window.location.href = '/login';  // Change '/login' to your login page URL
+                            }, 1000);  // Adjust timeout as needed
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
                 }
             })
             .catch((err) => {
@@ -65,6 +81,13 @@ export default function Register() {
                 <div className="absolute top-4 right-4 z-50">
                     <Alert severity="success" className="font-poppins">
                         Selamat! Akun kamu telah berhasil registrasi!
+                    </Alert>
+                </div>
+            )}
+            {alertFailed && (
+                <div className="absolute top-4 right-4 z-50">
+                    <Alert severity="error" className="font-poppins">
+                        Email Anda Sudah Terdaftar !!!
                     </Alert>
                 </div>
             )}
