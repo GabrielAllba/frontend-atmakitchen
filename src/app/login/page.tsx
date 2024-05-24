@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { useRouter } from 'next/navigation';
+import { FaArrowCircleLeft } from 'react-icons/fa';
 
 interface Login {
     email: string;
@@ -88,11 +89,19 @@ export default function AdminLogin() {
                 <div className="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 ">
                     <div className="card w-100 md:w-6/12 bg-primary border pb-8 rounded ">
                         <div className="card-body">
-                            <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center">
-                                <h2 className=" text-wrap text-center text-2xl font-bold text-accent break-words">
-                                    Atmakitchen
-                                </h2>
-                                <p className="mt-4 text-center text-sm text-[#555555]">Masuk ke akun anda </p>
+                            <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center flex">
+                                <div className='flex-none'>
+                                    <a href="/">
+                                    <FaArrowCircleLeft size={32} style={{ color: '#b54545'}} />
+                                    </a>
+                                </div>
+                                <div className='flex-auto'>
+                                    <h2 className=" text-wrap text-center text-2xl font-bold text-accent break-words">
+                                        Atmakitchen
+                                    </h2>
+                                    <p className="mt-4 text-center text-sm text-[#555555]">Masuk ke akun anda </p>
+                                </div>
+                                
                             </div>
                             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                                 <form onSubmit={handleSubmitPost} className="space-y-6" action="#" method="POST">
@@ -166,6 +175,11 @@ export default function AdminLogin() {
                                         >
                                             Sign In
                                         </button>
+                                        <div className='flex justify-center mt-2 '>
+                                            <a href="/register/customer" className='text-slate-400 hover:text-[#b54545] text-sm font-poppins'>
+                                                Belum Punya Akun ?
+                                            </a>
+                                        </div>
                                     </div>
                                 </form>
                             </div>

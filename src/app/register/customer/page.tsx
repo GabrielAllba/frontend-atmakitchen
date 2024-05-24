@@ -5,6 +5,7 @@ import Alert from '@mui/material/Alert';
 import { useState } from 'react';
 import { CgProfile } from 'react-icons/cg';
 import { CiPhone } from 'react-icons/ci';
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 import axios from 'axios';
 
@@ -41,8 +42,11 @@ export default function Register() {
         })
             .then((response) => {
                 setUser(emptyUser);
-                if (response.status == 200) {
+                if (response.status === 200) {
                     setAlert(true);
+                    setTimeout(() => {
+                        window.location.href = '/login';  // Ganti '/login' dengan URL halaman login Anda
+                    }, 2000);  // 2000 ms = 2 detik, sesuaikan dengan kebutuhan Anda
                 }
             })
             .catch((err) => {
@@ -69,11 +73,19 @@ export default function Register() {
                 <div className="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 ">
                     <div className="card w-100 md:w-6/12 bg-primary border pb-8 rounded ">
                         <div className="card-body">
-                            <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center">
-                                <h2 className="mt-8 text-wrap text-center text-2xl font-bold text-accent break-words">
-                                    Atmakitchen
-                                </h2>
-                                <p className="mt-4 text-center text-sm text-[#555555]">Registrasikan akun anda </p>
+                            <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center flex">
+                                <div className='flex-none'>
+                                    <a href="/">
+                                    <FaArrowCircleLeft size={32} style={{ color: '#b54545'}} />
+                                    </a>
+                                </div>
+                                <div className='flex-auto'>
+                                    <h2 className="mt-8 text-wrap text-center text-2xl font-bold text-accent break-words">
+                                        Atmakitchen
+                                    </h2>
+                                    <p className="mt-4 text-center text-sm text-[#555555]">Registrasikan akun anda </p>
+                                </div>
+                                
                             </div>
                             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                                 <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmitPost}>
@@ -228,6 +240,11 @@ export default function Register() {
                                         >
                                             Buat Akun
                                         </button>
+                                        <div className='flex justify-center mt-2 '>
+                                            <a href="/login" className='text-slate-400 hover:text-[#b54545] text-sm font-poppins'>
+                                                Sudah Punya Akun ?
+                                            </a>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
