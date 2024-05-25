@@ -28,24 +28,45 @@ const EditJarak: React.FC = () => {
     const [updateModal, setUpdateModal] = useState<Transaction>();
     const cancelButtonEdit = useRef(null);
 
-    //fetch(transaction)
+    //fetch transaction
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const fetchTransaction = () => {
+    const fetchTransactions = () => {
         try {
-            setLoading(true);
+            // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/users/`,
-                params: {
-                    query: 'Bahan Baku',
-                },
+                url: `${apiUrl}/transactions`,
             }).then((response) => {
-                setFilteredData(response.data.bahan);
-                setLoading(false);
+                setFilteredData(response.data.transactions);
+                console.log(response.data.transactions);
             });
         } catch (error) {
-            console.error('Error fetching bahans:', error);
+            console.error('Error fetching resep:', error);
         }
+    };
+
+    useEffect(() => {
+        fetchTransactions();
+    }, []);
+
+    //UPDATE DATA
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, userId: number) => {
+        e.preventDefault();
+        console.log('riel');
+
+        axios({
+            method: 'put',
+            url: apiUrl + '/transactions/' + userId,
+            data: updateModal,
+        })
+            .then((response) => {
+                console.log(response);
+                setopenUpdateModal(false);
+                fetchTransactions();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     return (
@@ -146,7 +167,7 @@ const EditJarak: React.FC = () => {
                                                 )}
                                             </td>
                                             <td className="p-4 border">{item.delivery_fee}</td>
-                                            <td className="p-4 border">{item.total_price}</td>
+                                            <td className="p-4 border">{item.total_price! + item.delivery_fee!}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
@@ -231,12 +252,12 @@ const EditJarak: React.FC = () => {
                                                             className="space-y-6"
                                                             action="#"
                                                             method="PUT"
-                                                            // onSubmit={(e) => handleUpdate(e, editBahan?.id!)}
+                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!)}
                                                         >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
-                                                                        <p className=" text-[#AA2B2B] ">
+                                                                        <p className=" text-[#AA2B2B] font-bold">
                                                                             Edit Jarak pada Transaksi nomor{' '}
                                                                             {updateModal?.invoice_number}
                                                                         </p>
@@ -254,20 +275,35 @@ const EditJarak: React.FC = () => {
                                                                                 id="nama_bahan"
                                                                                 placeholder="Nama Bahan"
                                                                                 required
-                                                                                value={updateModal?.distance}
+                                                                                value={updateModal?.distance || 0}
                                                                                 type="number"
-                                                                                // onChange={(e) => {
-                                                                                //     const { value } = e.target;
-
-                                                                                //     setSubmitEditBahan({
-                                                                                //         ...submitEditBahan!,
-                                                                                //         nama: value,
-                                                                                //     });
-                                                                                // }}
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
+                                                                                    const distance = parseFloat(value);
+                                                                            
+                                                                                    let deliveryFee = 0;
+                                                                            
+                                                                                    if (distance <= 5) {
+                                                                                        deliveryFee = 10000;
+                                                                                    } else if (distance > 5 && distance <= 10) {
+                                                                                        deliveryFee = 15000;
+                                                                                    } else if (distance > 10 && distance <= 15) {
+                                                                                        deliveryFee = 20000;
+                                                                                    } else {
+                                                                                        deliveryFee = 25000;
+                                                                                    }
+                                                                                    
+                                                                                    let biayaAntar = updateModal?.total_price! + distance;
+                                                                                    setUpdateModal({
+                                                                                        ...updateModal!,
+                                                                                        distance: distance,
+                                                                                        delivery_fee: deliveryFee,
+                                                                                    });
+                                                                                }}
                                                                             ></input>
                                                                         </div>
 
-                                                                        <div className="mb-4">
+                                                                        {/* <div className="mb-4">
                                                                             <label
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="stok"
@@ -279,18 +315,19 @@ const EditJarak: React.FC = () => {
                                                                                 id="stok_bahan"
                                                                                 placeholder="Stok Bahan"
                                                                                 required
-                                                                                value={updateModal?.delivery_fee}
-                                                                                type="text"
-                                                                                // onChange={(e) => {
-                                                                                //     const { value } = e.target;
+                                                                                value={updateModal?.delivery_fee!}
+                                                                                type="number"
+                                                                                onChange={(e) => {
+                                                                                    const { value } = e.target;
 
-                                                                                //     setSubmitEditBahan({
-                                                                                //         ...submitEditBahan!,
-                                                                                //         stok: parseFloat(value) || 0,
-                                                                                //     });
-                                                                                // }}
+                                                                                    setUpdateModal({
+                                                                                        ...updateModal!,
+                                                                                        delivery_fee: parseFloat(value),
+                                                                                    });
+
+                                                                                }}
                                                                             ></input>
-                                                                        </div>
+                                                                        </div> */}
                                                                     </div>
                                                                 </div>
                                                             </div>
