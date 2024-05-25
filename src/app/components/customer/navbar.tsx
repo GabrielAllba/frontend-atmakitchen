@@ -141,7 +141,7 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }: { isAuth: boo
                                                         <Menu.Item>
                                                             {({ active }) => (
                                                                 <Link
-                                                                    href="/customer/profile"
+                                                                    href="/profile"
                                                                     className={classNames(
                                                                         active ? 'bg-gray-100' : '',
                                                                         'block px-4 py-2 text-sm text-gray-700 ',

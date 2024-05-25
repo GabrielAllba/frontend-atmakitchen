@@ -303,6 +303,44 @@ export default function Navbar() {
                                     </li>
                                 </ul>
                             </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <GiFlour className="w-4 h-4"></GiFlour>
+                                    <span>Konfirmasi</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/transaction/jarak`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/bahan/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Pengiriman</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={``}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/bahan/tambah'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Pembayaran</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
                         </div>
 
                         <li className="py-2 " onClick={handleLogout}>
