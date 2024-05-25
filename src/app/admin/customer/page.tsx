@@ -4,16 +4,14 @@ import { Listbox } from '@headlessui/react';
 import { User as UserFetch } from '@/dummy_data/user';
 import axios from 'axios';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'
-
+import { useRouter } from 'next/navigation';
 
 const option = [{ number: 10 }, { number: 20 }, { number: 50 }];
 
 const List: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState<boolean>(true);
-    const router = useRouter()
-
+    const router = useRouter();
 
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredData, setFilteredData] = useState<UserFetch[]>([]);
@@ -25,7 +23,7 @@ const List: React.FC = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
- 
+
     useEffect(() => {
         const fetchSearchResults = async () => {
             setFilteredData([]);
@@ -61,8 +59,7 @@ const List: React.FC = () => {
                 method: 'get',
                 url: `${apiUrl}/users/customer`,
                 params: {
-                    query: '4',
-                    
+                    query: '1',
                 },
             }).then((response) => {
                 setFilteredData(response.data.users);
@@ -76,7 +73,6 @@ const List: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, []);
-    
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -170,9 +166,7 @@ const List: React.FC = () => {
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <Link href={`/admin/customer/histori/${item.id}`} passHref>
-                                                        <button
-                                                            className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]"
-                                                        >
+                                                        <button className="flex items-center rounded-md bg-[#E7F9FD] px-4 py-1 font-poppins w-fit text-[#1D6786]">
                                                             Cek Histori Pesanan
                                                         </button>
                                                     </Link>

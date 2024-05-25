@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TransaksiContent from './TransaksiContent';
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -49,7 +49,7 @@ const option = [
     { opsi: 'Selesai' },
 ];
 
-export default function TransaksiTabs({ id }: { id: number }) {
+export default function TransaksiTabs({ id }: { id: string }) {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {

@@ -10,8 +10,7 @@ import { Hampers } from '@/dummy_data/hampers';
 import { Transaction } from '@/dummy_data/transaction';
 import axios from 'axios';
 import { TransactionDetail } from '@/dummy_data/transaction_detaill';
-import { usePathname, useSearchParams } from 'next/navigation'
-
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const option = [
     { opsi: 'Menunggu Jarak' },
@@ -26,9 +25,9 @@ const option = [
     { opsi: 'Selesai' },
 ];
 
-export default function TransaksiContent({ status, id }: { status: string, id: number}) {
+export default function TransaksiContent({ status, id }: { status: string; id: string }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    console.log(id)
+    console.log(id);
 
     const [fetchTransaction, setFetchTransaction] = useState<Transaction[]>([]);
     const [fetchTransactionDetail, setFetchTransactionDetail] = useState<TransactionDetail[]>([]);
@@ -39,7 +38,6 @@ export default function TransaksiContent({ status, id }: { status: string, id: n
     const cancelButtonRef = useRef(null);
 
     useEffect(() => {
-
         if (status == 'Semua') {
             try {
                 axios({
@@ -107,7 +105,7 @@ export default function TransaksiContent({ status, id }: { status: string, id: n
             // setProduct({ ...product, photo: file });
         }
     };
-    
+
     if (!id) {
         return <p>Loading...</p>;
     }
