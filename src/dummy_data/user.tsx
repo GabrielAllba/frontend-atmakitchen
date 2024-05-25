@@ -12,4 +12,4 @@ interface User {
 const user_data: User[] = [];
 
 export type { User };
-export default { user_data };
+export { user_data };
