@@ -170,7 +170,7 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
 
     const [jumlahBeli, setJumlahBeli] = useState<number>(0);
 
-    const handleTambahKeCart = (e: React.FormEvent<HTMLFormElement>, jenis: string) => {
+    const handleTambahKeCart = async (e: React.FormEvent<HTMLFormElement>, jenis: string) => {
         e.preventDefault();
 
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -211,16 +211,28 @@ export default function TitipanHome({ isAuth }: { isAuth: boolean }) {
             };
         }
 
-        axios({
-            method: 'post',
-            url: apiUrl + '/cart',
-            data: newCart,
+        const cartResponse = await axios.post(`${apiUrl}/cart`, newCart, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
             },
-        }).then((response) => {
-            console.log(response);
         });
+
+        console.log('asdfklasdfadsf');
+        const cart = cartResponse.data.cart;
+        const product = cartResponse.data.cart.product;
+
+        const updatedStock = product.stock - jumlahBeli;
+        const stockResponse = await axios.put(
+            `${apiUrl}/product/stock/${product.id}`,
+            {
+                stock: updatedStock,
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            },
+        );
 
         console.log(newCart);
         setAlert(true);

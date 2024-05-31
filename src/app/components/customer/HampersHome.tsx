@@ -227,7 +227,7 @@ export default function HampersHome({ isAuth }: { isAuth: boolean }) {
 
     const [jumlahBeli, setJumlahBeli] = useState<number>(0);
 
-    const handleTambahKeCart = (e: React.FormEvent<HTMLFormElement>, jenis: string) => {
+    const handleTambahKeCart = async (e: React.FormEvent<HTMLFormElement>, jenis: string) => {
         e.preventDefault();
         console.log(productCheckout);
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -265,16 +265,72 @@ export default function HampersHome({ isAuth }: { isAuth: boolean }) {
             };
         }
 
-        axios({
-            method: 'post',
-            url: apiUrl + '/cart',
-            data: newCart,
+        const cartResponse = await axios.post(`${apiUrl}/cart`, newCart, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
             },
-        }).then((response) => {
-            console.log(response);
         });
+
+        console.log('asdfklasdfadsf');
+        const cart = cartResponse.data.cart;
+        const hampers = cartResponse.data.cart.hampers;
+
+        if (jenis == 'pre-order') {
+            try {
+                const createStockRes = await axios.post(
+                    `${apiUrl}/quota/hampers/tanggal`,
+                    {
+                        hampers_id: hampers.id,
+                        tanggal: deliveryDateNext2Day,
+                        quota: hampers.daily_quota - newCart.quantity,
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json; charset=utf-8',
+                        },
+                    },
+                );
+            } catch (error: any) {
+                console.error(error.response.status);
+
+                if (error.response.status == 409) {
+                    const getQuota = await axios.get(
+                        `${apiUrl}/quota/hampers/tanggal/${hampers.id}/${deliveryDateNext2Day}`,
+                        {
+                            headers: {
+                                'Content-Type': 'application/json; charset=utf-8',
+                            },
+                        },
+                    );
+                    const updateQuotaRes = await axios.put(
+                        `${apiUrl}/quota/hampers/tanggal`,
+                        {
+                            hampers_id: hampers.id,
+                            tanggal: deliveryDateNext2Day,
+                            quota: getQuota.data.quota.quota - newCart.quantity,
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json; charset=utf-8',
+                            },
+                        },
+                    );
+                }
+            }
+        } else if (jenis == 'ready-stock') {
+            const updatedStock = hampers.stock - jumlahBeli;
+            const stockResponse = await axios.put(
+                `${apiUrl}/hampers/stock/${hampers.id}`,
+                {
+                    stock: updatedStock,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
+                },
+            );
+        }
 
         console.log(newCart);
     };
