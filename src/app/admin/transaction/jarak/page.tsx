@@ -50,23 +50,25 @@ const EditJarak: React.FC = () => {
     }, []);
 
     //UPDATE DATA
-    const handleUpdate = (e: React.FormEvent<HTMLFormElement>, userId: number) => {
+    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number) => {
         e.preventDefault();
         console.log('riel');
 
-        axios({
-            method: 'put',
-            url: apiUrl + '/transactions/' + userId,
-            data: updateModal,
-        })
-            .then((response) => {
-                console.log(response);
-                setopenUpdateModal(false);
-                fetchTransactions();
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        try {
+            // Update the transaction
+            const transactionResponse = await axios.put(`${apiUrl}/transactions/${userId}`, updateModal);
+            console.log(transactionResponse);
+
+            // Update the status
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/Menunggu Pembayaran`);
+            console.log(statusResponse);
+
+            // Close the modal and fetch transactions
+            setopenUpdateModal(false);
+            fetchTransactions();
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (
@@ -280,20 +282,28 @@ const EditJarak: React.FC = () => {
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
                                                                                     const distance = parseFloat(value);
-                                                                            
+
                                                                                     let deliveryFee = 0;
-                                                                            
+
                                                                                     if (distance <= 5) {
                                                                                         deliveryFee = 10000;
-                                                                                    } else if (distance > 5 && distance <= 10) {
+                                                                                    } else if (
+                                                                                        distance > 5 &&
+                                                                                        distance <= 10
+                                                                                    ) {
                                                                                         deliveryFee = 15000;
-                                                                                    } else if (distance > 10 && distance <= 15) {
+                                                                                    } else if (
+                                                                                        distance > 10 &&
+                                                                                        distance <= 15
+                                                                                    ) {
                                                                                         deliveryFee = 20000;
                                                                                     } else {
                                                                                         deliveryFee = 25000;
                                                                                     }
-                                                                                    
-                                                                                    let biayaAntar = updateModal?.total_price! + distance;
+
+                                                                                    let biayaAntar =
+                                                                                        updateModal?.total_price! +
+                                                                                        distance;
                                                                                     setUpdateModal({
                                                                                         ...updateModal!,
                                                                                         distance: distance,

@@ -294,7 +294,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                 hampers_quantity: item.jenis_item === 'Hampers' ? item.quantity : null,
                 hampers_price: item.jenis_item === 'Hampers' ? item.hampers?.price : null,
                 jenis: item.jenis,
-                tanggal_pengiriman: item.tanggal_pengiriman,
+                tanggal_pengiriman: item.tanggal_pengiriman != null ? item.tanggal_pengiriman : getToday(),
                 transaction_status: 'Menunggu Jarak',
                 jenis_item: item.jenis_item,
             };
