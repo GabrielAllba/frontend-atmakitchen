@@ -122,12 +122,38 @@ export default function TransaksiContent({ status }: { status: string }) {
         });
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, invoice_number: string) => {
         const files = e.target.files;
         if (files && files.length > 0) {
             const file = files[0];
+            console.log(files);
+            const formData = new FormData();
+
+            formData.append('photo', file);
+
+            try {
+                // Upload the file
+                const response = await axios({
+                    method: 'put',
+                    url: `${apiUrl}/transactions/bukti_pembayaran/${invoice_number}`,
+                    data: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                console.log(response);
+
+                // Update the status after the file upload is successful
+                const statusResponse = await axios.put(
+                    `${apiUrl}/transactions/status/invoice/${invoice_number}/Sudah Bayar`,
+                );
+                console.log(statusResponse);
+            } catch (err) {
+                console.log(err);
+            }
         }
     };
+
     const fetchImage = async (name: string) => {
         try {
             const response = await axios.get(apiUrl + name, {
@@ -284,7 +310,9 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                         id="foto_produk"
                                                         type="file"
                                                         required
-                                                        onChange={handleFileChange}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                            handleFileChange(e, item.invoice_number!);
+                                                        }}
                                                     ></input>
                                                 </div>
                                             )}

@@ -63,6 +63,9 @@ const EditJarak: React.FC = () => {
             const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/Menunggu Pembayaran`);
             console.log(statusResponse);
 
+            const updateTransferNominalResponse = await axios.put(`${apiUrl}/transactions/transfer_nominal/${userId}`);
+            console.log(updateTransferNominalResponse);
+
             // Close the modal and fetch transactions
             setopenUpdateModal(false);
             fetchTransactions();

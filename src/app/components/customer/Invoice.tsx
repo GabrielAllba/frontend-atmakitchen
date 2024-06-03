@@ -243,22 +243,26 @@ export default function Invoice({ id, email, nota }: { id: string; email: string
                                 <th
                                     scope="row"
                                     colSpan={3}
-                                    className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0"
+                                    className="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0"
                                 >
                                     Ongkir
-                                    {nota.transaksi[0].distance ? nota.transaksi[0].distance + '(km)' : ' (km) '}
+                                    {nota.transaksi[0].distance ? ' (' + nota.transaksi[0].distance + ' km)' : ' (km) '}
                                 </th>
                                 <th
                                     scope="row"
-                                    className="pl-6 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden"
+                                    className="pl-6 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden"
                                 >
                                     Ongkir
                                     {nota.transaksi[0].distance ? nota.transaksi[0].distance + '(km)' : ' (km) '}
                                 </th>
                                 {nota.transaksi[0].distance ? (
-                                    nota.transaksi[0].distance
+                                    <td className="pl-3 pr-6 pt-6 text-right text-sm text-gray-500 sm:pr-0">
+                                        Rp. {nota.transaksi[0].delivery_fee?.toLocaleString('id-ID')}
+                                    </td>
                                 ) : (
-                                    <td className="pl-3 pr-6 pt-4 text-right text-sm text-gray-500 sm:pr-0">-</td>
+                                    <td className="pl-3 pr-6 pt-6 text-right text-sm text-gray-500 sm:pr-0">
+                                        Rp. {nota.transaksi[0].delivery_fee?.toLocaleString('id-ID')}
+                                    </td>
                                 )}
                             </tr>
                             <tr>
