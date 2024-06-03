@@ -351,9 +351,9 @@ export default function Navbar() {
                                         <Link
                                             passHref
                                             onClick={handleClickLink}
-                                            href={``}
+                                            href={`/admin/transaction/pembayaran`}
                                             className={`text-[#7D848C] font-poppins flex items-center ${
-                                                pathname === '/admin/bahan/tambah'
+                                                pathname === '/admin/transaction/pembayaran'
                                                     ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
                                                     : ''
                                             }`}
