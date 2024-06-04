@@ -15,6 +15,8 @@ import { BahanResep, ResepBahan } from '@/dummy_data/resep_bahan';
 import { ProductFetch } from '@/dummy_data/product';
 
 const HomeMO: React.FC = () => {
+    const [latestClickTransactionDetailId, setLatestClickTransactionDetailId] = useState<number>(0);
+
     const cancelButtonRef = useRef(null);
 
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
@@ -73,29 +75,6 @@ const HomeMO: React.FC = () => {
             console.error('Error fetching transaction details by user:', error);
         }
     }, []);
-
-    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number) => {
-        e.preventDefault();
-        // console.log('riel');
-
-        try {
-            // Update the transaction
-            const transactionResponse = await axios.put(`${apiUrl}/transactions/${userId}`, updateModal);
-            // console.log(transactionResponse);
-
-            // Update the status
-            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/Menunggu Pembayaran`);
-            // console.log(statusResponse);
-
-            const updateTransferNominalResponse = await axios.put(`${apiUrl}/transactions/transfer_nominal/${userId}`);
-            // console.log(updateTransferNominalResponse);
-
-            // Close the modal and fetch transactions
-            setopenUpdateModal(false);
-        } catch (err) {
-            console.log(err);
-        }
-    };
 
     const getToday = (): string => {
         const today = new Date();
@@ -187,6 +166,13 @@ const HomeMO: React.FC = () => {
     const [cekProduk, setCekProduk] = useState<ProductFetch[]>([]);
 
     useEffect(() => {
+        setTransactionDetailIdHampers(0);
+    }, [transactionDetailIdProduct]);
+    useEffect(() => {
+        setTransactionDetailIdProduct(0);
+    }, [transactionDetailIdHampers]);
+
+    useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;
@@ -237,6 +223,48 @@ const HomeMO: React.FC = () => {
         getProduk();
         getAllBahan();
     }, [hampersId, transactionDetailIdHampers]);
+
+    const handleProses = async (e: React.FormEvent<HTMLFormElement>, id: number, tipe: string) => {
+        e.preventDefault();
+        // console.log('riel');
+
+        try {
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/detail/${id}/Diproses`);
+
+            console.log(statusResponse.data);
+
+            setopenUpdateModal(false);
+        } catch (err) {
+            console.log(err);
+        }
+
+        console.log('start');
+
+        if (tipe == 'Product') {
+            console.log(cekBahanResep);
+            for (let index = 0; index < cekBahanResep.length; index++) {
+                const bahan = cekBahanResep[index];
+                const jumlah = bahan!.quantity! * jumlahBarang;
+                const kurangiBahan = await axios.put(`${apiUrl}/bahan/quantity/${bahan.bahan?.id}/${jumlah}`);
+                console.log(kurangiBahan.data);
+            }
+        }
+
+        if (tipe == 'Hampers') {
+            // console.log(cekProduk);
+            for (let index = 0; index < cekProduk.length; index++) {
+                const bahanresep = cekProduk[index].bahan_reseps!;
+
+                for (let index = 0; index < bahanresep.length; index++) {
+                    const bahan = bahanresep[index];
+
+                    const jumlah = bahan!.quantity! * jumlahBarang;
+                    const kurangiBahan = await axios.put(`${apiUrl}/bahan/quantity/${bahan.bahan?.id}/${jumlah}`);
+                }
+            }
+        }
+        window.location.reload();
+    };
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -394,8 +422,11 @@ const HomeMO: React.FC = () => {
                                                     {item.jenis_item == 'Titipan' && (
                                                         <button
                                                             className="rounded relative p-2 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  "
-                                                            onClick={() => {
-                                                                console.log(item);
+                                                            onClick={(e: any) => {
+                                                                setUpdateModal(item);
+                                                                setJumlahBarang(item.product_quantity!);
+
+                                                                handleProses(e, item.id!, 'Titipan');
                                                             }}
                                                         >
                                                             <span>Proses</span>
@@ -415,6 +446,7 @@ const HomeMO: React.FC = () => {
                                                                     item.product != null &&
                                                                         setProductId(item.product.id!);
                                                                     setTransactionDetailIdProduct(item.id!);
+                                                                    setLatestClickTransactionDetailId(item.id!);
                                                                 }
                                                             }}
                                                         >
@@ -435,6 +467,7 @@ const HomeMO: React.FC = () => {
                                                                     item.hampers != null &&
                                                                         setHampersId(item.hampers.id!);
                                                                     setTransactionDetailIdHampers(item.id!);
+                                                                    setLatestClickTransactionDetailId(item.id!);
                                                                 }
                                                             }}
                                                         >
@@ -511,12 +544,7 @@ const HomeMO: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form
-                                                            className="space-y-6"
-                                                            action="#"
-                                                            method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!)}
-                                                        >
+                                                        <form className="space-y-6" action="#" method="PUT">
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
@@ -593,7 +621,14 @@ const HomeMO: React.FC = () => {
                                                                     <button
                                                                         className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
                                                                         type="submit"
-                                                                        onClick={() => setopenUpdateModal(false)}
+                                                                        onClick={(e: any) => {
+                                                                            setopenUpdateModal(false);
+                                                                            handleProses(
+                                                                                e,
+                                                                                latestClickTransactionDetailId,
+                                                                                'Product',
+                                                                            );
+                                                                        }}
                                                                     >
                                                                         Proses
                                                                     </button>
@@ -653,12 +688,7 @@ const HomeMO: React.FC = () => {
                                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
                                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                     <div className="sm:items-start">
-                                                        <form
-                                                            className="space-y-6"
-                                                            action="#"
-                                                            method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!)}
-                                                        >
+                                                        <form className="space-y-6" action="#" method="PUT">
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
@@ -799,7 +829,14 @@ const HomeMO: React.FC = () => {
                                                                     <button
                                                                         className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
                                                                         type="submit"
-                                                                        onClick={() => setopenUpdateModalHampers(false)}
+                                                                        onClick={(e: any) => {
+                                                                            setopenUpdateModal(false);
+                                                                            handleProses(
+                                                                                e,
+                                                                                latestClickTransactionDetailId,
+                                                                                'Hampers',
+                                                                            );
+                                                                        }}
                                                                     >
                                                                         Proses
                                                                     </button>
