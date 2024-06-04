@@ -141,9 +141,11 @@ export default function TambahResep() {
             for (let i = 0; i < addBahan!.length; i++) {
                 const bahan = addBahan![i];
                 const detailFormData = new FormData();
+                console.log(bahan);
                 detailFormData.append('bahan_id', String(bahan.bahan.id));
                 detailFormData.append('quantity', String(bahan.quantity));
                 detailFormData.append('unit', String(bahan.bahan.satuan));
+                detailFormData.append('product_id', String(resep.product_id));
 
                 await axios({
                     method: 'post',

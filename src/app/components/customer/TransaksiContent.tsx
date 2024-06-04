@@ -293,12 +293,12 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                 </p>
                                                 {item.product && (
                                                     <p className="text-xs  font-bold">
-                                                        Rp. {item.product?.price.toLocaleString('id-ID')}
+                                                        {item.product?.price.toLocaleString('id-ID')}
                                                     </p>
                                                 )}
                                                 {item.hampers && (
                                                     <p className="text-xs  font-bold">
-                                                        Rp. {item.hampers?.price!.toLocaleString('id-ID')}
+                                                        {item.hampers?.price!.toLocaleString('id-ID')}
                                                     </p>
                                                 )}
                                             </div>
