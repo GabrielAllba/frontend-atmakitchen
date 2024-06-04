@@ -1,3 +1,5 @@
+import { BahanResep } from './resep_bahan';
+
 interface Product {
     id?: number;
     name: string;
@@ -10,6 +12,7 @@ interface Product {
     consignation_id: number | null;
     photo: File | null;
     tag?: string;
+    bahan_reseps?: BahanResep[];
 }
 
 interface ProductFetch {
@@ -24,6 +27,7 @@ interface ProductFetch {
     consignation_id: number | null;
     photo: string | null;
     tag?: string;
+    bahan_reseps?: BahanResep[];
 }
 
 const produk_data: Product[] = [];

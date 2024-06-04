@@ -12,6 +12,7 @@ import { Alert } from '@mui/material';
 import { TransactionDetail } from '@/dummy_data/transaction_detaill';
 import Invoice from '@/app/components/customer/Invoice';
 import { BahanResep, ResepBahan } from '@/dummy_data/resep_bahan';
+import { ProductFetch } from '@/dummy_data/product';
 
 const HomeMO: React.FC = () => {
     const cancelButtonRef = useRef(null);
@@ -34,10 +35,14 @@ const HomeMO: React.FC = () => {
     const [updateModal, setUpdateModal] = useState<TransactionDetail>();
     const cancelButtonEdit = useRef(null);
 
+    const [openUpdateModalHampers, setopenUpdateModalHampers] = useState<boolean>(false);
+    const [updateModalHampers, setUpdateModalHampers] = useState<TransactionDetail>();
+    const cancelButtonEditHampers = useRef(null);
+
     const [fetchTransaction, setFetchTransaction] = useState<Transaction[]>([]);
     const [fetchTransactionDetail, setFetchTransactionDetail] = useState<TransactionDetail[]>([]);
 
-    const [productId, setProductId] = useState<number>(0);
+    const [productId, setProductId] = useState<number>();
     const [hampersId, setHampersId] = useState<number>(0);
     const [jumlahBarang, setJumlahBarang] = useState<number>(0);
     //fetch transaction
@@ -71,19 +76,19 @@ const HomeMO: React.FC = () => {
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number) => {
         e.preventDefault();
-        console.log('riel');
+        // console.log('riel');
 
         try {
             // Update the transaction
             const transactionResponse = await axios.put(`${apiUrl}/transactions/${userId}`, updateModal);
-            console.log(transactionResponse);
+            // console.log(transactionResponse);
 
             // Update the status
             const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/Menunggu Pembayaran`);
-            console.log(statusResponse);
+            // console.log(statusResponse);
 
             const updateTransferNominalResponse = await axios.put(`${apiUrl}/transactions/transfer_nominal/${userId}`);
-            console.log(updateTransferNominalResponse);
+            // console.log(updateTransferNominalResponse);
 
             // Close the modal and fetch transactions
             setopenUpdateModal(false);
@@ -127,21 +132,111 @@ const HomeMO: React.FC = () => {
     const [clickedIdTransaksi, setClickedIdTransaksi] = useState<string>('');
 
     const [cekBahanResep, setCekBahanResep] = useState<BahanResep[]>([]);
-    const [transactionDetailId, setTransactionDetailId] = useState(0);
+    const [transactionDetailIdProduct, setTransactionDetailIdProduct] = useState(0);
+    const [transactionDetailIdHampers, setTransactionDetailIdHampers] = useState(0);
+
+    const [kekurangan, setKekurangan] = useState<boolean>(false);
+    const [elemn, setElemn] = useState<any>();
+    const isFirstRender = useRef(true);
 
     useEffect(() => {
-        const getResepBahan = async () => {
-            const response = await axios.get(`${apiUrl}/bahan_resep/${productId}`);
-            setCekBahanResep(response.data.bahan_resep);
-            console.log('adfasdfasdf');
-            console.log(cekBahanResep);
-        };
-        if (productId != 0) {
-            getResepBahan();
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
         }
-    }, [productId]);
 
-    useEffect(() => {}, [hampersId]);
+        const getResepBahan = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/bahan_resep/${productId}`);
+                setCekBahanResep(response.data.bahan_resep);
+                setElemn(response.data.bahan_resep);
+            } catch (error) {
+                console.error('Error fetching resep bahan:', error);
+            }
+        };
+
+        const getAllBahan = async () => {
+            setKekurangan(false);
+            try {
+                const response = await axios.get(
+                    `${apiUrl}/transaction_details/get_all_bahan/${transactionDetailIdProduct}`,
+                );
+
+                const allbahan = response.data.bahan;
+
+                const response_bahan_resep = await axios.get(`${apiUrl}/bahan_resep/${productId}`);
+                const bahan_resep = response_bahan_resep.data.bahan_resep;
+
+                for (let index = 0; index < bahan_resep.length; index++) {
+                    const element = bahan_resep[index].quantity * jumlahBarang;
+                    const stok_bahan = allbahan[index].stok;
+
+                    if (element > stok_bahan) {
+                        setKekurangan(true);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching all bahan:', error);
+            }
+        };
+
+        getResepBahan();
+        getAllBahan();
+    }, [productId, transactionDetailIdProduct]);
+
+    const [cekProduk, setCekProduk] = useState<ProductFetch[]>([]);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const getProduk = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/hampers/product/${hampersId}`);
+                setCekProduk(response.data.products);
+                console.log(response.data.products);
+            } catch (error) {
+                console.error('Error fetching resep bahan:', error);
+            }
+        };
+
+        const getAllBahan = async () => {
+            try {
+                const response_hampers = await axios.get(`${apiUrl}/hampers/product/${hampersId}`);
+                const products = response_hampers.data.products;
+
+                for (let index = 0; index < products.length; index++) {
+                    const product: ProductFetch = products[index];
+
+                    const response = await axios.get(
+                        `${apiUrl}/transaction_details/get_all_bahan/product/${product.id}`,
+                    );
+
+                    const allbahan = response.data.bahan;
+
+                    const response_bahan_resep = await axios.get(`${apiUrl}/bahan_resep/${product.id}`);
+                    const bahan_resep = response_bahan_resep.data.bahan_resep;
+
+                    for (let index = 0; index < bahan_resep.length; index++) {
+                        const element = bahan_resep[index].quantity * jumlahBarang;
+                        const stok_bahan = allbahan[index].stok;
+
+                        if (element > stok_bahan) {
+                            setKekurangan(true);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching all bahan:', error);
+            }
+        };
+
+        setKekurangan(false);
+        getProduk();
+        getAllBahan();
+    }, [hampersId, transactionDetailIdHampers]);
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -149,7 +244,15 @@ const HomeMO: React.FC = () => {
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
                         <div className="flex justify-center pb-4 flex-wrap flex-col">
-                            <p className="text-[#AA2B2B] font-semibold">Transaksi yang perlu diproses hari ini</p>
+                            <p
+                                className="text-[#AA2B2B] font-semibold"
+                                onClick={() => {
+                                    console.log('halo dek');
+                                    console.log(elemn);
+                                }}
+                            >
+                                Transaksi yang perlu diproses hari ini
+                            </p>
                             <p>{formatDate(getToday())}</p>
                         </div>
                         <div className="pb-4 flex justify-start items-center">
@@ -298,30 +401,41 @@ const HomeMO: React.FC = () => {
                                                             <span>Proses</span>
                                                         </button>
                                                     )}
-                                                    {item.jenis_item != 'Titipan' && (
+                                                    {item.jenis_item == 'Produk Toko' && (
                                                         <button
                                                             className="rounded relative p-2 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  "
                                                             onClick={() => {
                                                                 setUpdateModal(item);
-                                                                setopenUpdateModal(true);
-                                                                console.log('halo');
                                                                 setJumlahBarang(
                                                                     item.product_quantity! | item.hampers_quantity!,
                                                                 );
-                                                                console.log(productId);
+
                                                                 {
+                                                                    setopenUpdateModal(true);
                                                                     item.product != null &&
                                                                         setProductId(item.product.id!);
-                                                                    setTransactionDetailId(item.id!);
-                                                                    console.log(transactionDetailId);
+                                                                    setTransactionDetailIdProduct(item.id!);
                                                                 }
-                                                                {
-                                                                    item.product != null &&
-                                                                        setHampersId(item.hampers?.id!);
-                                                                    setTransactionDetailId(item.id!);
-                                                                }
+                                                            }}
+                                                        >
+                                                            <span>Proses</span>
+                                                        </button>
+                                                    )}
+                                                    {item.jenis_item == 'Hampers' && (
+                                                        <button
+                                                            className="rounded relative p-2 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  "
+                                                            onClick={() => {
+                                                                setUpdateModalHampers(item);
+                                                                setJumlahBarang(
+                                                                    item.product_quantity! | item.hampers_quantity!,
+                                                                );
 
-                                                                console.log(item);
+                                                                {
+                                                                    setopenUpdateModalHampers(true);
+                                                                    item.hampers != null &&
+                                                                        setHampersId(item.hampers.id!);
+                                                                    setTransactionDetailIdHampers(item.id!);
+                                                                }
                                                             }}
                                                         >
                                                             <span>Proses</span>
@@ -363,6 +477,7 @@ const HomeMO: React.FC = () => {
                                 </button>
                             </div>
                         </div>
+                        {/* start product modal */}
                         <Transition.Root show={openUpdateModal} as={Fragment}>
                             <Dialog
                                 as="div"
@@ -457,7 +572,7 @@ const HomeMO: React.FC = () => {
                                                                                         <td className="p-2 border border-gray-300 text-left  table-cell text-gray-500">
                                                                                             {bahan.quantity! *
                                                                                                 jumlahBarang -
-                                                                                                bahan.bahan?.stok! <
+                                                                                                bahan.bahan?.stok! <=
                                                                                             0
                                                                                                 ? '-'
                                                                                                 : bahan.quantity! *
@@ -474,13 +589,15 @@ const HomeMO: React.FC = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                                <button
-                                                                    className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
-                                                                    type="submit"
-                                                                    onClick={() => setopenUpdateModal(false)}
-                                                                >
-                                                                    Proses
-                                                                </button>
+                                                                {!kekurangan && (
+                                                                    <button
+                                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                        type="submit"
+                                                                        onClick={() => setopenUpdateModal(false)}
+                                                                    >
+                                                                        Proses
+                                                                    </button>
+                                                                )}
 
                                                                 <button
                                                                     className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
@@ -500,6 +617,213 @@ const HomeMO: React.FC = () => {
                                 </div>
                             </Dialog>
                         </Transition.Root>
+                        {/* end product modal */}
+
+                        {/* start hampers modal */}
+                        <Transition.Root show={openUpdateModalHampers} as={Fragment}>
+                            <Dialog
+                                as="div"
+                                className="relative z-10"
+                                initialFocus={cancelButtonEditHampers}
+                                onClose={setopenUpdateModalHampers}
+                            >
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="ease-out duration-300"
+                                    enterFrom="opacity-0"
+                                    enterTo="opacity-100"
+                                    leave="ease-in duration-200"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                >
+                                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                                </Transition.Child>
+
+                                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                                        <Transition.Child
+                                            as={Fragment}
+                                            enter="ease-out duration-300"
+                                            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                            enterTo="opacity-100 translate-y-0 sm:scale-100"
+                                            leave="ease-in duration-200"
+                                            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                        >
+                                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
+                                                <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                                    <div className="sm:items-start">
+                                                        <form
+                                                            className="space-y-6"
+                                                            action="#"
+                                                            method="PUT"
+                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!)}
+                                                        >
+                                                            <div className="grid grid-cols-1 gap-4">
+                                                                <div className="h-min rounded-md border bg-white">
+                                                                    <div className="border-b p-4">
+                                                                        <p className=" text-[#AA2B2B] font-bold">
+                                                                            Cek Bahan Baku Pada{' '}
+                                                                            {updateModalHampers?.hampers?.hampers_name}(
+                                                                            {jumlahBarang})
+                                                                        </p>
+                                                                    </div>
+
+                                                                    <div className="p-4 overflow-auto">
+                                                                        <table className="min-w-full border-collapse block table">
+                                                                            <thead className="table-header-group">
+                                                                                <tr className="border  table-row">
+                                                                                    <th className="bg-gray-200 p-2 text-gray-600 font-bold border border-gray-300  table-cell">
+                                                                                        Nama Produk
+                                                                                    </th>
+                                                                                    <th className="bg-gray-200 p-2 text-gray-600 font-bold border border-gray-300  table-cell">
+                                                                                        List Bahan - Jumlah Dibutuhkan
+                                                                                    </th>
+                                                                                    <th className="bg-gray-200 p-2 text-gray-600 font-bold border border-gray-300  table-cell">
+                                                                                        Stok
+                                                                                    </th>
+                                                                                    <th className="bg-gray-200 p-2 text-gray-600 font-bold border border-gray-300  table-cell">
+                                                                                        Kekurangan
+                                                                                    </th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody className="table-row-group">
+                                                                                {cekProduk &&
+                                                                                    cekProduk.map(
+                                                                                        (
+                                                                                            produk: ProductFetch,
+                                                                                            index: any,
+                                                                                        ) => (
+                                                                                            <tr
+                                                                                                key={index}
+                                                                                                className="border border-none table-row"
+                                                                                            >
+                                                                                                <td className="p-2 border border-gray-300 text-left table-cell text-gray-500">
+                                                                                                    {produk.name}
+                                                                                                </td>
+                                                                                                <td className="p-2 border border-gray-300 text-left table-cell text-gray-500">
+                                                                                                    {produk.bahan_reseps?.map(
+                                                                                                        (
+                                                                                                            bahan: BahanResep,
+                                                                                                            idx: any,
+                                                                                                        ) => (
+                                                                                                            <div
+                                                                                                                key={
+                                                                                                                    idx
+                                                                                                                }
+                                                                                                            >
+                                                                                                                {
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.nama
+                                                                                                                }{' '}
+                                                                                                                -{' '}
+                                                                                                                {bahan.quantity! *
+                                                                                                                    jumlahBarang +
+                                                                                                                    ' ' +
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.satuan}
+                                                                                                                -{' '}
+                                                                                                                {' @ ' +
+                                                                                                                    bahan.quantity +
+                                                                                                                    ' ' +
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.satuan}
+                                                                                                            </div>
+                                                                                                        ),
+                                                                                                    )}
+                                                                                                </td>
+                                                                                                <td className="p-2 border border-gray-300 text-left table-cell text-gray-500">
+                                                                                                    {produk.bahan_reseps?.map(
+                                                                                                        (
+                                                                                                            bahan: BahanResep,
+                                                                                                            idx: any,
+                                                                                                        ) => (
+                                                                                                            <div
+                                                                                                                key={
+                                                                                                                    idx
+                                                                                                                }
+                                                                                                            >
+                                                                                                                {
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.stok
+                                                                                                                }
+                                                                                                                {' ' +
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.satuan}
+                                                                                                            </div>
+                                                                                                        ),
+                                                                                                    )}
+                                                                                                </td>
+                                                                                                <td className="p-2 border border-gray-300 text-left table-cell text-gray-500">
+                                                                                                    {produk.bahan_reseps?.map(
+                                                                                                        (
+                                                                                                            bahan: BahanResep,
+                                                                                                            idx: any,
+                                                                                                        ) => (
+                                                                                                            <div>
+                                                                                                                {bahan.quantity! *
+                                                                                                                    jumlahBarang -
+                                                                                                                    bahan
+                                                                                                                        .bahan
+                                                                                                                        ?.stok! <=
+                                                                                                                0
+                                                                                                                    ? '-'
+                                                                                                                    : bahan.quantity! *
+                                                                                                                          jumlahBarang -
+                                                                                                                      bahan
+                                                                                                                          .bahan
+                                                                                                                          ?.stok! +
+                                                                                                                      ' ' +
+                                                                                                                      bahan
+                                                                                                                          .bahan
+                                                                                                                          ?.satuan}
+                                                                                                            </div>
+                                                                                                        ),
+                                                                                                    )}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        ),
+                                                                                    )}
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                                {!kekurangan && (
+                                                                    <button
+                                                                        className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
+                                                                        type="submit"
+                                                                        onClick={() => setopenUpdateModalHampers(false)}
+                                                                    >
+                                                                        Proses
+                                                                    </button>
+                                                                )}
+
+                                                                <button
+                                                                    className="mx-3 rounded-md bg-white px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-[#AA2B2B] outline-none  hover:bg-gray-100 shadow-sm ring-2 ring-inset ring-[#AA2B2B]"
+                                                                    type="button"
+                                                                    onClick={() => setopenUpdateModalHampers(false)}
+                                                                    ref={cancelButtonEdit}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </Dialog.Panel>
+                                        </Transition.Child>
+                                    </div>
+                                </div>
+                            </Dialog>
+                        </Transition.Root>
+                        {/* end hampers modal */}
 
                         <Transition.Root show={open} as={Fragment}>
                             <Dialog className="relative z-50" initialFocus={cancelButtonRef} onClose={setOpen}>
