@@ -13,6 +13,7 @@ import { TransactionDetail } from '@/dummy_data/transaction_detaill';
 import Invoice from '@/app/components/customer/Invoice';
 import { BahanResep, ResepBahan } from '@/dummy_data/resep_bahan';
 import { ProductFetch } from '@/dummy_data/product';
+import { PemakaianBahanBaku } from '@/dummy_data/pemakaian_bahan_baku';
 
 const HomeMO: React.FC = () => {
     const [latestClickTransactionDetailId, setLatestClickTransactionDetailId] = useState<number>(0);
@@ -49,7 +50,7 @@ const HomeMO: React.FC = () => {
     const [jumlahBarang, setJumlahBarang] = useState<number>(0);
     //fetch transaction
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    useEffect(() => {
+    const fetchTransactionAndDetail = () => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
         try {
@@ -74,6 +75,9 @@ const HomeMO: React.FC = () => {
         } catch (error) {
             console.error('Error fetching transaction details by user:', error);
         }
+    };
+    useEffect(() => {
+        fetchTransactionAndDetail();
     }, []);
 
     const getToday = (): string => {
@@ -118,6 +122,8 @@ const HomeMO: React.FC = () => {
     const [elemn, setElemn] = useState<any>();
     const isFirstRender = useRef(true);
 
+    const [accumulateBahan, setAccumulateBahan] = useState<any>([]);
+
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -136,6 +142,9 @@ const HomeMO: React.FC = () => {
 
         const getAllBahan = async () => {
             setKekurangan(false);
+            const tempAccumulateBahan = [];
+            const semuaBahan = [];
+
             try {
                 const response = await axios.get(
                     `${apiUrl}/transaction_details/get_all_bahan/${transactionDetailIdProduct}`,
@@ -146,14 +155,44 @@ const HomeMO: React.FC = () => {
                 const response_bahan_resep = await axios.get(`${apiUrl}/bahan_resep/${productId}`);
                 const bahan_resep = response_bahan_resep.data.bahan_resep;
 
+                let kekurangan = false;
+
                 for (let index = 0; index < bahan_resep.length; index++) {
                     const element = bahan_resep[index].quantity * jumlahBarang;
                     const stok_bahan = allbahan[index].stok;
+                    const newBahan = bahan_resep[index];
+
+                    const existingBahanIndex = tempAccumulateBahan.findIndex(
+                        (bahan) => bahan.bahan_id === newBahan.bahan_id,
+                    );
+                    semuaBahan.push(allbahan[index]);
+                    if (existingBahanIndex !== -1) {
+                        // Bahan with same id exists, update its quantity
+                        tempAccumulateBahan[existingBahanIndex].quantity += newBahan.quantity;
+                    } else {
+                        // Bahan with same id does not exist, add new bahan
+                        tempAccumulateBahan.push(newBahan);
+                    }
 
                     if (element > stok_bahan) {
+                        kekurangan = true;
+                    }
+                }
+
+                console.log('temp start');
+                console.log(tempAccumulateBahan);
+                console.log('temp end');
+
+                for (let index = 0; index < tempAccumulateBahan.length; index++) {
+                    const bahan = tempAccumulateBahan[index].quantity * jumlahBarang;
+                    const stok_bahan = tempAccumulateBahan[index].bahan.stok;
+
+                    if (bahan > stok_bahan) {
                         setKekurangan(true);
                     }
                 }
+                setAccumulateBahan(tempAccumulateBahan);
+                setKekurangan(kekurangan);
             } catch (error) {
                 console.error('Error fetching all bahan:', error);
             }
@@ -173,6 +212,7 @@ const HomeMO: React.FC = () => {
     }, [transactionDetailIdHampers]);
 
     useEffect(() => {
+        setAccumulateBahan([]);
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;
@@ -190,6 +230,8 @@ const HomeMO: React.FC = () => {
 
         const getAllBahan = async () => {
             try {
+                const tempAccumulateBahan = [];
+                const semuaBahan = [];
                 const response_hampers = await axios.get(`${apiUrl}/hampers/product/${hampersId}`);
                 const products = response_hampers.data.products;
 
@@ -204,14 +246,47 @@ const HomeMO: React.FC = () => {
 
                     const response_bahan_resep = await axios.get(`${apiUrl}/bahan_resep/${product.id}`);
                     const bahan_resep = response_bahan_resep.data.bahan_resep;
+                    console.log(bahan_resep.length);
+                    console.log('-');
+
+                    let kekurangan = false;
 
                     for (let index = 0; index < bahan_resep.length; index++) {
                         const element = bahan_resep[index].quantity * jumlahBarang;
                         const stok_bahan = allbahan[index].stok;
+                        const newBahan = bahan_resep[index];
+
+                        const existingBahanIndex = tempAccumulateBahan.findIndex(
+                            (bahan) => bahan.bahan_id === newBahan.bahan_id,
+                        );
+                        semuaBahan.push(allbahan[index]);
+                        if (existingBahanIndex !== -1) {
+                            // Bahan with same id exists, update its quantity
+                            tempAccumulateBahan[existingBahanIndex].quantity += newBahan.quantity;
+                        } else {
+                            // Bahan with same id does not exist, add new bahan
+                            tempAccumulateBahan.push(newBahan);
+                        }
 
                         if (element > stok_bahan) {
-                            setKekurangan(true);
+                            kekurangan = true;
                         }
+                    }
+
+                    setAccumulateBahan(tempAccumulateBahan);
+
+                    setKekurangan(kekurangan);
+                }
+                console.log('temp start');
+                console.log(tempAccumulateBahan);
+                console.log('temp end');
+
+                for (let index = 0; index < tempAccumulateBahan.length; index++) {
+                    const bahan = tempAccumulateBahan[index].quantity * jumlahBarang;
+                    const stok_bahan = tempAccumulateBahan[index].bahan.stok;
+
+                    if (bahan > stok_bahan) {
+                        setKekurangan(true);
                     }
                 }
             } catch (error) {
@@ -226,6 +301,57 @@ const HomeMO: React.FC = () => {
 
     const handleProses = async (e: React.FormEvent<HTMLFormElement>, id: number, tipe: string) => {
         e.preventDefault();
+        console.log(accumulateBahan.length);
+
+        for (let index = 0; index < accumulateBahan.length; index++) {
+            const bahan = accumulateBahan[index];
+
+            if (tipe == 'Hampers') {
+                const pemakaian_bahan_baku: PemakaianBahanBaku = {
+                    bahan_id: bahan.bahan_id,
+                    jumlah: bahan.quantity * jumlahBarang,
+                    tanggal: getToday(),
+                    transaction_detail_id: transactionDetailIdHampers,
+                };
+                axios({
+                    method: 'post',
+                    url: apiUrl + '/pemakaian_bahan_baku',
+                    data: pemakaian_bahan_baku,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
+                })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+            if (tipe == 'Product') {
+                const pemakaian_bahan_baku: PemakaianBahanBaku = {
+                    bahan_id: bahan.bahan_id,
+                    jumlah: bahan.quantity * jumlahBarang,
+                    tanggal: getToday(),
+                    transaction_detail_id: transactionDetailIdProduct,
+                };
+                axios({
+                    method: 'post',
+                    url: apiUrl + '/pemakaian_bahan_baku',
+                    data: pemakaian_bahan_baku,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
+                })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+        }
+
         // console.log('riel');
 
         try {
@@ -238,7 +364,7 @@ const HomeMO: React.FC = () => {
             console.log(err);
         }
 
-        console.log('start');
+        // console.log('start');
 
         if (tipe == 'Product') {
             console.log(cekBahanResep);
@@ -263,7 +389,7 @@ const HomeMO: React.FC = () => {
                 }
             }
         }
-        window.location.reload();
+        // window.location.reload();
     };
 
     return (

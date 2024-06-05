@@ -6,7 +6,7 @@ import { RiLuggageDepositFill } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
 import { GiFlour } from 'react-icons/gi';
 import { usePathname, useRouter } from 'next/navigation';
-import { GiTakeMyMoney } from "react-icons/gi";
+import { GiTakeMyMoney } from 'react-icons/gi';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -259,6 +259,21 @@ export default function Navbar() {
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>List Pembelian Bahan Baku</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/bahan_baku/pemakaian`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/manajer_operasional/bahan_baku/pemakaian'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Pemakaian Bahan Baku</span>
                                         </Link>
                                     </li>
                                 </ul>
