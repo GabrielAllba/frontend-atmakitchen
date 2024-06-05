@@ -297,6 +297,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                 tanggal_pengiriman: item.tanggal_pengiriman != null ? item.tanggal_pengiriman : getToday(),
                 transaction_status: 'Menunggu Jarak',
                 jenis_item: item.jenis_item,
+                tanggal_pemesanan: getToday(),
             };
 
             if (item.jenis_item == 'Titipan') {

@@ -4,13 +4,14 @@ import { Disclosure } from '@headlessui/react';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositFill } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
-import { GiFlour } from 'react-icons/gi';
+import { GiFlour, GiPaper } from 'react-icons/gi';
 import { usePathname, useRouter } from 'next/navigation';
 import { GiTakeMyMoney } from 'react-icons/gi';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaUserFriends } from 'react-icons/fa';
+import { BookOpenIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 
 const handleClickLink = () => {
     const drawerToggle = document.getElementById('my-drawer');
@@ -111,6 +112,44 @@ export default function Navbar() {
                                     <BiHome className="w-4 h-4"></BiHome>
                                     <span>Home</span>
                                 </a>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <BookOpenIcon className="w-4 h-4"></BookOpenIcon>
+                                    <span>Laporan</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/penjualan/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/manajer_operasional/penjualan/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Laporan Penjualan</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/laporan_bahan/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/manajer_operasional/laporan_bahan/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Laporan Bahan Baku</span>
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li>
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">

@@ -16,6 +16,7 @@ interface TransactionDetail {
     tanggal_pengiriman?: string | null;
     transaction_status?: string | null;
     jenis_item?: string | null;
+    tanggal_pemesanan?: string | null;
 }
 
 export type { TransactionDetail };
