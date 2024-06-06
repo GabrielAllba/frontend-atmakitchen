@@ -19,6 +19,7 @@ interface Transaction {
     payment_proof?: File | null;
     total_poin_user?: number | null;
     user_transfer?: number | null;
+    tips?: number | null;
 }
 
 interface TransactionFetch {
@@ -42,6 +43,7 @@ interface TransactionFetch {
     payment_proof?: string | null | null;
     total_poin_user?: number | null;
     user_transfer?: number | null;
+    tips?: number | null;
 }
 
 const transaction_data: Transaction[] = [

@@ -329,7 +329,7 @@ export default function Navbar() {
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">
                                     <GiFlour className="w-4 h-4"></GiFlour>
-                                    <span>Konfirmasi</span>
+                                    <span>Konfirmasi Pesanan</span>
                                 </a>
                                 <ul>
                                     <li className="py-2">
@@ -344,7 +344,7 @@ export default function Navbar() {
                                             }`}
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>Pengiriman</span>
+                                            <span>Konfirmasi Jarak</span>
                                         </Link>
                                     </li>
                                     <li className="py-2">
@@ -359,7 +359,52 @@ export default function Navbar() {
                                             }`}
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
-                                            <span>Pembayaran</span>
+                                            <span>Konfirmasi Pembayaran</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/transaction/proses/`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/transaction/pembayaran/'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Update Status Proses</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/transaction/pengiriman/`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/transaction/pengiriman/'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Update Status Pengiriman Atma Delivery</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/transaction/pickup/`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/transaction/pickup/'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Update Status Pick-Up</span>
                                         </Link>
                                     </li>
                                 </ul>

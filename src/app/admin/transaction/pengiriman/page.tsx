@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-
+import Image from 'next/image';
 import { Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { Transaction, transaction_data } from '@/dummy_data/transaction';
+import { Transaction, TransactionFetch, transaction_data } from '@/dummy_data/transaction';
 
 import axios from 'axios';
 import { Alert } from '@mui/material';
 
-const EditJarak: React.FC = () => {
+const EditPengiriman: React.FC = () => {
     //jumlah menampilkan halaman
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
@@ -35,9 +35,10 @@ const EditJarak: React.FC = () => {
             // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/tampil/Menunggu Jarak`,
+                url: `${apiUrl}/transactions/tampil/Sedang dikirim`,
             }).then((response) => {
                 setFilteredData(response.data.transactions);
+                fetchAllImages(response.data.transactions);
                 console.log(response.data.transactions);
             });
         } catch (error) {
@@ -50,21 +51,14 @@ const EditJarak: React.FC = () => {
     }, []);
 
     //UPDATE DATA
-    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number) => {
+    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number, status: string) => {
         e.preventDefault();
         console.log('riel');
 
         try {
-            // Update the transaction
-            const transactionResponse = await axios.put(`${apiUrl}/transactions/${userId}`, updateModal);
-            console.log(transactionResponse);
-
             // Update the status
-            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/Menunggu Pembayaran`);
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/${status}`);
             console.log(statusResponse);
-
-            const updateTransferNominalResponse = await axios.put(`${apiUrl}/transactions/transfer_nominal/${userId}`);
-            console.log(updateTransferNominalResponse);
 
             // Close the modal and fetch transactions
             setopenUpdateModal(false);
@@ -74,13 +68,45 @@ const EditJarak: React.FC = () => {
         }
     };
 
+    //ALERT
+    const [alertMessage, setAlertMessage] = useState('');
+
+
+    // FETCH IMAGE
+    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+    const fetchImage = async (name: string) => {
+        try {
+            const response = await axios.get(apiUrl + name, {
+                responseType: 'blob',
+            });
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            return objectURL;
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return '';
+        }
+    };
+
+    const fetchAllImages = async (transactions: TransactionFetch[]) => {
+        const imageUrls: { [key: string]: string } = {};
+        for (const transaction of transactions) {
+            if (transaction.payment_proof) {
+                const imageUrl = await fetchImage(transaction.payment_proof);
+                imageUrls[transaction.payment_proof] = imageUrl;
+            }
+        }
+        setImageUrls(imageUrls);
+    };
+    
+
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
                         <div className="flex items-center pb-4 flex-wrap">
-                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi</p>
+                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi dengan status Diproses</p>
                             {/* <form>
                                 <input
                                     type="text"
@@ -145,11 +171,14 @@ const EditJarak: React.FC = () => {
                                     <tr className="border">
                                         <th className="p-8 border text-start font-semibold">No.</th>
                                         <th className="p-8 border text-start font-semibold">Nomor Transaksi</th>
-                                        <th className="p-8 border text-start font-semibold">Nama Pemesan</th>
-                                        <th className="p-8 border text-start font-semibold">Metode Pengiriman</th>
-                                        <th className="p-8 border text-start font-semibold">Jarak</th>
-                                        <th className="p-8 border text-start font-semibold">Biaya Antar</th>
-                                        <th className="p-8 border text-start font-semibold">Total Bayar</th>
+                                        <th className="p-8 border text-start font-semibold">Status</th>
+                                        <th className="p-8 border text-start font-semibold">Nama Penerima</th>
+                                        <th className="p-8 border text-start font-semibold">Nomor Telepon</th>
+                                        <th className="p-8 border text-start font-semibold">Alamat Penerima</th>
+                                        <th className="p-8 border text-start font-semibold">Total Biaya</th>
+                                        <th className="p-8 border text-start font-semibold">Bukti Pembayaran</th>
+                                        <th className="p-8 border text-start font-semibold">Nominal transfer</th>
+                                        <th className="p-8 border text-start font-semibold">Tips</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -157,22 +186,32 @@ const EditJarak: React.FC = () => {
                                     {currentItems.map((item, index) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
-                                            <td className="p-4 border">
-                                                {item.invoice_number}
-                                                {/* {productData.find((product) => product.id === item.product_id)?.name ||
-                                                    'Product Not Found'} */}
+                                            <td className="p-4 border">{item.invoice_number}</td>
+                                            <td className="p-4 border">{item.transaction_status}</td>
+                                            <td className="p-4 border">{item.nama_penerima}</td>
+                                            <td className="p-4 border">{item.no_telp_penerima}</td>
+                                            <td className="p-4 border">{item.alamat_penerima}</td>
+                                            <td className="p-4 border ">{item.transfer_nominal}</td>
+                                            <td className="p-4 border ">
+                                                <Image
+                                                    className="rounded"
+                                                    src={imageUrls[item.payment_proof]}
+                                                    height={100}
+                                                    width={200}
+                                                    alt={'image-' + index}
+                                                    />
                                             </td>
-                                            <td className="p-4 border ">{item.nama_penerima}</td>
-                                            <td className="p-4 border ">{item.alamat_penerima}</td>
-                                            <td className="p-4 border">
-                                                {item.distance === 0 ? (
-                                                    <span className="font-bold text-[#AA2B2B]">Belum di update</span>
+                                            <td className="p-4 border ">
+                                            {item.user_transfer === 0 ? (
+                                                    <div
+                                                    className="relative grid select-none items-center font-bold whitespace-nowrap rounded-lg bg-[#AA2B2B] py-1.5 px-3 font-sans text-xs font-poppins  text-white">
+                                                    <span className="text-center">Pembayaran Belum di Verifikasi</span>
+                                                  </div>
                                                 ) : (
-                                                    item.distance
+                                                    item.user_transfer
                                                 )}
-                                            </td>
-                                            <td className="p-4 border">{item.delivery_fee}</td>
-                                            <td className="p-4 border">{item.total_price! + item.delivery_fee!}</td>
+                                                </td>
+                                            <td className="p-4 border ">{item.tips}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
@@ -182,7 +221,7 @@ const EditJarak: React.FC = () => {
                                                             setopenUpdateModal(true);
                                                         }}
                                                     >
-                                                        <span className="relative z-10">Update Jarak</span>
+                                                        <span className="relative z-10">Konfirmasi Pembayaran</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -257,90 +296,25 @@ const EditJarak: React.FC = () => {
                                                             className="space-y-6"
                                                             action="#"
                                                             method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!)}
+                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!,updateModal?.delivery === "Dikirim Kurir" ? "Sedang dikirim" : "Siap di-pickup")}
                                                         >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] font-bold">
-                                                                            Edit Jarak pada Transaksi nomor{' '}
-                                                                            {updateModal?.invoice_number}
+                                                                            Update Status {updateModal?.invoice_number}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
-                                                                        <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="nama"
-                                                                            >
-                                                                                Jarak
-                                                                            </label>
-                                                                            <input
-                                                                                className=" w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="nama_bahan"
-                                                                                placeholder="Nama Bahan"
-                                                                                required
-                                                                                value={updateModal?.distance || 0}
-                                                                                type="number"
-                                                                                onChange={(e) => {
-                                                                                    const { value } = e.target;
-                                                                                    const distance = parseFloat(value);
-
-                                                                                    let deliveryFee = 0;
-
-                                                                                    if (distance <= 5) {
-                                                                                        deliveryFee = 10000;
-                                                                                    } else if (
-                                                                                        distance > 5 &&
-                                                                                        distance <= 10
-                                                                                    ) {
-                                                                                        deliveryFee = 15000;
-                                                                                    } else if (
-                                                                                        distance > 10 &&
-                                                                                        distance <= 15
-                                                                                    ) {
-                                                                                        deliveryFee = 20000;
-                                                                                    } else {
-                                                                                        deliveryFee = 25000;
-                                                                                    }
-
-                                                                                    let biayaAntar =
-                                                                                        updateModal?.total_price! +
-                                                                                        distance;
-                                                                                    setUpdateModal({
-                                                                                        ...updateModal!,
-                                                                                        distance: distance,
-                                                                                        delivery_fee: deliveryFee,
-                                                                                    });
-                                                                                }}
-                                                                            ></input>
-                                                                        </div>
-
-                                                                        {/* <div className="mb-4">
-                                                                            <label
-                                                                                className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
-                                                                                htmlFor="stok"
-                                                                            >
-                                                                                Biaya Jarak
-                                                                            </label>
-                                                                            <input
-                                                                                className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
-                                                                                id="stok_bahan"
-                                                                                placeholder="Stok Bahan"
-                                                                                required
-                                                                                value={updateModal?.delivery_fee!}
-                                                                                type="number"
-                                                                                onChange={(e) => {
-                                                                                    const { value } = e.target;
-
-                                                                                    setUpdateModal({
-                                                                                        ...updateModal!,
-                                                                                        delivery_fee: parseFloat(value),
-                                                                                    });
-
-                                                                                }}
-                                                                            ></input>
-                                                                        </div> */}
+                                                                        {updateModal?.delivery === "Dikirim Kurir" ? (
+                                                                            <div className='font-poppins text-[#AA2B2B]'>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Sedang Dikirim</p> ? </p>
+                                                                            </div> 
+                                                                        ) : (
+                                                                            <div className='font-poppins text-[#AA2B2B]'>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Siap di-pickup</p> ? </p>
+                                                                            </div> 
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -348,7 +322,6 @@ const EditJarak: React.FC = () => {
                                                                 <button
                                                                     className=" rounded-md bg-[#AA2B2B] px-5  py-2.5 text-center font-semibold font-poppins text-sm  text-white outline-none  hover:bg-[#832a2a]"
                                                                     type="submit"
-                                                                    onClick={() => setopenUpdateModal(false)}
                                                                 >
                                                                     Save
                                                                 </button>
@@ -377,4 +350,4 @@ const EditJarak: React.FC = () => {
         </div>
     );
 };
-export default EditJarak;
+export default EditPengiriman;
