@@ -49,7 +49,7 @@ export default function TransaksiContent({ status }: { status: string }) {
             // Update the status
             const statusResponse = await axios.put(`${apiUrl}/transactions/status/invoice/${invoice}/${status}`);
             console.log(statusResponse);
-    
+
             // Close the modal and fetch transactions
             fetchTransactionDetail;
         } catch (err) {
@@ -102,8 +102,12 @@ export default function TransaksiContent({ status }: { status: string }) {
                     url: `${apiUrl}/transaction_details/user/` + user.id,
                 }).then((response) => {
                     const items = response.data.transaction_details;
-                    const filteredItems = items.filter((item: any) => item.transaction_status === status);
-                    setFetchTransactionDetail(filteredItems);
+                    if (!items) {
+                        setFetchTransactionDetail([]);
+                    } else {
+                        const filteredItems = items.filter((item: any) => item.transaction_status === status);
+                        setFetchTransactionDetail(filteredItems);
+                    }
                 });
             } catch (error) {
                 console.error('Error fetching transaction details by user:', error);
@@ -330,26 +334,26 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                 </div>
                                             )}
 
-                                        {item.transaction_status === 'Sedang dikirim' && (
-                                            <div className='flex'>
-                                            <button
-                                            className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                            onClick={() => handleUpdate(item?.invoice_number!,"Selesai")}
-                                            >
-                                            Update
-                                            </button>
-                                            </div>
-                                        )}
-                                        {item.transaction_status === 'Sudah di-pickup' && (
-                                            <div className='flex'>
-                                            <button
-                                            className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                            onClick={() => handleUpdate(item?.invoice_number!,"Selesai")}
-                                            >
-                                            Update
-                                            </button>
-                                            </div>
-                                        )}
+                                            {item.transaction_status === 'Sedang dikirim' && (
+                                                <div className="flex">
+                                                    <button
+                                                        className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                        onClick={() => handleUpdate(item?.invoice_number!, 'Selesai')}
+                                                    >
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {item.transaction_status === 'Sudah di-pickup' && (
+                                                <div className="flex">
+                                                    <button
+                                                        className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                        onClick={() => handleUpdate(item?.invoice_number!, 'Selesai')}
+                                                    >
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
