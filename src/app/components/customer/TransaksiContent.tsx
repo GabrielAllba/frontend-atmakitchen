@@ -44,6 +44,19 @@ export default function TransaksiContent({ status }: { status: string }) {
 
     const cancelButtonRef = useRef(null);
 
+    const handleUpdate = async (invoice: string, status: string) => {
+        try {
+            // Update the status
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/invoice/${invoice}/${status}`);
+            console.log(statusResponse);
+    
+            // Close the modal and fetch transactions
+            fetchTransactionDetail;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -316,6 +329,27 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                     ></input>
                                                 </div>
                                             )}
+
+                                        {item.transaction_status === 'Sedang dikirim' && (
+                                            <div className='flex'>
+                                            <button
+                                            className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                            onClick={() => handleUpdate(item?.invoice_number!,"Selesai")}
+                                            >
+                                            Update
+                                            </button>
+                                            </div>
+                                        )}
+                                        {item.transaction_status === 'Sudah di-pickup' && (
+                                            <div className='flex'>
+                                            <button
+                                            className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                            onClick={() => handleUpdate(item?.invoice_number!,"Selesai")}
+                                            >
+                                            Update
+                                            </button>
+                                            </div>
+                                        )}
                                         </div>
                                     </div>
                                 </div>
