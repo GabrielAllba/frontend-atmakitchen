@@ -4,7 +4,7 @@ import { Disclosure } from '@headlessui/react';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositFill } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
-import { GiFlour, GiPaper } from 'react-icons/gi';
+import { GrTransaction, GiPaper } from 'react-icons/gr';
 import { usePathname, useRouter } from 'next/navigation';
 import { GiTakeMyMoney } from 'react-icons/gi';
 
@@ -109,8 +109,19 @@ export default function Navbar() {
                         <div>
                             <li className="py-2">
                                 <a className="text-black font-poppins flex items-center">
-                                    <BiHome className="w-4 h-4"></BiHome>
-                                    <span>Home</span>
+                                    <Link
+                                        passHref
+                                        onClick={handleClickLink}
+                                        href={`/manajer_operasional/home`}
+                                        className={`text-[#7D848C] font-poppins flex items-center ${
+                                            pathname === '/manajer_operasional/home'
+                                                ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                : ''
+                                        }`}
+                                    >
+                                        <BiHome className="w-4 h-4"></BiHome>
+                                        <span>Home</span>
+                                    </Link>
                                 </a>
                             </li>
                             <li className="py-2">
@@ -147,6 +158,29 @@ export default function Navbar() {
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Laporan Bahan Baku</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <GrTransaction className="w-4 h-4"></GrTransaction>
+                                    <span>Pesanan Baru</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/manajer_operasional/pesanan/konfirmasi`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/manajer_operasional/pesanan/konfirmasi'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Konfirmasi Pesanan</span>
                                         </Link>
                                     </li>
                                 </ul>
