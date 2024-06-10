@@ -16,7 +16,7 @@ const EditPembayaran: React.FC = () => {
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
     const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
     //paginate data (data dibagi)
-    const [filteredData, setFilteredData] = useState<Transaction[]>(transaction_data);
+    const [filteredData, setFilteredData] = useState<Transaction[]>([]);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
     //fetch item
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -35,7 +35,7 @@ const EditPembayaran: React.FC = () => {
             // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/tampil/Sudah Bayar`,
+                url: `${apiUrl}/transactions/tampil/ayas/Sudah Bayar`,
             }).then((response) => {
                 setFilteredData(response.data.transactions);
                 fetchAllImages(response.data.transactions);
@@ -75,7 +75,6 @@ const EditPembayaran: React.FC = () => {
     //ALERT
     const [alertMessage, setAlertMessage] = useState('');
 
-
     // FETCH IMAGE
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
     const fetchImage = async (name: string) => {
@@ -102,7 +101,6 @@ const EditPembayaran: React.FC = () => {
         }
         setImageUrls(imageUrls);
     };
-    
 
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
@@ -200,18 +198,19 @@ const EditPembayaran: React.FC = () => {
                                                     height={100}
                                                     width={200}
                                                     alt={'image-' + index}
-                                                    />
+                                                />
                                             </td>
                                             <td className="p-4 border ">
-                                            {item.user_transfer === 0 ? (
-                                                    <div
-                                                    className="relative grid select-none items-center font-bold whitespace-nowrap rounded-lg bg-[#AA2B2B] py-1.5 px-3 font-sans text-xs font-poppins  text-white">
-                                                    <span className="text-center">Pembayaran Belum di Verifikasi</span>
-                                                  </div>
+                                                {item.user_transfer === 0 ? (
+                                                    <div className="relative grid select-none items-center font-bold whitespace-nowrap rounded-lg bg-[#AA2B2B] py-1.5 px-3 font-sans text-xs font-poppins  text-white">
+                                                        <span className="text-center">
+                                                            Pembayaran Belum di Verifikasi
+                                                        </span>
+                                                    </div>
                                                 ) : (
                                                     item.user_transfer
                                                 )}
-                                                </td>
+                                            </td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
@@ -302,7 +301,8 @@ const EditPembayaran: React.FC = () => {
                                                                 <div className="h-min rounded-md border bg-white">
                                                                     <div className="border-b p-4">
                                                                         <p className=" text-[#AA2B2B] font-bold">
-                                                                            Konfirmasi Pembayaran {updateModal?.invoice_number}
+                                                                            Konfirmasi Pembayaran{' '}
+                                                                            {updateModal?.invoice_number}
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
@@ -313,16 +313,19 @@ const EditPembayaran: React.FC = () => {
                                                                             >
                                                                                 Bukti Pembayaran
                                                                             </label>
-                                                                            <div className='flex justify-center'>
-                                                                            <Image
-                                                                                className="rounded"
-                                                                                src={imageUrls[updateModal?.payment_proof]}
-                                                                                height={100}
-                                                                                width={200}
-                                                                                alt={'image-' + updateModal?.id}
+                                                                            <div className="flex justify-center">
+                                                                                <Image
+                                                                                    className="rounded"
+                                                                                    src={
+                                                                                        imageUrls[
+                                                                                            updateModal?.payment_proof
+                                                                                        ]
+                                                                                    }
+                                                                                    height={100}
+                                                                                    width={200}
+                                                                                    alt={'image-' + updateModal?.id}
                                                                                 />
                                                                             </div>
-                                                                            
                                                                         </div>
                                                                         <div className="mb-4">
                                                                             <label
@@ -339,26 +342,32 @@ const EditPembayaran: React.FC = () => {
                                                                                 type="number"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
-                                                                                    const transferNominal = parseFloat(value);
-                                                                                    const tip = transferNominal - updateModal?.transfer_nominal!;
+                                                                                    const transferNominal =
+                                                                                        parseFloat(value);
+                                                                                    const tip =
+                                                                                        transferNominal -
+                                                                                        updateModal?.transfer_nominal!;
 
-                                                                                    if (transferNominal > updateModal?.transfer_nominal! ) {
+                                                                                    if (
+                                                                                        transferNominal >
+                                                                                        updateModal?.transfer_nominal!
+                                                                                    ) {
                                                                                         setUpdateModal({
                                                                                             ...updateModal!,
-                                                                                            user_transfer: transferNominal,
-                                                                                            tips : tip 
+                                                                                            user_transfer:
+                                                                                                transferNominal,
+                                                                                            tips: tip,
                                                                                         });
                                                                                     } else {
                                                                                         setUpdateModal({
                                                                                             ...updateModal!,
-                                                                                            user_transfer: transferNominal,
+                                                                                            user_transfer:
+                                                                                                transferNominal,
                                                                                         });
                                                                                     }
-
                                                                                 }}
                                                                             ></input>
                                                                         </div>
-
                                                                     </div>
                                                                 </div>
                                                             </div>

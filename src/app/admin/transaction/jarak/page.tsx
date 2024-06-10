@@ -16,7 +16,7 @@ const EditJarak: React.FC = () => {
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
     const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
     //paginate data (data dibagi)
-    const [filteredData, setFilteredData] = useState<Transaction[]>(transaction_data);
+    const [filteredData, setFilteredData] = useState<Transaction[]>([]);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
     //fetch item
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -35,7 +35,7 @@ const EditJarak: React.FC = () => {
             // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/tampil/Menunggu Jarak`,
+                url: `${apiUrl}/transactions/tampil/ayas/Menunggu Jarak`,
             }).then((response) => {
                 setFilteredData(response.data.transactions);
                 console.log(response.data.transactions);

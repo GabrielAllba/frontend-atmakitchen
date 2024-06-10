@@ -9,6 +9,7 @@ import { Transaction, TransactionFetch, transaction_data } from '@/dummy_data/tr
 
 import axios from 'axios';
 import { Alert } from '@mui/material';
+import { TransactionDetail } from '@/dummy_data/transaction_detaill';
 
 const EditProses: React.FC = () => {
     //jumlah menampilkan halaman
@@ -16,7 +17,7 @@ const EditProses: React.FC = () => {
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
     const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
     //paginate data (data dibagi)
-    const [filteredData, setFilteredData] = useState<Transaction[]>(transaction_data);
+    const [filteredData, setFilteredData] = useState<TransactionDetail[]>([]);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
     //fetch item
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -37,9 +38,9 @@ const EditProses: React.FC = () => {
                 method: 'get',
                 url: `${apiUrl}/transactions/tampil/Diproses`,
             }).then((response) => {
-                setFilteredData(response.data.transactions);
-                fetchAllImages(response.data.transactions);
-                console.log(response.data.transactions);
+                setFilteredData(response.data.transaction_details);
+                fetchAllImages(response.data.transaction_details);
+                console.log(response.data.transaction_details);
             });
         } catch (error) {
             console.error('Error fetching resep:', error);
@@ -57,8 +58,10 @@ const EditProses: React.FC = () => {
 
         try {
             // Update the status
-            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/${status}`);
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/detail/${userId}/${status}`);
+            console.log('start');
             console.log(statusResponse);
+            console.log('end');
 
             // Close the modal and fetch transactions
             setopenUpdateModal(false);
@@ -70,7 +73,6 @@ const EditProses: React.FC = () => {
 
     //ALERT
     const [alertMessage, setAlertMessage] = useState('');
-
 
     // FETCH IMAGE
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
@@ -88,6 +90,15 @@ const EditProses: React.FC = () => {
         }
     };
 
+    const handleUpdateModal = async (item: TransactionDetail) => {
+        axios({
+            method: 'get',
+            url: `${apiUrl}/transactions/delivery/${item.invoice_number}`,
+        }).then((response) => {
+            setUpdateModal(response.data.transactions);
+        });
+    };
+
     const fetchAllImages = async (transactions: TransactionFetch[]) => {
         const imageUrls: { [key: string]: string } = {};
         for (const transaction of transactions) {
@@ -98,8 +109,8 @@ const EditProses: React.FC = () => {
         }
         setImageUrls(imageUrls);
     };
-    
 
+    const [clickedIdTD, setClickedIdTD] = useState<number>(0);
     return (
         <div className="flex bg-[#FFFCFC] min-h-screen font-poppins text-black p-8">
             <div className="w-full">
@@ -170,15 +181,10 @@ const EditProses: React.FC = () => {
                                 <thead>
                                     <tr className="border">
                                         <th className="p-8 border text-start font-semibold">Nomor Transaksi</th>
+                                        <th className="p-8 border text-start font-semibold">
+                                            Produk | Hampers | Titipan
+                                        </th>
                                         <th className="p-8 border text-start font-semibold">Status Pengiriman</th>
-                                        <th className="p-8 border text-start font-semibold">Status Pengerjaan</th>
-                                        <th className="p-8 border text-start font-semibold">Nama Penerima</th>
-                                        <th className="p-8 border text-start font-semibold">Nomor Telepon</th>
-                                        <th className="p-8 border text-start font-semibold">Alamat Penerima</th>
-                                        <th className="p-8 border text-start font-semibold">Total Biaya</th>
-                                        <th className="p-8 border text-start font-semibold">Bukti Pembayaran</th>
-                                        <th className="p-8 border text-start font-semibold">Nominal transfer</th>
-                                        <th className="p-8 border text-start font-semibold">Tips</th>
                                         <th className="p-8 border text-start font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -186,39 +192,19 @@ const EditProses: React.FC = () => {
                                     {currentItems.map((item, index) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.invoice_number}</td>
-                                            <td className="p-4 border">{item.delivery}</td>
-                                            <td className="p-4 border">{item.transaction_status}</td>
-                                            <td className="p-4 border">{item.nama_penerima}</td>
-                                            <td className="p-4 border">{item.no_telp_penerima}</td>
-                                            <td className="p-4 border">{item.alamat_penerima}</td>
-                                            <td className="p-4 border ">{item.transfer_nominal}</td>
-                                            <td className="p-4 border ">
-                                                <Image
-                                                    className="rounded"
-                                                    src={imageUrls[item.payment_proof]}
-                                                    height={100}
-                                                    width={200}
-                                                    alt={'image-' + index}
-                                                    />
+                                            <td className="p-4 border">
+                                                {item.product ? item.product.name : item.hampers?.hampers_name}
                                             </td>
-                                            <td className="p-4 border ">
-                                            {item.user_transfer === 0 ? (
-                                                    <div
-                                                    className="relative grid select-none items-center font-bold whitespace-nowrap rounded-lg bg-[#AA2B2B] py-1.5 px-3 font-sans text-xs font-poppins  text-white">
-                                                    <span className="text-center">Pembayaran Belum di Verifikasi</span>
-                                                  </div>
-                                                ) : (
-                                                    item.user_transfer
-                                                )}
-                                                </td>
-                                            <td className="p-4 border ">{item.tips}</td>
+                                            <td className="p-4 border">{item.transaction_status}</td>
                                             <td className="p-4 border">
                                                 <div className="flex gap-2">
                                                     <button
                                                         className="rounded-md relative h-12 w-40 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B]  transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-[#AA2B2B] before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
                                                         onClick={() => {
-                                                            setUpdateModal(item);
                                                             setopenUpdateModal(true);
+
+                                                            handleUpdateModal(item);
+                                                            setClickedIdTD(item.id!);
                                                         }}
                                                     >
                                                         <span className="relative z-10">Update Pengiriman</span>
@@ -296,7 +282,17 @@ const EditProses: React.FC = () => {
                                                             className="space-y-6"
                                                             action="#"
                                                             method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!,updateModal?.delivery === "Dikirim Kurir" ? "Sedang dikirim" : "Siap di-pickup")}
+                                                            onSubmit={(e) => {
+                                                                e.preventDefault();
+                                                                console.log(updateModal);
+                                                                handleUpdate(
+                                                                    e,
+                                                                    clickedIdTD,
+                                                                    updateModal?.delivery === 'Dikirim Kurir'
+                                                                        ? 'Sedang dikirim'
+                                                                        : 'Siap di-pickup',
+                                                                );
+                                                            }}
                                                         >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
@@ -306,14 +302,28 @@ const EditProses: React.FC = () => {
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
-                                                                        {updateModal?.delivery === "Dikirim Kurir" ? (
-                                                                            <div className='font-poppins text-[#AA2B2B]'>
-                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Sedang Dikirim</p> ? </p>
-                                                                            </div> 
+                                                                        {updateModal?.delivery === 'Dikirim Kurir' ? (
+                                                                            <div className="font-poppins text-[#AA2B2B]">
+                                                                                <p className="font-poppins">
+                                                                                    Apakah Anda yakin ingin mengupdate
+                                                                                    status menjadi{' '}
+                                                                                    <p className="font-bold font-poppins">
+                                                                                        Sedang Dikirim
+                                                                                    </p>{' '}
+                                                                                    ?{' '}
+                                                                                </p>
+                                                                            </div>
                                                                         ) : (
-                                                                            <div className='font-poppins text-[#AA2B2B]'>
-                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Siap di-pickup</p> ? </p>
-                                                                            </div> 
+                                                                            <div className="font-poppins text-[#AA2B2B]">
+                                                                                <p className="font-poppins">
+                                                                                    Apakah Anda yakin ingin mengupdate
+                                                                                    status menjadi{' '}
+                                                                                    <p className="font-bold font-poppins">
+                                                                                        Siap di-pickup
+                                                                                    </p>{' '}
+                                                                                    ?{' '}
+                                                                                </p>
+                                                                            </div>
                                                                         )}
                                                                     </div>
                                                                 </div>

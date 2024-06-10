@@ -44,14 +44,13 @@ export default function TransaksiContent({ status }: { status: string }) {
 
     const cancelButtonRef = useRef(null);
 
-    const handleUpdate = async (invoice: string, status: string) => {
+    const handleUpdate = async (userId: number, status: string) => {
         try {
             // Update the status
-            const statusResponse = await axios.put(`${apiUrl}/transactions/status/invoice/${invoice}/${status}`);
+            const statusResponse = await axios.put(`${apiUrl}/transactions/status/detail/${userId}/${status}`);
+            console.log('start');
             console.log(statusResponse);
-
-            // Close the modal and fetch transactions
-            fetchTransactionDetail;
+            console.log('end');
         } catch (err) {
             console.log(err);
         }
@@ -102,12 +101,8 @@ export default function TransaksiContent({ status }: { status: string }) {
                     url: `${apiUrl}/transaction_details/user/` + user.id,
                 }).then((response) => {
                     const items = response.data.transaction_details;
-                    if (!items) {
-                        setFetchTransactionDetail([]);
-                    } else {
-                        const filteredItems = items.filter((item: any) => item.transaction_status === status);
-                        setFetchTransactionDetail(filteredItems);
-                    }
+                    const filteredItems = items.filter((item: any) => item.transaction_status === status);
+                    setFetchTransactionDetail(filteredItems);
                 });
             } catch (error) {
                 console.error('Error fetching transaction details by user:', error);
@@ -333,12 +328,25 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                     ></input>
                                                 </div>
                                             )}
-
+                                            {item.transaction_status == 'Menunggu Pembayaran' && (
+                                                <div>
+                                                    <p className="text-xs text-black">Bukti Pembayaran</p>
+                                                    <input
+                                                        className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
+                                                        id="foto_produk"
+                                                        type="file"
+                                                        required
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                            handleFileChange(e, item.invoice_number!);
+                                                        }}
+                                                    ></input>
+                                                </div>
+                                            )}
                                             {item.transaction_status === 'Sedang dikirim' && (
                                                 <div className="flex">
                                                     <button
                                                         className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                        onClick={() => handleUpdate(item?.invoice_number!, 'Selesai')}
+                                                        onClick={() => handleUpdate(item?.id!, 'Selesai')}
                                                     >
                                                         Update
                                                     </button>
@@ -348,7 +356,7 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                 <div className="flex">
                                                     <button
                                                         className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                        onClick={() => handleUpdate(item?.invoice_number!, 'Selesai')}
+                                                        onClick={() => handleUpdate(item?.id!, 'Selesai')}
                                                     >
                                                         Update
                                                     </button>
