@@ -39,7 +39,7 @@ interface TransactionFetch {
     point_used?: number | null;
     point_income?: number | null;
     payment_date?: string | null;
-    payment_proof?: string | null | null;
+    payment_proof?: string | null;
     total_poin_user?: number | null;
     user_transfer?: number | null;
 }

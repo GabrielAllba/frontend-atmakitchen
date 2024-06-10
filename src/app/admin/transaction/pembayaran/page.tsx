@@ -294,12 +294,12 @@ const EditJarak: React.FC = () => {
                                                                                 className="mb-2 font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="nama"
                                                                             >
-                                                                                Total transfer
+                                                                                Total Transfer
                                                                             </label>
                                                                             <input
                                                                                 className=" w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                                 id="nama_bahan"
-                                                                                placeholder="Nama Bahan"
+                                                                                placeholder="Masukkan Total Transfer"
                                                                                 required
                                                                                 type="number"
                                                                                 onChange={(e) => {
@@ -332,7 +332,7 @@ const EditJarak: React.FC = () => {
                                                                                 placeholder="Masukn Tanggal Transfer"
                                                                                 required
                                                                                 value={updateModal?.tanggal_pemesanan!}
-                                                                                type="number"
+                                                                                type="date"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;
 
@@ -349,7 +349,7 @@ const EditJarak: React.FC = () => {
                                                                                 className="mb-2 block font-poppins text-sm font-medium text-[#111827]"
                                                                                 htmlFor="stok"
                                                                             >
-                                                                                Tanggal Transfer
+                                                                                Delivery Fee
                                                                             </label>
                                                                             <input
                                                                                 className="block w-full rounded-lg border border-[#DADDE2] bg-white p-2.5 font-poppins text-sm text-black outline-none"
