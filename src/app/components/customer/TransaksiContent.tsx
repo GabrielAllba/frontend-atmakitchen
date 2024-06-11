@@ -328,20 +328,6 @@ export default function TransaksiContent({ status }: { status: string }) {
                                                     ></input>
                                                 </div>
                                             )}
-                                            {item.transaction_status == 'Menunggu Pembayaran' && (
-                                                <div>
-                                                    <p className="text-xs text-black">Bukti Pembayaran</p>
-                                                    <input
-                                                        className="mt-2 block w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
-                                                        id="foto_produk"
-                                                        type="file"
-                                                        required
-                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                            handleFileChange(e, item.invoice_number!);
-                                                        }}
-                                                    ></input>
-                                                </div>
-                                            )}
                                             {item.transaction_status === 'Sedang dikirim' && (
                                                 <div className="flex">
                                                     <button

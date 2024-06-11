@@ -35,7 +35,7 @@ const EditJarak: React.FC = () => {
             // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/tampil/ayas/Menunggu Jarak`,
+                url: `${apiUrl}/transactions/tampil/Menunggu Jarak`,
             }).then((response) => {
                 setFilteredData(response.data.transactions);
                 console.log(response.data.transactions);
@@ -278,9 +278,9 @@ const EditJarak: React.FC = () => {
                                                                             <input
                                                                                 className=" w-full rounded-lg border border-[#DADDE2] bg-white  p-2.5 font-poppins text-sm text-black outline-none"
                                                                                 id="nama_bahan"
-                                                                                placeholder="Nama Bahan"
+                                                                                placeholder="Masukkan Jarak"
                                                                                 required
-                                                                                value={updateModal?.distance || 0}
+                                                                                value={updateModal?.distance || ''}
                                                                                 type="number"
                                                                                 onChange={(e) => {
                                                                                     const { value } = e.target;

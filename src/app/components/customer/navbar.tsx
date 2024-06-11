@@ -9,7 +9,7 @@ import { CiShoppingCart } from 'react-icons/ci';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const navigation = [{ name: 'Home', href: '#', current: true }];
+const navigation = [{ name: 'Home', href: '', current: true }];
 
 function classNames(...classes: (string | undefined | null | false | 0)[]): string {
     return classes.filter(Boolean).join(' ');

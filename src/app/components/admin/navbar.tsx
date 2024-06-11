@@ -338,7 +338,7 @@ export default function Navbar() {
                                             onClick={handleClickLink}
                                             href={`/admin/transaction/jarak`}
                                             className={`text-[#7D848C] font-poppins flex items-center ${
-                                                pathname === '/admin/bahan/list'
+                                                pathname === '/admin/transaction/jarak'
                                                     ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
                                                     : ''
                                             }`}

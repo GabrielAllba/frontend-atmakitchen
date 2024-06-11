@@ -4,7 +4,7 @@ import { Disclosure } from '@headlessui/react';
 import { BiHome, BiShoppingBag, BiLogOut } from 'react-icons/bi';
 import { RiLuggageDepositFill } from 'react-icons/ri';
 import { BsArrowRightShort, BsListNested } from 'react-icons/bs';
-import { GrTransaction, GiPaper } from 'react-icons/gr';
+import { GrTransaction } from 'react-icons/gr';
 import { usePathname, useRouter } from 'next/navigation';
 import { GiTakeMyMoney } from 'react-icons/gi';
 
@@ -310,7 +310,7 @@ export default function Navbar() {
                                             onClick={handleClickLink}
                                             href={`/manajer_operasional/bahan_baku/tambah`}
                                             className={`text-[#7D848C] font-poppins flex items-center ${
-                                                pathname === '/manajer_operasional/penitip/list'
+                                                pathname === '/manajer_operasional/bahan_baku/tambah'
                                                     ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
                                                     : ''
                                             }`}
