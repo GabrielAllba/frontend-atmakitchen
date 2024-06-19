@@ -245,26 +245,30 @@ const KonfirmasiMO: React.FC = () => {
                                             <td className="p-4 border">{item.point_income}</td>
                                             
                                             <td className="p-4 border">
+                                                {item.transaction_status === "Sudah Bayar" ? (
                                                 <div className="flex gap-2">
                                                     <button
-                                                        className="rounded-md relative h-12 w-40 overflow-hidden border border-green-600 text-green-600 transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-green-600 before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
-                                                        onClick={() => {
-                                                            setAcceptModal(item);
-                                                            setOpenAcceptModal(true);
-                                                        }}
+                                                    className="rounded-md relative h-12 w-40 overflow-hidden border border-green-600 text-green-600 transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-green-600 before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
+                                                    onClick={() => {
+                                                        setAcceptModal(item);
+                                                        setOpenAcceptModal(true);
+                                                    }}
                                                     >
-                                                        <span className="relative z-10">Terima</span>
+                                                    <span className="relative z-10">Terima</span>
                                                     </button>
                                                     <button
-                                                        className="rounded-md relative h-12 w-40 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B] transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-[#AA2B2B] before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
-                                                        onClick={() => {
-                                                            setRejectModal(item);
-                                                            setOpenRejectModal(true);
-                                                        }}
+                                                    className="rounded-md relative h-12 w-40 overflow-hidden border border-[#AA2B2B] text-[#AA2B2B] transition-all duration-200 before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:h-0 before:w-0 before:rounded-sm before:bg-[#AA2B2B] before:duration-300 before:ease-out hover:text-white hover:before:h-40 hover:before:w-40 hover:before:opacity-80"
+                                                    onClick={() => {
+                                                        setRejectModal(item);
+                                                        setOpenRejectModal(true);
+                                                    }}
                                                     >
-                                                        <span className="relative z-10">Tolak</span>
+                                                    <span className="relative z-10">Tolak</span>
                                                     </button>
                                                 </div>
+                                                ) : (
+                                                <span>{item.transaction_status}</span>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -444,7 +448,7 @@ const KonfirmasiMO: React.FC = () => {
                                                             className="inline-flex w-full justify-center rounded-md bg-[#AA2B2B] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                                             onClick={() => {
                                                                 setOpenRejectModal(false);
-                                                                handleReject(acceptModal?.id!);
+                                                                handleReject(rejectModal?.id!);
                                                             }}
                                                         >
                                                             Tolak
