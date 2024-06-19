@@ -1,36 +1,38 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { useRouter } from 'next/navigation';
 
 interface Login {
     email: string;
-    password: string;
 }
+
 interface AlertI {
     type: boolean;
     alertType: string;
     message: string;
 }
 
-export default function AdminLogin() {
+const emptyLogin: Login = {
+    email: '',
+};
+
+const emptyAlert: AlertI = {
+    type: false,
+    alertType: 'success',
+    message: '',
+};
+
+
+
+export default function ResetPassword() {
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const emptyLogin: Login = {
-        email: '',
-        password: '',
-    };
-    const emptyAlert: AlertI = {
-        type: false,
-        alertType: 'success',
-        message: '',
-    };
     const [login, setLogin] = useState<Login>(emptyLogin);
-    const [alert, setAlert] = useState<AlertI>(emptyAlert);
+    const [alert, setAlert] = useState<AlertI>(emptyAlert); 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -41,43 +43,52 @@ export default function AdminLogin() {
         console.log(login);
     };
 
-    const newLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const sendResetPasswordEmail = async (email: string) => {
+        try {
+            const response = await axios.post(`${apiUrl}/email/sendResetEmail`, { email }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            setAlert({ type: true, alertType: 'success', message: 'Email reset password berhasil dikirim!' });
+        } catch (error) {
+            console.error(error);
+            setAlert({ type: true, alertType: 'error', message: 'Gagal mengirim email reset password' });
+        }
+    };
+
+    const cekRole = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await axios.post(apiUrl + '/autologin/login', login);
-            const { token, user } = response.data;
-            localStorage.setItem('accessToken', token);
-            localStorage.setItem('user', JSON.stringify(user));
-            setAlert({ type: true, alertType: 'success', message: 'Selamat! Berhasil Login!' });
-            if (user.role.name == 'Admin') {
-                router.push('/admin/produk/list');
-            } else if (user.role.name == 'Customer') {
-                router.push('/customer');
-            } else if (user.role.name == 'Manajer Operasional') {
-                router.push('/manajer_operasional/home');
-            } else if (user.role.name == 'Owner') {
-                router.push('/owner/home');
+            const response = await axios.get(`${apiUrl}/autologin/cekRole?email=${login.email}`);
+            const { role } = response.data;
+            
+            if (role === 'Customer') {
+                await sendResetPasswordEmail(login.email);
+            } else {
+                router.push('/reset_password/change_password');
             }
         } catch (error) {
             console.error(error);
-            setAlert({ type: true, alertType: 'error', message: 'Email dan Password harus benar' });
+            setAlert({ type: true, alertType: 'error', message: 'Email harus benar' });
         }
     };
 
     const handleSubmitPost = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        newLogin(e);
+        cekRole(e);
     };
+    
     return (
         <>
             {alert.type && (
                 <div className="absolute top-4 right-4 z-50">
-                    {alert.alertType == 'success' && (
+                    {alert.alertType === 'success' && (
                         <Alert severity="success" className="font-poppins">
                             {alert.message}
                         </Alert>
                     )}
-                    {alert.alertType == 'error' && (
+                    {alert.alertType === 'error' && (
                         <Alert severity="error" className="font-poppins">
                             {alert.message}
                         </Alert>
@@ -131,7 +142,7 @@ export default function AdminLogin() {
                                             type="submit"
                                             className="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-normal leading-6 text-white shadow-sm hover:bg-[#b54545] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  font-poppins"
                                         >
-                                            Ganti Password via Email
+                                            Ganti Password Sesuai Role
                                         </button>
                                     </div>
                                 </form>

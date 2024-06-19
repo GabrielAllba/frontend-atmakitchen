@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { useRouter } from 'next/navigation';
 import { FaArrowCircleLeft } from 'react-icons/fa';
+import Link from "next/link";
 
 interface Login {
     email: string;
@@ -140,12 +141,12 @@ export default function AdminLogin() {
                                             >
                                                 Password
                                             </label>
-                                            <a
-                                                href="/change_password/"
+                                            <Link 
+                                                href="/reset_password/"
                                                 className="block text-sm font-poppins font-medium leading-6 text-accent mb-2"
-                                            >
-                                                Lupa Password?
-                                            </a>
+                                                >
+                                                    Lupa Password?
+                                            </Link>
                                         </div>
                                         <label className="input input-bordered flex items-center gap-2 bg-white">
                                             <svg

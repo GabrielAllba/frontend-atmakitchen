@@ -60,7 +60,7 @@ export default function AdminLogin() {
         try {
             await updatePassword();
             setAlert({ type: true, alertType: 'success', message: 'Password updated successfully!' });
-            
+            router.push('/login');
             // Redirect to appropriate page after password update
         } catch (error) {
             console.error(error);
