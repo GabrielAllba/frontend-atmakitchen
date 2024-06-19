@@ -10,13 +10,13 @@ import { Transaction, TransactionFetch, transaction_data } from '@/dummy_data/tr
 import axios from 'axios';
 import { Alert } from '@mui/material';
 
-const EditPengiriman: React.FC = () => {
+const ShowBatal: React.FC = () => {
     //jumlah menampilkan halaman
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(5);
     const option = [{ number: 5 }, { number: 10 }, { number: 20 }, { number: 50 }];
     //paginate data (data dibagi)
-    const [filteredData, setFilteredData] = useState<Transaction[]>(transaction_data);
+    const [filteredData, setFilteredData] = useState<TransactionFetch[]>([]);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
     //fetch item
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -35,10 +35,10 @@ const EditPengiriman: React.FC = () => {
             // setLoading(true);
             axios({
                 method: 'get',
-                url: `${apiUrl}/transactions/tampil/Sudah di-pickup`,
+                url: `${apiUrl}/transactions/tampil/Dibatalkan`,
             }).then((response) => {
                 setFilteredData(response.data.transactions);
-                fetchAllImages(response.data.transactions);
+                // fetchAllImages(response.data.transactions);
                 console.log(response.data.transactions);
             });
         } catch (error) {
@@ -51,53 +51,53 @@ const EditPengiriman: React.FC = () => {
     }, []);
 
     //UPDATE DATA
-    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number, status: string) => {
-        e.preventDefault();
-        console.log('riel');
+    // const handleUpdate = async (e: React.FormEvent<HTMLFormElement>, userId: number, status: string) => {
+    //     e.preventDefault();
+    //     console.log('riel');
 
-        try {
-            // Update the status
-            const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/${status}`);
-            console.log(statusResponse);
+    //     try {
+    //         // Update the status
+    //         const statusResponse = await axios.put(`${apiUrl}/transactions/status/${userId}/${status}`);
+    //         console.log(statusResponse);
 
-            // Close the modal and fetch transactions
-            setopenUpdateModal(false);
-            fetchTransactions();
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    //         // Close the modal and fetch transactions
+    //         setopenUpdateModal(false);
+    //         fetchTransactions();
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
 
     //ALERT
     const [alertMessage, setAlertMessage] = useState('');
 
 
     // FETCH IMAGE
-    const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
-    const fetchImage = async (name: string) => {
-        try {
-            const response = await axios.get(apiUrl + name, {
-                responseType: 'blob',
-            });
-            const blob = response.data;
-            const objectURL = URL.createObjectURL(blob);
-            return objectURL;
-        } catch (error) {
-            console.error('Error fetching image:', error);
-            return '';
-        }
-    };
+    // const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+    // const fetchImage = async (name: string) => {
+    //     try {
+    //         const response = await axios.get(apiUrl + name, {
+    //             responseType: 'blob',
+    //         });
+    //         const blob = response.data;
+    //         const objectURL = URL.createObjectURL(blob);
+    //         return objectURL;
+    //     } catch (error) {
+    //         console.error('Error fetching image:', error);
+    //         return '';
+    //     }
+    // };
 
-    const fetchAllImages = async (transactions: TransactionFetch[]) => {
-        const imageUrls: { [key: string]: string } = {};
-        for (const transaction of transactions) {
-            if (transaction.payment_proof) {
-                const imageUrl = await fetchImage(transaction.payment_proof);
-                imageUrls[transaction.payment_proof] = imageUrl;
-            }
-        }
-        setImageUrls(imageUrls);
-    };
+    // const fetchAllImages = async (transactions: TransactionFetch[]) => {
+    //     const imageUrls: { [key: string]: string } = {};
+    //     for (const transaction of transactions) {
+    //         if (transaction.payment_proof) {
+    //             const imageUrl = await fetchImage(transaction.payment_proof);
+    //             imageUrls[transaction.payment_proof] = imageUrl;
+    //         }
+    //     }
+    //     setImageUrls(imageUrls);
+    // };
     
 
     return (
@@ -106,7 +106,7 @@ const EditPengiriman: React.FC = () => {
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
                         <div className="flex items-center pb-4 flex-wrap">
-                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi dengan status Diproses</p>
+                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi Yang </p>
                             {/* <form>
                                 <input
                                     type="text"
@@ -169,9 +169,9 @@ const EditPengiriman: React.FC = () => {
                             <table className="table-auto w-full overflow-auto">
                                 <thead>
                                     <tr className="border">
-                                        <th className="p-8 border text-start font-semibold">No.</th>
                                         <th className="p-8 border text-start font-semibold">Nomor Transaksi</th>
-                                        <th className="p-8 border text-start font-semibold">Status</th>
+                                        <th className="p-8 border text-start font-semibold">Status Pengiriman</th>
+                                        <th className="p-8 border text-start font-semibold">Status Pengerjaan</th>
                                         <th className="p-8 border text-start font-semibold">Nama Penerima</th>
                                         <th className="p-8 border text-start font-semibold">Nomor Telepon</th>
                                         <th className="p-8 border text-start font-semibold">Alamat Penerima</th>
@@ -185,8 +185,8 @@ const EditPengiriman: React.FC = () => {
                                 <tbody>
                                     {currentItems.map((item, index) => (
                                         <tr key={item.id} className="border text-[#7D848C]">
-                                            <td className="p-4 border">{item.id}</td>
                                             <td className="p-4 border">{item.invoice_number}</td>
+                                            <td className="p-4 border">{item.delivery}</td>
                                             <td className="p-4 border">{item.transaction_status}</td>
                                             <td className="p-4 border">{item.nama_penerima}</td>
                                             <td className="p-4 border">{item.no_telp_penerima}</td>
@@ -221,7 +221,7 @@ const EditPengiriman: React.FC = () => {
                                                             setopenUpdateModal(true);
                                                         }}
                                                     >
-                                                        <span className="relative z-10">Konfirmasi Pembayaran</span>
+                                                        <span className="relative z-10">Update Pengiriman</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -306,9 +306,15 @@ const EditPengiriman: React.FC = () => {
                                                                         </p>
                                                                     </div>
                                                                     <div className="p-4 overflow-auto">
+                                                                        {updateModal?.delivery === "Dikirim Kurir" ? (
                                                                             <div className='font-poppins text-[#AA2B2B]'>
-                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Selesai</p> ? </p>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Sedang Dikirim</p> ? </p>
                                                                             </div> 
+                                                                        ) : (
+                                                                            <div className='font-poppins text-[#AA2B2B]'>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Siap di-pickup</p> ? </p>
+                                                                            </div> 
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -344,4 +350,4 @@ const EditPengiriman: React.FC = () => {
         </div>
     );
 };
-export default EditPengiriman;
+export default ShowBatal;

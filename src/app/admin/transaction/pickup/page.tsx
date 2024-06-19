@@ -30,19 +30,15 @@ const EditPickup: React.FC = () => {
 
     //fetch transaction
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const fetchTransactions = () => {
+    const fetchTransactions = async () => {
         try {
-            // setLoading(true);
-            axios({
-                method: 'get',
-                url: `${apiUrl}/transactions/tampil/Siap di-pickup`,
-            }).then((response) => {
-                setFilteredData(response.data.transactions);
-                fetchAllImages(response.data.transactions);
-                console.log(response.data.transactions);
-            });
+            const responsePickup = await axios.get(`${apiUrl}/transactions/tampil/Siap di-pickup`);
+            const responseDikirim = await axios.get(`${apiUrl}/transactions/tampil/Sedang dikirim`);
+            const combinedData = [...responsePickup.data.transactions, ...responseDikirim.data.transactions];
+            setFilteredData(combinedData);
+            fetchAllImages(combinedData);
         } catch (error) {
-            console.error('Error fetching resep:', error);
+            console.error('Error fetching transactions:', error);
         }
     };
 
@@ -106,7 +102,7 @@ const EditPickup: React.FC = () => {
                 <div className="card bg-primary border pb-8 rounded ">
                     <div className="card-body ">
                         <div className="flex items-center pb-4 flex-wrap">
-                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi dengan status Diproses</p>
+                            <p className="text-[#AA2B2B] font-semibold">Data Transaksi yang Siap Dipick-up</p>
                             {/* <form>
                                 <input
                                     type="text"
@@ -171,6 +167,7 @@ const EditPickup: React.FC = () => {
                                     <tr className="border">
                                         <th className="p-8 border text-start font-semibold">No.</th>
                                         <th className="p-8 border text-start font-semibold">Nomor Transaksi</th>
+                                        <th className="p-8 border text-start font-semibold">Metode Pengiriman</th>
                                         <th className="p-8 border text-start font-semibold">Status</th>
                                         <th className="p-8 border text-start font-semibold">Nama Penerima</th>
                                         <th className="p-8 border text-start font-semibold">Nomor Telepon</th>
@@ -187,6 +184,7 @@ const EditPickup: React.FC = () => {
                                         <tr key={item.id} className="border text-[#7D848C]">
                                             <td className="p-4 border">{item.id}</td>
                                             <td className="p-4 border">{item.invoice_number}</td>
+                                            <td className="p-4 border">{item.delivery}</td>
                                             <td className="p-4 border">{item.transaction_status}</td>
                                             <td className="p-4 border">{item.nama_penerima}</td>
                                             <td className="p-4 border">{item.no_telp_penerima}</td>
@@ -221,7 +219,7 @@ const EditPickup: React.FC = () => {
                                                             setopenUpdateModal(true);
                                                         }}
                                                     >
-                                                        <span className="relative z-10">Update Pick Up Status</span>
+                                                        <span className="relative z-10">Update Status</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -296,7 +294,8 @@ const EditPickup: React.FC = () => {
                                                             className="space-y-6"
                                                             action="#"
                                                             method="PUT"
-                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!,"Sudah di-pickup")}
+                                                            onSubmit={(e) => handleUpdate(e, updateModal?.id!, updateModal?.delivery! === 'Pickup Mandiri' ? "Selesai" : "Sudah di-pickup")}
+
                                                         >
                                                             <div className="grid grid-cols-1 gap-4">
                                                                 <div className="h-min rounded-md border bg-white">
@@ -305,11 +304,21 @@ const EditPickup: React.FC = () => {
                                                                             Update Status {updateModal?.invoice_number}
                                                                         </p>
                                                                     </div>
-                                                                    <div className="p-4 overflow-auto">
-                                                                        <div className='font-poppins text-[#AA2B2B]'>
-                                                                            <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <p className='font-bold font-poppins'>Sudah di-pickup</p> ? </p>
-                                                                        </div> 
-                                                                    </div>
+
+                                                                    {updateModal?.delivery === 'Pickup Mandiri' ? (
+                                                                        <div className="p-4 overflow-auto">
+                                                                            <div className='font-poppins text-[#AA2B2B]'>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <span className='font-bold'>Selesai</span> ?</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="p-4 overflow-auto">
+                                                                            <div className='font-poppins text-[#AA2B2B]'>
+                                                                                <p className='font-poppins'>Apakah Anda yakin ingin mengupdate status menjadi <span className='font-bold'>Sudah di-pickup</span> ?</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
                                                                 </div>
                                                             </div>
                                                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
