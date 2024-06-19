@@ -9,7 +9,7 @@ import { CiShoppingCart } from 'react-icons/ci';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const navigation = [{ name: 'Home', href: '', current: true }];
+const navigation = [{ name: 'Home', href: '/', current: true }];
 
 function classNames(...classes: (string | undefined | null | false | 0)[]): string {
     return classes.filter(Boolean).join(' ');
@@ -164,7 +164,19 @@ const NavbarCustomer: React.FC<NavbarCustomerProps> = ({ isAuth }: { isAuth: boo
                                                                 </Link>
                                                             )}
                                                         </Menu.Item>
-
+                                                        <Menu.Item>
+                                                            {({ active }) => (
+                                                                <Link
+                                                                    href="/history"
+                                                                    className={classNames(
+                                                                        active ? 'bg-gray-100' : '',
+                                                                        'block px-4 py-2 text-sm text-gray-700 ',
+                                                                    )}
+                                                                >
+                                                                    History Pesanan
+                                                                </Link>
+                                                            )}
+                                                        </Menu.Item>
                                                         <Menu.Item>
                                                             {({ active }) => (
                                                                 <p

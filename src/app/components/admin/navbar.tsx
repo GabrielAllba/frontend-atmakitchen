@@ -400,7 +400,7 @@ export default function Navbar() {
                                             <span>Update Status Proses</span>
                                         </Link>
                                     </li>
-                                    <li className="py-2">
+                                    {/* <li className="py-2">
                                         <Link
                                             passHref
                                             onClick={handleClickLink}
@@ -414,7 +414,7 @@ export default function Navbar() {
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Update Status Pengiriman Atma Delivery</span>
                                         </Link>
-                                    </li>
+                                    </li> */}
                                     <li className="py-2">
                                         <Link
                                             passHref
@@ -428,6 +428,44 @@ export default function Navbar() {
                                         >
                                             <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
                                             <span>Update Status Pick-Up</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="py-2">
+                                <a className="text-black font-poppins flex items-center">
+                                    <RiLuggageDepositLine className="w-4 h-4"></RiLuggageDepositLine>
+                                    <span>Pembatalan Pesanan</span>
+                                </a>
+                                <ul>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/batal/list`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/batal/list'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>List Pesanan Batal</span>
+                                        </Link>
+                                    </li>
+                                    <li className="py-2">
+                                        <Link
+                                            passHref
+                                            onClick={handleClickLink}
+                                            href={`/admin/batal/pembatalanpesanan`}
+                                            className={`text-[#7D848C] font-poppins flex items-center ${
+                                                pathname === '/admin/batal/pembatalanpesanan'
+                                                    ? 'bg-[#AA2B2B] text-white hover:bg-[#921f1f] hover:text-white'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <BsArrowRightShort className="w-4 h-4"></BsArrowRightShort>
+                                            <span>Batalkan Pesanan</span>
                                         </Link>
                                     </li>
                                 </ul>

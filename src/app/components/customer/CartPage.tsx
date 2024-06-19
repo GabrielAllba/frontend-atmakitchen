@@ -273,7 +273,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
             lunas_pada: null,
             point_income: earnedPoints,
             transfer_nominal: totalPriceFix - (nominal_pemakaian_poin / 100) * 100,
-            transaction_status: 'Menunggu Jarak',
+            transaction_status: opsiPengiriman === 'ickup mandiri' ? 'Menunggu Pembayaran' : 'Menunggu Jarak',
             total_price: totalPriceFix,
             invoice_number: invoiceNumber,
             payment_date: null,
@@ -295,7 +295,7 @@ export default function CartPage({ isAuth }: { isAuth: boolean }) {
                 hampers_price: item.jenis_item === 'Hampers' ? item.hampers?.price : null,
                 jenis: item.jenis,
                 tanggal_pengiriman: item.tanggal_pengiriman != null ? item.tanggal_pengiriman : getToday(),
-                transaction_status: 'Menunggu Jarak',
+                transaction_status: opsiPengiriman === 'Pickup Mandiri' ? 'Menunggu Pembayaran' : 'Menunggu Jarak',
                 jenis_item: item.jenis_item,
                 tanggal_pemesanan: getToday(),
             };
